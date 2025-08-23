@@ -62,7 +62,7 @@ const LandingScreen: React.FC = () => {
       ))}
 
       {/* Main Content */}
-      <div className="relative z-40 max-w-7xl mx-auto px-6 lg:px-8 pt-24 sm:pt-28 md:pt-32 pb-16">
+      <div className="relative z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 md:pt-36 pb-16">
         <div className="text-center">
           <div className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-6 py-2 mb-8">
             <Sparkles className="w-4 h-4 text-blue-400" />
@@ -70,7 +70,7 @@ const LandingScreen: React.FC = () => {
             <ArrowRight className="w-4 h-4 text-gray-400" />
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-8">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-8">
             <span className="text-white">One-click for Service</span>
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
@@ -78,20 +78,20 @@ const LandingScreen: React.FC = () => {
             </span>
           </h1>
 
-          <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-300 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             Dive into the art of services, where innovative technology meets professional expertise
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12 sm:mb-16 px-4 sm:px-0">
             <button 
               onClick={onGetStarted}
-              className="px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+              className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
             >
               Open App →
             </button>
             <button 
               onClick={onGetStarted}
-              className="flex items-center space-x-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:bg-white/20 transition-all duration-300"
+              className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:bg-white/20 transition-all duration-300"
             >
               <Play className="w-5 h-5" />
               <span>Discover More</span>

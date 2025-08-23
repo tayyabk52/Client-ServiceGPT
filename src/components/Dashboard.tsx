@@ -170,7 +170,7 @@ const Dashboard: React.FC = () => {
 
       <div className="relative z-10">
         {/* Redesigned Header */}
-        <header className="sticky top-0 z-50">
+        <header className="fixed top-0 left-0 right-0 z-50">
           <div className="relative">
             {/* Ambient layers */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.05]" />
@@ -233,7 +233,7 @@ const Dashboard: React.FC = () => {
         </header>
 
         {/* Main Content */}
-        <main className="pb-20">
+        <main className="pt-20 sm:pt-24 md:pt-28 pb-20">
           {/* Enhanced AI Hero Section - Main Focus */}
           <div id="ai-search-card" className="px-4 py-6">
             {/* Welcome Message with Stats Preview */}
