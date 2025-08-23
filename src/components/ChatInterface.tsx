@@ -901,21 +901,21 @@ const ChatInterface: React.FC = () => {
         </div>
       </div>
 
-  {/* Main Chat Container */}
-  <div className="relative z-10 flex flex-col min-h-[calc(var(--app-vh,1vh)*100)]">
-  {/* Header with glassmorphic design */}
-  <div className="backdrop-blur-xl bg-white/5 border-b border-white/10 p-3 sm:p-4">
+      {/* Main Chat Container */}
+      <div className="relative z-10 flex flex-col h-[calc(var(--app-vh,1vh)*100)] overflow-hidden">
+        {/* Fixed Header with glassmorphic design */}
+        <div className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/5 border-b border-white/10 p-3 sm:p-4 pt-safe">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <div>
-                <h1 className="text-xl font-bold text-white">Conversational Cosmos</h1>
-                <p className="text-sm text-blue-300">AI Service Discovery</p>
+                <h1 className="text-lg sm:text-xl font-bold text-white">Conversational Cosmos</h1>
+                <p className="text-xs sm:text-sm text-blue-300">AI Service Discovery</p>
               </div>
             </div>
             
@@ -935,8 +935,8 @@ const ChatInterface: React.FC = () => {
           </div>
         </div>
 
-        {/* Messages Container with Dynamic Bottom Padding */}
-  <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-3 sm:p-4 pb-6 sm:pb-8 space-y-5 sm:space-y-6 scroll-smooth">
+        {/* Messages Container with Dynamic Bottom Padding - Account for fixed header and input */}
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto pt-24 sm:pt-28 pb-56 sm:pb-60 px-3 sm:px-4 space-y-5 sm:space-y-6 scroll-smooth">
           {messages.map((message, index) => {
             // Check if this is the first user message (from dashboard)
             const isInitialUserMessage = message.type === 'user' && 
@@ -1090,19 +1090,19 @@ const ChatInterface: React.FC = () => {
                                     
                                     {/* Action Buttons */}
                                     <div className="space-y-2">
-                                      <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white py-2.5 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-xs sm:text-sm flex items-center justify-center space-x-2">
-                                        <ExternalLink className="w-4 h-4" />
-                                        <span>View Full Profile</span>
+                                      <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-xs sm:text-sm flex items-center justify-center space-x-1.5 sm:space-x-2">
+                                        <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        <span>View Profile</span>
                                       </button>
-                                      <div className="grid grid-cols-3 gap-2">
-                                        <button onClick={() => openWhatsAppModal(provider)} className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white py-2 px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center shadow-md">
-                                          <MessageCircle className="w-4 h-4" />
+                                      <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                                        <button onClick={() => openWhatsAppModal(provider)} className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white py-2 px-1.5 sm:px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center shadow-md">
+                                          <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         </button>
-                                        <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
-                                          <Phone className="w-4 h-4" />
+                                        <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-1.5 sm:px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
+                                          <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         </button>
-                                        <button className="bg-white/10 hover:bg-white/20 text-white py-2 px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
-                                          <Heart className="w-4 h-4" />
+                                        <button className="bg-white/10 hover:bg-white/20 text-white py-2 px-1.5 sm:px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
+                                          <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         </button>
                                       </div>
                                     </div>
@@ -1172,16 +1172,16 @@ const ChatInterface: React.FC = () => {
                                   <div className="mb-2 h-px bg-white/10" />
                                   
                                   {/* Mobile Actions */}
-                                  <div className="grid grid-cols-4 gap-1.5">
-                                    <button className="col-span-2 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white py-2 px-3 rounded-lg font-medium transition-all duration-300 text-xs flex items-center justify-center space-x-1">
+                                  <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
+                                    <button className="col-span-2 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg font-medium transition-all duration-300 text-[10px] sm:text-xs flex items-center justify-center space-x-1">
                                       <ExternalLink className="w-3 h-3" />
                                       <span>View</span>
                                     </button>
-                                    <button onClick={() => openWhatsAppModal(provider)} className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white py-2 rounded-lg transition-all duration-300 flex items-center justify-center shadow">
-                                      <MessageCircle className="w-4 h-4" />
+                                    <button onClick={() => openWhatsAppModal(provider)} className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white py-1.5 sm:py-2 px-1 sm:px-2 rounded-lg transition-all duration-300 flex items-center justify-center shadow">
+                                      <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                     </button>
-                                    <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-all duration-300 flex items-center justify-center">
-                                      <Phone className="w-4 h-4" />
+                                    <button className="bg-blue-500 hover:bg-blue-600 text-white py-1.5 sm:py-2 px-1 sm:px-2 rounded-lg transition-all duration-300 flex items-center justify-center">
+                                      <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                     </button>
                                   </div>
                                 </div>
@@ -1312,23 +1312,21 @@ const ChatInterface: React.FC = () => {
             </div>
           )}
           
-          {/* Minimal spacer (reduced to prevent excessive blank area) */}
-          <div className="h-2"></div>
         </div>
 
-        {/* Luxury Premium Input Area */}
-        <div className="relative">
+        {/* Fixed Luxury Premium Input Area */}
+        <div className="fixed bottom-0 left-0 right-0 z-40 pb-safe">
           {/* Luxury gradient background */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-gray-900/40 to-transparent"></div>
           
           {/* Glassmorphic container */}
-          <div className="relative backdrop-blur-2xl bg-gradient-to-r from-white/8 via-white/5 to-white/8 border-t border-white/20 p-3 sm:p-4">
+          <div className="relative backdrop-blur-2xl bg-gradient-to-r from-white/8 via-white/5 to-white/8 border-t border-white/20 p-2.5 sm:p-3 md:p-4">
             {/* Premium glow effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 rounded-t-3xl"></div>
             
             <div className="relative z-10">
               {/* Main input container */}
-              <div className="flex items-end space-x-3 sm:space-x-4 mb-2 sm:mb-3">
+              <div className="flex items-end space-x-2 sm:space-x-3 md:space-x-4 mb-2 sm:mb-3">
                 {/* Luxury text input with sophisticated styling */}
                 <div className="flex-1 relative group">
                   {/* Input background with multiple layers */}
@@ -1350,7 +1348,7 @@ const ChatInterface: React.FC = () => {
                     rows={1}
                     spellCheck={false}
                     autoComplete="off"
-                    className="relative w-full px-4 py-2.5 sm:px-5 sm:py-3 bg-transparent text-white placeholder-blue-300/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-[14px] sm:text-[15px] leading-relaxed z-10 overflow-hidden"
+                    className="relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 bg-transparent text-white placeholder-blue-300/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-[14px] sm:text-[15px] leading-relaxed z-10 overflow-hidden"
                     style={{ 
                       height: '48px',
                       minHeight: '48px',
@@ -1372,14 +1370,14 @@ const ChatInterface: React.FC = () => {
                   />
                   
                   {/* Luxury microphone button */}
-                  <button className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-r from-gray-700/80 to-gray-600/80 backdrop-blur-sm border border-white/15 rounded-lg flex items-center justify-center text-white/90 hover:text-white hover:from-blue-600/70 hover:to-purple-600/70 hover:border-blue-400/40 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-blue-500/20">
-                    <Mic className="w-4 h-4" />
+                  <button className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gradient-to-r from-gray-700/80 to-gray-600/80 backdrop-blur-sm border border-white/15 rounded-lg flex items-center justify-center text-white/90 hover:text-white hover:from-blue-600/70 hover:to-purple-600/70 hover:border-blue-400/40 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-blue-500/20">
+                    <Mic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                   
                   {/* Typing indicator */}
                   {inputValue && (
-                    <div className="absolute bottom-2 left-6 text-xs text-blue-300/60">
-                      {inputValue.length} characters
+                    <div className="absolute bottom-1.5 sm:bottom-2 left-4 sm:left-6 text-[10px] sm:text-xs text-blue-300/60">
+                      {inputValue.length} chars
                     </div>
                   )}
                 </div>
@@ -1388,7 +1386,7 @@ const ChatInterface: React.FC = () => {
                 <button
                   onClick={() => handleSendMessage(inputValue)}
                   disabled={!inputValue.trim() || isTyping || messageAnimating}
-                  className={`relative w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ease-out shadow-xl group ${
+                  className={`relative w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ease-out shadow-xl group ${
                     (!inputValue.trim() || isTyping || messageAnimating) 
                       ? 'bg-gray-700/50 opacity-40 cursor-not-allowed shadow-none' 
                       : 'bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 hover:shadow-blue-500/40 hover:scale-105 active:scale-95'
@@ -1402,9 +1400,9 @@ const ChatInterface: React.FC = () => {
                   {/* Button content */}
                   <div className="relative z-10">
                     {(isTyping || messageAnimating) ? (
-                      <div className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></div>
                     ) : (
-                      <Send className="w-5 h-5" />
+                      <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </div>
                   
@@ -1419,33 +1417,63 @@ const ChatInterface: React.FC = () => {
               <div className="space-y-1.5 sm:space-y-2 relative">
                 <div className="text-[10px] sm:text-xs text-gray-400/70 font-medium tracking-wide uppercase pl-1">Quick Actions</div>
                 <div className="relative">
-                  {/* Gradient edge masks */}
-                  <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-[#0b0f17] via-[#0b0f17]/60 to-transparent rounded-l-xl" />
-                  <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-[#0b0f17] via-[#0b0f17]/60 to-transparent rounded-r-xl" />
-                  <div className="flex gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar pr-4 -ml-1 pl-1 snap-x snap-mandatory">
-                  {[
-                    { text: '🚨 Emergency repair', color: 'from-red-500/20 to-orange-500/20', border: 'red-400/30' },
-                    { text: '💰 Budget quote', color: 'from-green-500/20 to-emerald-500/20', border: 'green-400/30' },
-                    { text: '📅 Schedule appointment', color: 'from-blue-500/20 to-cyan-500/20', border: 'blue-400/30' },
-                    { text: '⭐ View reviews', color: 'from-purple-500/20 to-pink-500/20', border: 'purple-400/30' }
-                  ].map((suggestion, index) => (
-                    <button
-                      key={suggestion.text}
-                      onClick={() => handleSendMessage(suggestion.text)}
-                      disabled={isTyping || messageAnimating}
-                      className={`snap-start relative px-3 py-2 sm:px-3.5 sm:py-2 bg-gradient-to-r ${suggestion.color} backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[11px] sm:text-[12px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group whitespace-nowrap ${
-                        (isTyping || messageAnimating)
-                          ? 'text-gray-500/60 cursor-not-allowed opacity-40'
-                          : 'text-white/90 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
-                      }`}
-                      style={{ animationDelay: `${index * 100 + 400}ms` }}
-                    >
-                      {/* Button highlight effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
-                      
-                      <span className="relative z-10">{suggestion.text}</span>
-                    </button>
-                  ))}
+                  {/* Mobile: Grid layout, Desktop: Horizontal scroll */}
+                  <div className="block sm:hidden">
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { text: '🚨 Emergency', fullText: '🚨 Emergency repair', color: 'from-red-500/20 to-orange-500/20', border: 'red-400/30' },
+                        { text: '💰 Quote', fullText: '💰 Budget quote', color: 'from-green-500/20 to-emerald-500/20', border: 'green-400/30' },
+                        { text: '📅 Schedule', fullText: '📅 Schedule appointment', color: 'from-blue-500/20 to-cyan-500/20', border: 'blue-400/30' },
+                        { text: '⭐ Reviews', fullText: '⭐ View reviews', color: 'from-purple-500/20 to-pink-500/20', border: 'purple-400/30' }
+                      ].map((suggestion, index) => (
+                        <button
+                          key={suggestion.text}
+                          onClick={() => handleSendMessage(suggestion.fullText)}
+                          disabled={isTyping || messageAnimating}
+                          className={`relative px-2 py-1.5 bg-gradient-to-r ${suggestion.color} backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[10px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group ${
+                            (isTyping || messageAnimating)
+                              ? 'text-gray-500/60 cursor-not-allowed opacity-40'
+                              : 'text-white/90 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
+                          }`}
+                          style={{ animationDelay: `${index * 100 + 400}ms` }}
+                        >
+                          {/* Button highlight effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
+                          <span className="relative z-10">{suggestion.text}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Desktop: Horizontal scroll layout */}
+                  <div className="hidden sm:block">
+                    {/* Gradient edge masks */}
+                    <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-[#0b0f17] via-[#0b0f17]/60 to-transparent rounded-l-xl z-10" />
+                    <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-[#0b0f17] via-[#0b0f17]/60 to-transparent rounded-r-xl z-10" />
+                    <div className="flex gap-2.5 overflow-x-auto no-scrollbar pr-4 -ml-1 pl-1 snap-x snap-mandatory">
+                      {[
+                        { text: '🚨 Emergency repair', color: 'from-red-500/20 to-orange-500/20', border: 'red-400/30' },
+                        { text: '💰 Budget quote', color: 'from-green-500/20 to-emerald-500/20', border: 'green-400/30' },
+                        { text: '📅 Schedule appointment', color: 'from-blue-500/20 to-cyan-500/20', border: 'blue-400/30' },
+                        { text: '⭐ View reviews', color: 'from-purple-500/20 to-pink-500/20', border: 'purple-400/30' }
+                      ].map((suggestion, index) => (
+                        <button
+                          key={suggestion.text}
+                          onClick={() => handleSendMessage(suggestion.text)}
+                          disabled={isTyping || messageAnimating}
+                          className={`snap-start relative px-3.5 py-2 bg-gradient-to-r ${suggestion.color} backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[12px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group whitespace-nowrap min-w-0 flex-shrink-0 ${
+                            (isTyping || messageAnimating)
+                              ? 'text-gray-500/60 cursor-not-allowed opacity-40'
+                              : 'text-white/90 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
+                          }`}
+                          style={{ animationDelay: `${index * 100 + 400}ms` }}
+                        >
+                          {/* Button highlight effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
+                          <span className="relative z-10">{suggestion.text}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1507,16 +1535,16 @@ const ChatInterface: React.FC = () => {
                   <span>Editable</span>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <div className="flex-1 flex gap-3">
-                  <button disabled={waSending || waSent} onClick={simulateWaPrepare} className={`flex-1 h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all relative overflow-hidden ${waSent ? 'bg-green-600/20 border border-green-400/40 text-green-300' : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border border-green-400/30 shadow-lg hover:shadow-green-500/30'} ${waSending ? 'opacity-70 cursor-wait' : ''}`}>
-                    {waSending && <Loader2 className="w-4 h-4 animate-spin" />}
-                    {waSent && <Check className="w-4 h-4" />}
-                    {!waSending && !waSent && <MessageCircle className="w-4 h-4" />}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                <div className="flex-1 flex gap-2 sm:gap-3">
+                  <button disabled={waSending || waSent} onClick={simulateWaPrepare} className={`flex-1 h-10 sm:h-11 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all relative overflow-hidden ${waSent ? 'bg-green-600/20 border border-green-400/40 text-green-300' : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border border-green-400/30 shadow-lg hover:shadow-green-500/30'} ${waSending ? 'opacity-70 cursor-wait' : ''}`}>
+                    {waSending && <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />}
+                    {waSent && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+                    {!waSending && !waSent && <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                     <span>{waSent ? 'Prepared' : waSending ? 'Preparing...' : 'Prepare & Track'}</span>
                   </button>
-                  <a onClick={e=>{if(!waSent){e.preventDefault(); simulateWaPrepare();}}} href={buildWaLink()} target="_blank" rel="noopener noreferrer" className={`flex-1 h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${waSent ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg' : 'bg-white/5 text-blue-200/70 border border-white/10 hover:bg-white/10'} `}>
-                    <ExternalLink className="w-4 h-4" />
+                  <a onClick={e=>{if(!waSent){e.preventDefault(); simulateWaPrepare();}}} href={buildWaLink()} target="_blank" rel="noopener noreferrer" className={`flex-1 h-10 sm:h-11 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all ${waSent ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg' : 'bg-white/5 text-blue-200/70 border border-white/10 hover:bg-white/10'} `}>
+                    <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>{waSent ? 'Open WhatsApp' : 'Open (after prep)'}</span>
                   </a>
                 </div>

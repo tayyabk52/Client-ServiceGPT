@@ -95,39 +95,40 @@ const ProviderResultsScreen: React.FC = () => {
       {/* Noise overlay */}
       <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{backgroundImage:'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27160%27 height=%27160%27 viewBox=%270 0 160 160%27%3E%3Cpath fill=%27%23fff%27 fill-opacity=%270.08%27 d=%27M0 0h1v1H0z%27/%3E%3C/svg%3E")'}} />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
-        {/* Header / Filters */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8 lg:mb-10">
-          <div className="flex items-start sm:items-center gap-4">
-            <button onClick={() => navigate(-1)} className="group h-11 w-11 rounded-2xl bg-white/5 border border-white/10 shadow-inner flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 hover:-translate-y-0.5 transition-all backdrop-blur-md">
-              <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-0.5" />
-            </button>
-            <div>
-              <div className="inline-flex items-center gap-2 mb-2">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-blue-50 to-purple-100 bg-clip-text text-transparent">{searchQuery}</h1>
-                <span className="px-2 py-0.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-white/15 text-blue-200/80">Live</span>
+      {/* Fixed Header / Filters */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[linear-gradient(140deg,#05070d_0%,#090d17_45%,#0d1220_70%,#101727_100%)] backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 sm:py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6">
+            <div className="flex items-start sm:items-center gap-4">
+              <button onClick={() => navigate(-1)} className="group h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-white/5 border border-white/10 shadow-inner flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 hover:-translate-y-0.5 transition-all backdrop-blur-md">
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:-translate-x-0.5" />
+              </button>
+              <div>
+                <div className="inline-flex items-center gap-2 mb-1 sm:mb-2">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-blue-50 to-purple-100 bg-clip-text text-transparent">{searchQuery}</h1>
+                  <span className="px-2 py-0.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-white/15 text-blue-200/80">Live</span>
+                </div>
+                <p className="text-xs sm:text-[13px] text-blue-100/60 font-medium">{providers.length} providers • curated results</p>
               </div>
-              <p className="text-[13px] text-blue-100/60 font-medium">{providers.length} providers • curated results</p>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3 self-start md:self-auto">
+              <button onClick={() => setViewMode('list')} className={`relative h-9 sm:h-11 px-3 sm:px-4 rounded-xl flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm font-medium transition-all backdrop-blur-md border ${viewMode==='list' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-400/40 shadow-lg shadow-blue-500/25' : 'bg-white/5 text-blue-200/70 border-white/10 hover:bg-white/10 hover:text-white'} overflow-hidden`}>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white/10 to-transparent" />
+                <List className="w-3.5 h-3.5 sm:w-4 sm:h-4" /><span>List</span>
+              </button>
+              <button onClick={() => setViewMode('map')} className={`relative h-9 sm:h-11 px-3 sm:px-4 rounded-xl flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm font-medium transition-all backdrop-blur-md border ${viewMode==='map' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-400/40 shadow-lg shadow-blue-500/25' : 'bg-white/5 text-blue-200/70 border-white/10 hover:bg-white/10 hover:text-white'} overflow-hidden`}>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white/10 to-transparent" />
+                <MapIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /><span>Map</span>
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-start md:self-auto">
-            <button onClick={() => setViewMode('list')} className={`relative h-11 px-4 rounded-xl flex items-center space-x-2 text-sm font-medium transition-all backdrop-blur-md border ${viewMode==='list' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-400/40 shadow-lg shadow-blue-500/25' : 'bg-white/5 text-blue-200/70 border-white/10 hover:bg-white/10 hover:text-white'} overflow-hidden`}>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white/10 to-transparent" />
-              <List className="w-4 h-4" /><span>List</span>
-            </button>
-            <button onClick={() => setViewMode('map')} className={`relative h-11 px-4 rounded-xl flex items-center space-x-2 text-sm font-medium transition-all backdrop-blur-md border ${viewMode==='map' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-400/40 shadow-lg shadow-blue-500/25' : 'bg-white/5 text-blue-200/70 border-white/10 hover:bg-white/10 hover:text-white'} overflow-hidden`}>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white/10 to-transparent" />
-              <MapIcon className="w-4 h-4" /><span>Map</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Filter Chips */}
-        <div className="flex flex-wrap items-center gap-3 mb-8 sm:mb-10">
-          {[
-            {label:`Location: 5 km`},
-            {label:`Category: ${category}`},
+          {/* Filter Chips */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-4 sm:mt-6">
+            {[
+              {label:`Location: 5 km`},
+              {label:`Category: ${category}`},
             {label:`Rating 4.0+`},
             {label:`Price: All`}
           ].map(chip => (
@@ -138,6 +139,12 @@ const ProviderResultsScreen: React.FC = () => {
             </button>
           ))}
         </div>
+      </div>
+    </div>
+
+    {/* Scrollable Content Area */}
+    <div className="pt-32 sm:pt-36 md:pt-44 lg:pt-48 px-4 sm:px-6 lg:px-10 pb-8">
+      <div className="max-w-7xl mx-auto">
 
         {viewMode === 'map' ? (
           <MapPlaceholder providers={providers} />
@@ -283,6 +290,7 @@ const ProviderResultsScreen: React.FC = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

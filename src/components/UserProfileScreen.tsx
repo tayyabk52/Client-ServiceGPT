@@ -179,24 +179,24 @@ const UserProfileScreen: React.FC = () => {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.07]" />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0b111a] via-[#080e16] to-[#05080d]" />
       <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Header */}
-        <div className="sticky top-0 backdrop-blur-2xl bg-black/50 border-b border-white/10 px-4 py-4 flex items-center justify-between">
+        {/* Fixed Header */}
+        <div className="fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl bg-black/50 border-b border-white/10 px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center">
-              <ArrowLeft className="w-5 h-5" />
+            <button onClick={() => navigate(-1)} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center">
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent tracking-wide">Profile</h1>
-              <p className="text-[11px] uppercase tracking-[0.25em] text-blue-300/70 font-medium">User Settings</p>
+              <h1 className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent tracking-wide">Profile</h1>
+              <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-blue-300/70 font-medium">User Settings</p>
             </div>
           </div>
-          <button onClick={() => setEditing(e=>{ if(!e) pushToast('Edit Mode Enabled','info','Changes are local only'); else if(isDirty) pushToast('Unsaved Changes','info','Remember to save'); return !e;})} className="px-3 h-10 rounded-xl text-sm font-semibold relative group overflow-hidden">
+          <button onClick={() => setEditing(e=>{ if(!e) pushToast('Edit Mode Enabled','info','Changes are local only'); else if(isDirty) pushToast('Unsaved Changes','info','Remember to save'); return !e;})} className="px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold relative group overflow-hidden">
             <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-500 group-hover:to-pink-500 transition" />
-            <span className="relative flex items-center gap-2"><Edit3 className="w-4 h-4" /> {editing ? 'Exit' : 'Edit'}</span>
+            <span className="relative flex items-center gap-1.5 sm:gap-2"><Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> {editing ? 'Exit' : 'Edit'}</span>
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pt-5 pb-40 space-y-8">
+        <div className="flex-1 overflow-y-auto px-4 pt-20 sm:pt-24 pb-40 space-y-8">
           {/* Profile Header */}
           <div className="relative rounded-3xl p-6 sm:p-8 bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden gradient-ring">
             <div className="absolute inset-0 opacity-60 mix-blend-overlay" style={{backgroundImage:'radial-gradient(circle at 20% 25%, rgba(59,130,246,.25) 0, transparent 60%), radial-gradient(circle at 80% 35%, rgba(147,51,234,.25) 0, transparent 65%), radial-gradient(circle at 55% 85%, rgba(236,72,153,.25) 0, transparent 65%)'}} />

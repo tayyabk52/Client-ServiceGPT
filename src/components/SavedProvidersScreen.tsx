@@ -64,37 +64,37 @@ const SavedProvidersScreen: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[#0b111a] via-[#080e16] to-[#05080d]" />
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Header (consistent with other pages) */}
-        <div className="sticky top-0 backdrop-blur-2xl bg-black/55 border-b border-white/10 px-4 py-4 flex items-center justify-between">
+        {/* Fixed Header */}
+        <div className="fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl bg-black/55 border-b border-white/10 px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
               onClick={()=>navigate(-1)}
               size="sm"
               variant="subtle"
-              className="!h-10 !w-10 !px-0 rounded-xl"
-              leftIcon={<ArrowLeft className="w-5 h-5" />}
+              className="!h-9 !w-9 sm:!h-10 sm:!w-10 !px-0 rounded-xl"
+              leftIcon={<ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />}
               aria-label="Back"
             >
               <span className="sr-only">Back</span>
             </Button>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent tracking-wide">Saved Providers</h1>
-              <p className="text-[11px] uppercase tracking-[0.25em] text-blue-300/70 font-medium">Favorites</p>
+              <h1 className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent tracking-wide">Saved Providers</h1>
+              <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-blue-300/70 font-medium">Favorites</p>
             </div>
           </div>
-          <Button size="md" variant="primary" onClick={()=>setShowFilters(f=>!f)} leftIcon={<Filter className="w-4 h-4" />}>{showFilters ? 'Hide' : 'Filter'}</Button>
+          <Button size="md" variant="primary" onClick={()=>setShowFilters(f=>!f)} leftIcon={<Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />} className="text-xs sm:text-sm">{showFilters ? 'Hide' : 'Filter'}</Button>
         </div>
 
         {/* Filters Bar */}
         {showFilters && (
-          <div className="px-4 py-3 space-y-3 bg-[#0b131c]/80 backdrop-blur-lg border-b border-white/10 animate-section">
+          <div className="fixed top-16 sm:top-20 left-0 right-0 z-40 px-4 py-3 space-y-3 bg-[#0b131c]/80 backdrop-blur-lg border-b border-white/10 animate-section">
             <div className="flex gap-2">
               <div className="flex-1 relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-blue-200/40" />
-                <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search saved..." className="w-full pl-9 pr-3 h-10 rounded-lg bg-white/[0.05] border border-white/10 focus:border-blue-500/50 text-[13px]" />
+                <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search saved..." className="w-full pl-9 pr-3 h-9 sm:h-10 rounded-lg bg-white/[0.05] border border-white/10 focus:border-blue-500/50 text-xs sm:text-[13px]" />
               </div>
-              <div className="w-36">
-                <select value={sort} onChange={e=>setSort(e.target.value as 'recent' | 'rating' | 'name')} className="w-full h-10 rounded-lg bg-white/[0.05] border border-white/10 px-2 text-[13px] focus:border-blue-500/50">
+              <div className="w-28 sm:w-36">
+                <select value={sort} onChange={e=>setSort(e.target.value as 'recent' | 'rating' | 'name')} className="w-full h-9 sm:h-10 rounded-lg bg-white/[0.05] border border-white/10 px-2 text-xs sm:text-[13px] focus:border-blue-500/50">
                   <option value="recent">Recent</option>
                   <option value="rating">Rating</option>
                   <option value="name">A-Z</option>
@@ -118,7 +118,7 @@ const SavedProvidersScreen: React.FC = () => {
         )}
 
         {/* Content */}
-  <div className="flex-1 overflow-y-auto px-4 pt-4 pb-32 space-y-5">
+        <div className={`flex-1 overflow-y-auto px-4 pb-32 space-y-5 ${showFilters ? 'pt-32 sm:pt-36' : 'pt-20 sm:pt-24'}`}>
           {loading && (
             <div className="flex items-center justify-center py-20">
               <div className="flex flex-col items-center gap-4">
