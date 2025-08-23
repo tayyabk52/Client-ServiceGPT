@@ -594,16 +594,44 @@ const ChatInterface: React.FC = () => {
     };
   }, []); // Empty dependency array is intentional - only run once on mount
 
-  // Auto-scroll to bottom without overshooting blank space
+  // Track whether user is viewing bottom; only autoscroll if they are (improves mobile UX)
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
+  // Resize listener to set a CSS variable for mobile 100dvh fallback (iOS Safari compatibility)
+  useEffect(() => {
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--app-vh', `${vh}px`);
+    };
+    setVh();
+    window.addEventListener('resize', setVh);
+    return () => window.removeEventListener('resize', setVh);
+  }, []);
+
+  // Scroll listener to update isAtBottom
   useEffect(() => {
     const c = messagesContainerRef.current;
     if (!c) return;
-    // Use requestAnimationFrame to ensure layout (esp. after animations adding height)
+    const handleScroll = () => {
+      const threshold = 64; // px tolerance
+      const atBottom = c.scrollHeight - c.scrollTop - c.clientHeight < threshold;
+      setIsAtBottom(atBottom);
+    };
+    c.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => c.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Conditional auto-scroll (only if user was already at bottom when new content appears)
+  useEffect(() => {
+    if (!isAtBottom) return; // respect user scroll position
+    const c = messagesContainerRef.current;
+    if (!c) return;
     const id = requestAnimationFrame(() => {
-      c.scrollTop = c.scrollHeight; // direct scroll prevents extra blank gap from spacer
+      c.scrollTop = c.scrollHeight;
     });
     return () => cancelAnimationFrame(id);
-  }, [messages, isTyping, messageAnimating]);
+  }, [messages, isTyping, messageAnimating, isAtBottom]);
 
   // Professional conversation initialization
   useEffect(() => {
@@ -835,7 +863,8 @@ const ChatInterface: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    // Use dynamic viewport height for mobile (avoids 100vh issues with browser chrome)
+    <div className="min-h-[calc(var(--app-vh,1vh)*100)] bg-black relative overflow-hidden">
       {/* Cosmic Background Effects */}
       <div className="absolute inset-0">
         {/* Base gradient */}
@@ -872,9 +901,9 @@ const ChatInterface: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Chat Container */}
-      <div className="relative z-10 flex flex-col h-screen">
-        {/* Header with glassmorphic design */}
+  {/* Main Chat Container */}
+  <div className="relative z-10 flex flex-col min-h-[calc(var(--app-vh,1vh)*100)]">
+  {/* Header with glassmorphic design */}
   <div className="backdrop-blur-xl bg-white/5 border-b border-white/10 p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
