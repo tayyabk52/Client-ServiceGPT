@@ -62,7 +62,7 @@ const LandingScreen: React.FC = () => {
       ))}
 
       {/* Main Content */}
-      <div className="relative z-40 max-w-7xl mx-auto px-6 lg:px-8 pt-20 pb-16">
+      <div className="relative z-40 max-w-7xl mx-auto px-6 lg:px-8 pt-24 sm:pt-28 md:pt-32 pb-16">
         <div className="text-center">
           <div className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-6 py-2 mb-8">
             <Sparkles className="w-4 h-4 text-blue-400" />

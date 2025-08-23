@@ -144,7 +144,7 @@ const HowItWorksScreen: React.FC = () => {
       <Navbar currentPage="how-it-works" />
 
       {/* Main Content */}
-      <div className="relative z-40 max-w-7xl mx-auto px-6 lg:px-8 pt-8 pb-16">
+      <div className="relative z-40 max-w-7xl mx-auto px-6 lg:px-8 pt-24 sm:pt-28 md:pt-32 pb-16">
         
         {/* Hero Section */}
         <div className={`text-center mb-12 md:mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>

@@ -33,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
   return (
-    <nav className="relative z-50 p-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 p-4 bg-black/20 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto">
         <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4">
           <div className="flex items-center justify-between">

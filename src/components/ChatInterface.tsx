@@ -608,12 +608,13 @@ const ChatInterface: React.FC = () => {
     return () => window.removeEventListener('resize', setVh);
   }, []);
 
-  // Scroll listener to update isAtBottom
+  // Scroll listener to update isAtBottom with better mobile support
   useEffect(() => {
     const c = messagesContainerRef.current;
     if (!c) return;
     const handleScroll = () => {
-      const threshold = 64; // px tolerance
+      // Larger threshold for mobile devices due to different scrolling behavior
+      const threshold = window.innerWidth <= 768 ? 120 : 64; // px tolerance
       const atBottom = c.scrollHeight - c.scrollTop - c.clientHeight < threshold;
       setIsAtBottom(atBottom);
     };
@@ -622,15 +623,21 @@ const ChatInterface: React.FC = () => {
     return () => c.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Conditional auto-scroll (only if user was already at bottom when new content appears)
+  // Enhanced auto-scroll with better mobile support
   useEffect(() => {
-    if (!isAtBottom) return; // respect user scroll position
     const c = messagesContainerRef.current;
     if (!c) return;
-    const id = requestAnimationFrame(() => {
-      c.scrollTop = c.scrollHeight;
-    });
-    return () => cancelAnimationFrame(id);
+
+    // Check if this is a mobile device
+    const isMobile = window.innerWidth <= 768;
+    
+    // More aggressive auto-scroll on mobile, or when user is at bottom
+    if (isMobile || isAtBottom) {
+      const id = requestAnimationFrame(() => {
+        c.scrollTop = c.scrollHeight;
+      });
+      return () => cancelAnimationFrame(id);
+    }
   }, [messages, isTyping, messageAnimating, isAtBottom]);
 
   // Professional conversation initialization
@@ -742,6 +749,14 @@ const ChatInterface: React.FC = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    
+    // Force scroll on mobile after sending message
+    setTimeout(() => {
+      const c = messagesContainerRef.current;
+      if (c && window.innerWidth <= 768) {
+        c.scrollTop = c.scrollHeight;
+      }
+    }, 100);
     
     // Optimized timing for natural conversation flow
     setTimeout(() => {

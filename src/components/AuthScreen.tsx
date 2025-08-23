@@ -36,7 +36,7 @@ const AuthScreen: React.FC = () => {
       />
 
       {/* Main Content */}
-      <div className="relative z-40 min-h-screen flex items-center justify-center p-6">
+      <div className="relative z-40 min-h-screen flex items-center justify-center p-6 pt-24 sm:pt-28 md:pt-32">
         <div className="w-full max-w-md">
           {/* Auth Card */}
           <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
