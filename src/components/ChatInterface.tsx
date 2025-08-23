@@ -1363,11 +1363,13 @@ const ChatInterface: React.FC = () => {
                     rows={1}
                     spellCheck={false}
                     autoComplete="off"
-                    className="relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 bg-transparent text-white placeholder-blue-300/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-[14px] sm:text-[15px] leading-relaxed z-10 overflow-hidden"
+                    className="relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 bg-transparent text-white placeholder-blue-300/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden"
                     style={{ 
                       height: '48px',
                       minHeight: '48px',
                       fontFamily: 'Inter, system-ui, sans-serif',
+                      fontSize: '16px', // Prevent iOS zoom
+                      WebkitAppearance: 'none',
                       scrollbarWidth: 'none',
                       msOverflowStyle: 'none'
                     }}
@@ -1542,7 +1544,17 @@ const ChatInterface: React.FC = () => {
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-blue-200/70 block mb-2">Prefilled Message</label>
                 <div className="relative group">
-                  <textarea value={waPrefill} onChange={e=>setWaPrefill(e.target.value)} rows={5} className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-blue-400/50 focus:ring-2 focus:ring-blue-500/20 outline-none resize-none p-4 text-sm text-blue-50/90 leading-relaxed backdrop-blur-md transition-all" />
+                  <textarea 
+                    value={waPrefill} 
+                    onChange={e=>setWaPrefill(e.target.value)} 
+                    rows={5} 
+                    className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-blue-400/50 focus:ring-2 focus:ring-blue-500/20 outline-none resize-none p-4 text-base text-blue-50/90 leading-relaxed backdrop-blur-md transition-all" 
+                    style={{
+                      fontSize: '16px',
+                      WebkitAppearance: 'none',
+                      borderRadius: '16px'
+                    }}
+                  />
                   <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10 group-focus-within:ring-blue-400/40 transition" />
                 </div>
                 <div className="flex justify-between mt-2 text-[11px] text-blue-300/50">

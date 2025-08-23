@@ -68,7 +68,50 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Add custom CSS for spark animations
+  // Mobile input handling to prevent zoom and handle keyboard
+  React.useEffect(() => {
+    const handleInputFocus = (e: FocusEvent) => {
+      const target = e.target as HTMLInputElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        // Prevent zoom on iOS
+        target.style.fontSize = '16px';
+        
+        // Handle virtual keyboard on mobile
+        if (window.innerWidth <= 768) {
+          // Scroll into view with some offset
+          setTimeout(() => {
+            target.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest'
+            });
+          }, 300);
+        }
+      }
+    };
+
+    const handleInputBlur = (e: FocusEvent) => {
+      const target = e.target as HTMLInputElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        // Restore original viewport on blur
+        if (window.innerWidth <= 768) {
+          setTimeout(() => {
+            window.scrollTo(0, 0);
+          }, 100);
+        }
+      }
+    };
+
+    document.addEventListener('focusin', handleInputFocus);
+    document.addEventListener('focusout', handleInputBlur);
+
+    return () => {
+      document.removeEventListener('focusin', handleInputFocus);
+      document.removeEventListener('focusout', handleInputBlur);
+    };
+  }, []);
+
+  // Add custom CSS for spark animations and mobile input handling
   React.useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
@@ -105,6 +148,28 @@ const Dashboard: React.FC = () => {
       .animate-spark-2 { animation: spark-2 2.2s ease-out 0.2s; }
       .animate-spark-3 { animation: spark-3 1.8s ease-out 0.4s; }
       .animate-spark-4 { animation: spark-4 2.1s ease-out 0.6s; }
+      
+      /* Mobile input handling */
+      @media (max-width: 768px) {
+        input, textarea {
+          font-size: 16px !important;
+          zoom: 1 !important;
+          -webkit-appearance: none !important;
+          -webkit-text-size-adjust: 100% !important;
+        }
+        
+        /* Prevent horizontal scroll when keyboard opens */
+        body {
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Handle keyboard overlay */
+        .keyboard-adjust {
+          height: 100vh;
+          height: 100dvh;
+        }
+      }
     `;
     document.head.appendChild(style);
     return () => {
@@ -295,7 +360,12 @@ const Dashboard: React.FC = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleInputKeyPress}
                       placeholder="Try: 'I need a plumber for emergency leak repair'"
-                      className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl pl-6 pr-16 py-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 text-sm"
+                      className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl pl-6 pr-16 py-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 text-base"
+                      style={{
+                        fontSize: '16px', // Prevent iOS zoom
+                        WebkitAppearance: 'none',
+                        borderRadius: '16px'
+                      }}
                     />
                     <button 
                       onClick={handleStartChat}
