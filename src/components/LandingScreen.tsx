@@ -35,6 +35,22 @@ const LandingScreen: React.FC = () => {
         currentPage="home"
       />
 
+      {/* Admin Test Button */}
+      <div className="fixed top-6 right-6 z-50">
+        <button 
+          onClick={() => navigate('/admin')}
+          className="group relative overflow-hidden bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white px-4 py-2 rounded-xl font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative flex items-center space-x-2">
+            <span className="text-sm">Admin</span>
+            <div className="px-1.5 py-0.5 bg-white/20 backdrop-blur-sm rounded-md text-[10px] font-bold uppercase tracking-wider border border-white/30">
+              TEST
+            </div>
+          </div>
+        </button>
+      </div>
+
       {/* Floating Service Provider Cards */}
       {floatingElements.map((element, index) => (
         <div

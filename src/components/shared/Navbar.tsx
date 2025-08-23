@@ -72,10 +72,10 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 How it Works
               </button>
-              <a href="#" className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">Services</a>
-              <a href="#" className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">For Professionals</a>
-              <a href="#" className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">Pricing</a>
-              <a href="#" className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">Support</a>
+              <button onClick={() => navigate('/services')} className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">Services</button>
+              <button onClick={() => navigate('/professionals')} className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">For Professionals</button>
+              <button onClick={() => navigate('/pricing')} className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">Pricing</button>
+              <button onClick={() => navigate('/support')} className="px-6 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 font-medium">Support</button>
             </div>
 
             {/* Right Side Actions */}
@@ -136,10 +136,10 @@ const Navbar: React.FC<NavbarProps> = ({
                 >
                   How it Works
                 </button>
-                <a href="#" className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">Services</a>
-                <a href="#" className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">For Professionals</a>
-                <a href="#" className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">Pricing</a>
-                <a href="#" className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">Support</a>
+                <button onClick={() => {navigate('/services'); setIsMobileMenuOpen(false);}} className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">Services</button>
+                <button onClick={() => {navigate('/professionals'); setIsMobileMenuOpen(false);}} className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">For Professionals</button>
+                <button onClick={() => {navigate('/pricing'); setIsMobileMenuOpen(false);}} className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">Pricing</button>
+                <button onClick={() => {navigate('/support'); setIsMobileMenuOpen(false);}} className="text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 font-medium">Support</button>
                 
                 <div className="pt-4 border-t border-white/10 space-y-2">
                   <button 

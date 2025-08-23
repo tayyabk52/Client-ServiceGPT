@@ -9,6 +9,7 @@ import ChatHistory from './components/ChatHistory'
 import UserProfileScreen from './components/UserProfileScreen'
 import SavedProvidersScreen from './components/SavedProvidersScreen'
 import HowItWorksScreen from './components/HowItWorksScreen'
+import ComingSoonScreen from './components/ComingSoonScreen'
 import AdminLogin from './components/admin/AdminLogin'
 import AdminDashboard from './components/admin/AdminDashboard'
 import AnalyticsDashboard from './components/admin/AnalyticsDashboard'
@@ -32,6 +33,13 @@ function App() {
           <Route path="/history" element={<ChatHistory />} />
           <Route path="/profile" element={<UserProfileScreen />} />
           <Route path="/saved" element={<SavedProvidersScreen />} />
+          
+          {/* Coming Soon / Placeholder Routes */}
+          <Route path="/coming-soon" element={<ComingSoonScreen />} />
+          <Route path="/services" element={<ComingSoonScreen />} />
+          <Route path="/professionals" element={<ComingSoonScreen />} />
+          <Route path="/pricing" element={<ComingSoonScreen />} />
+          <Route path="/support" element={<ComingSoonScreen />} />
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
