@@ -16,15 +16,15 @@ const GlassCard: React.FC<GlassCardProps> = ({
   const getVariantStyles = () => {
     switch (variant) {
       case 'premium':
-        return 'bg-white border border-gray-200 shadow-lg';
+        return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg dark:shadow-2xl';
       case 'elevated':
-        return 'bg-white border border-gray-200 shadow-xl';
+        return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl';
       default:
-        return 'bg-white border border-gray-200 shadow-md';
+        return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md';
     }
   };
 
-  const hoverStyles = hover ? 'hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300' : '';
+  const hoverStyles = hover ? 'hover:shadow-lg dark:hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300' : '';
 
   return (
     <div

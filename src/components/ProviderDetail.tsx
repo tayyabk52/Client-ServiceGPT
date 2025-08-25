@@ -10,10 +10,10 @@ interface ProviderDetailProps {
 
 const ProviderDetail: React.FC<ProviderDetailProps> = ({ provider, onBack }) => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
       {/* Hero Section */}
       <div className="relative">
-        <div className="h-48 bg-gradient-to-r from-blue-600 to-cyan-500"></div>
+        <div className="h-48 bg-gradient-to-r from-blue-200 to-cyan-200 dark:from-blue-600 dark:to-cyan-500 transition-colors duration-300"></div>
         <button
           onClick={onBack}
           className="absolute top-6 left-6 w-10 h-10 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white"
@@ -22,7 +22,7 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ provider, onBack }) => 
         </button>
         
         {/* Provider Info Overlay */}
-        <GlassCard className="absolute -bottom-16 left-6 right-6 p-6">
+        <GlassCard className="absolute -bottom-16 left-6 right-6 p-6 bg-card-light dark:bg-card-dark transition-colors duration-300">
           <div className="flex items-center space-x-4">
             <div className="relative">
               <img

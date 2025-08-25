@@ -22,12 +22,12 @@ const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:bg-black relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 via-black to-gray-900/50"></div>
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-green-500/20 to-blue-600/20 rounded-full blur-3xl"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+      <div className="absolute inset-0 dark:bg-gradient-to-br dark:from-gray-900/50 dark:via-black dark:to-gray-900/50"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-gray-200/50 to-white/50 dark:from-blue-500/20 dark:to-purple-600/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-white/50 to-gray-200/50 dark:from-green-500/20 dark:to-blue-600/20 rounded-full blur-3xl"></div>
 
       {/* Navigation */}
       <Navbar 
@@ -39,16 +39,16 @@ const AuthScreen: React.FC = () => {
       <div className="relative z-40 min-h-screen flex items-center justify-center p-6 pt-24 sm:pt-28 md:pt-32">
         <div className="w-full max-w-md">
           {/* Auth Card */}
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+          <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200 dark:border-white/20 rounded-3xl p-8 shadow-lg shadow-gray-200/50 dark:shadow-2xl">
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Search className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {isSignUp ? 'Sign Up' : 'Sign In'}
               </h2>
-              <p className="text-gray-300">
+              <p className="text-gray-600 dark:text-gray-300">
                 {isSignUp 
                   ? 'Just a few quick things to get started' 
                   : 'Welcome back you\'ve been missed'
@@ -66,7 +66,7 @@ const AuthScreen: React.FC = () => {
                     placeholder="Full Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/10 transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50/80 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 dark:focus:bg-white/10 transition-all duration-300"
                     required={isSignUp}
                   />
                 </div>
@@ -79,7 +79,7 @@ const AuthScreen: React.FC = () => {
                   placeholder="Email ID"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/10 transition-all duration-300"
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50/80 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 dark:focus:bg-white/10 transition-all duration-300"
                   required
                 />
               </div>
@@ -111,13 +111,13 @@ const AuthScreen: React.FC = () => {
                     placeholder="Confirm Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/10 transition-all duration-300"
+                    className="w-full pl-12 pr-12 py-4 bg-gray-50/80 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 dark:focus:bg-white/10 transition-all duration-300"
                     required={isSignUp}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -131,13 +131,13 @@ const AuthScreen: React.FC = () => {
                   id={isSignUp ? "terms" : "remember"}
                   checked={isSignUp ? agreeTerms : rememberMe}
                   onChange={(e) => isSignUp ? setAgreeTerms(e.target.checked) : setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500 focus:ring-2"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 text-blue-500 focus:ring-blue-500 focus:ring-2"
                 />
-                <label htmlFor={isSignUp ? "terms" : "remember"} className="text-gray-300 text-sm">
+                <label htmlFor={isSignUp ? "terms" : "remember"} className="text-gray-600 dark:text-gray-300 text-sm">
                   {isSignUp ? "I Agree With The Terms And Conditions" : "Remember Me"}
                 </label>
                 {!isSignUp && (
-                  <a href="#" className="ml-auto text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                  <a href="#" className="ml-auto text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 text-sm transition-colors">
                     Forgot Password?
                   </a>
                 )}
@@ -146,7 +146,7 @@ const AuthScreen: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 bg-white text-black font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-600/30 transform hover:-translate-y-1"
               >
                 {isSignUp ? 'Sign Up' : 'Sign In'}
               </button>
@@ -154,14 +154,14 @@ const AuthScreen: React.FC = () => {
 
             {/* Divider */}
             <div className="flex items-center my-6">
-              <div className="flex-1 h-px bg-white/20"></div>
-              <span className="px-4 text-gray-400 text-sm">Or with</span>
-              <div className="flex-1 h-px bg-white/20"></div>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-white/20"></div>
+              <span className="px-4 text-gray-500 dark:text-gray-400 text-sm">Or with</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-white/20"></div>
             </div>
 
             {/* Social Login */}
             <div className="space-y-3">
-              <button className="w-full flex items-center justify-center space-x-3 py-3 bg-white/5 border border-white/20 rounded-xl text-white hover:bg-white/10 transition-all duration-300">
+              <button className="w-full flex items-center justify-center space-x-3 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-xl text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 transition-all duration-300 shadow-sm hover:shadow-md">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -171,7 +171,7 @@ const AuthScreen: React.FC = () => {
                 <span>Google</span>
               </button>
 
-              <button className="w-full flex items-center justify-center space-x-3 py-3 bg-white/5 border border-white/20 rounded-xl text-white hover:bg-white/10 transition-all duration-300">
+              <button className="w-full flex items-center justify-center space-x-3 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-xl text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 transition-all duration-300 shadow-sm hover:shadow-md">
                 <svg className="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
@@ -181,11 +181,11 @@ const AuthScreen: React.FC = () => {
 
             {/* Footer */}
             <div className="text-center mt-6">
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 {isSignUp ? "Already have an account? " : "Don't have an account? "}
                 <button
                   onClick={() => setIsSignUp(!isSignUp)}
-                  className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
                 >
                   {isSignUp ? "Sign In" : "Sign Up"}
                 </button>

@@ -17,17 +17,16 @@ const LandingScreen: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark relative overflow-hidden transition-colors duration-300">
       {/* Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:50px_50px] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)]"></div>
+      <div className="relative z-[60]"> {/* Ensure toggle is visible above grid */}</div>
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 via-black to-gray-900/50"></div>
-      
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-100/50 via-white to-gray-100/50 dark:from-gray-900/50 dark:via-black dark:to-gray-900/50"></div>
       {/* Large Gradient Blobs */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-green-500/20 to-blue-600/20 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-500/10 to-pink-600/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl dark:from-blue-500/20 dark:to-purple-600/20"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl dark:from-green-500/20 dark:to-blue-600/20"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-200/10 to-pink-200/10 rounded-full blur-3xl dark:from-purple-500/10 dark:to-pink-600/10"></div>
 
       {/* Navigation */}
       <Navbar 
@@ -86,15 +85,15 @@ const LandingScreen: React.FC = () => {
             <ArrowRight className="w-4 h-4 text-gray-400" />
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-8">
-            <span className="text-white">One-click for Service</span>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-8 text-[#222] dark:text-white">
+            <span>One-click for Service</span>
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
               Excellence
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-gray-300 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
+          <p className="text-lg sm:text-xl mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0 text-[#333] dark:text-gray-300">
             Dive into the art of services, where innovative technology meets professional expertise
           </p>
 
@@ -107,7 +106,7 @@ const LandingScreen: React.FC = () => {
             </button>
             <button 
               onClick={onGetStarted}
-              className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:bg-white/20 transition-all duration-300"
+              className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-4 bg-gray-100/80 dark:bg-white/10 backdrop-blur-sm border border-gray-300 dark:border-white/20 text-gray-900 dark:text-white rounded-xl hover:bg-gray-200/80 dark:hover:bg-white/20 transition-all duration-300"
             >
               <Play className="w-5 h-5" />
               <span>Discover More</span>
@@ -132,13 +131,13 @@ const LandingScreen: React.FC = () => {
               <button
                 key={item.label}
                 onClick={onGetStarted}
-                className="group relative bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-500 cursor-pointer overflow-hidden"
+                className="group relative bg-white/80 dark:bg-white/[0.04] backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-2xl p-4 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-500 cursor-pointer overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_65%)] transition-opacity" />
                 <div className={`w-12 h-12 mb-3 mx-auto rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg shadow-black/40 group-hover:scale-110 group-active:scale-95 transition-transform`}>
                   <item.icon className="w-6 h-6 text-white" />
                 </div>
-                <p className="text-white text-sm font-medium tracking-wide">{item.label}</p>
+                <p className="text-gray-900 dark:text-white text-sm font-medium tracking-wide">{item.label}</p>
                 <div className="mt-2 h-px w-8 mx-auto bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             ))}
@@ -146,50 +145,54 @@ const LandingScreen: React.FC = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-          {[
-            { label: 'Active Professionals', value: '50K+' },
-            { label: 'Completed Services', value: '1M+' },
-            { label: 'Average Rating', value: '4.9★' },
-            { label: 'Response Time', value: '<30min' }
-          ].map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.value}</div>
-              <div className="text-gray-400 text-sm">{stat.label}</div>
-            </div>
-          ))}
+        <div className="grid grid-cols-4 gap-6 my-12">
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-bold text-[#222] dark:text-white">50K+</span>
+            <span className="text-[#555] dark:text-blue-200/60">Active Professionals</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-bold text-[#222] dark:text-white">1M+</span>
+            <span className="text-[#555] dark:text-blue-200/60">Completed Services</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-bold text-[#222] dark:text-white">4.9★</span>
+            <span className="text-[#555] dark:text-blue-200/60">Average Rating</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-bold text-[#222] dark:text-white">&lt;30min</span>
+            <span className="text-[#555] dark:text-blue-200/60">Response Time</span>
+          </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {[
-            {
-              icon: Shield,
-              title: 'Verified Professionals',
-              description: 'All service providers are background-checked and verified for your safety'
-            },
-            {
-              icon: Clock,
-              title: 'Instant Matching',
-              description: 'Get connected with qualified professionals in minutes, not hours'
-            },
-            {
-              icon: Users,
-              title: 'Community Driven',
-              description: 'Real reviews from real customers help you make informed decisions'
-            }
-          ].map((feature, index) => (
-            <div
-              key={index}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 group"
-            >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <feature.icon className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
-              <p className="text-gray-300 leading-relaxed">{feature.description}</p>
+        {/* Features Section */}
+        <div className="grid grid-cols-3 gap-8 my-16">
+          <div className="bg-card-light dark:bg-card-dark shadow-lg rounded-2xl p-6">
+            <div className="flex items-center mb-4">
+              <span className="inline-block w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
+                <Shield className="w-6 h-6" />
+              </span>
             </div>
-          ))}
+            <h3 className="text-xl font-bold text-[#222] dark:text-white mb-2">Verified Professionals</h3>
+            <p className="text-[#555] dark:text-blue-200/60">All service providers are background-checked and verified for your safety</p>
+          </div>
+          <div className="bg-card-light dark:bg-card-dark shadow-lg rounded-2xl p-6">
+            <div className="flex items-center mb-4">
+              <span className="inline-block w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
+                <Clock className="w-6 h-6" />
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-[#222] dark:text-white mb-2">Instant Matching</h3>
+            <p className="text-[#555] dark:text-blue-200/60">Get connected with qualified professionals in minutes, not hours</p>
+          </div>
+          <div className="bg-card-light dark:bg-card-dark shadow-lg rounded-2xl p-6">
+            <div className="flex items-center mb-4">
+              <span className="inline-block w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
+                <Users className="w-6 h-6" />
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-[#222] dark:text-white mb-2">Community Driven</h3>
+            <p className="text-[#555] dark:text-blue-200/60">Real reviews from real customers help you make informed decisions</p>
+          </div>
         </div>
       </div>
       

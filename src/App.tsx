@@ -14,11 +14,18 @@ import AdminLogin from './components/admin/AdminLogin'
 import AdminDashboard from './components/admin/AdminDashboard'
 import AnalyticsDashboard from './components/admin/AnalyticsDashboard'
 
+import { UnifiedThemeToggle } from './components/shared'
+import { ThemeProvider } from './theme/ThemeContext'
+
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-black">
-        <Routes>
+    <ThemeProvider>
+      <Router>
+        <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
+          <div className="relative">
+            <UnifiedThemeToggle />
+          </div>
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingScreen />} />
           <Route path="/auth" element={<AuthScreen />} />
@@ -48,6 +55,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </ThemeProvider>
   )
 }
 

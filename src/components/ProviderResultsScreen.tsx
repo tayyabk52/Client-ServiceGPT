@@ -13,26 +13,26 @@ type ViewMode = 'list' | 'map';
 
 // Themed mock map placeholder (dark glass style)
 const MapPlaceholder: React.FC<{ providers: ServiceProvider[] }> = ({ providers }) => (
-  <div className="w-full h-[520px] rounded-3xl relative overflow-hidden backdrop-blur-xl bg-gradient-to-br from-[#101826]/80 via-[#0d1320]/70 to-[#161b2b]/80 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.05)]">
+  <div className="w-full h-[520px] rounded-3xl relative overflow-hidden backdrop-blur-xl glass-surface">
     <div className="absolute inset-0 opacity-[0.35] mix-blend-screen" style={{backgroundImage:'radial-gradient(circle at 20% 30%, rgba(59,130,246,0.35) 0, transparent 55%), radial-gradient(circle at 75% 20%, rgba(168,85,247,0.35) 0, transparent 60%), radial-gradient(circle at 60% 75%, rgba(236,72,153,0.3) 0, transparent 60%)'}} />
     <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0)_65%,rgba(255,255,255,0.08)_100%)] pointer-events-none" />
     <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-6">
-      <div className="mb-4 inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-lg text-xs font-medium text-blue-200 tracking-wider">
+      <div className="mb-4 inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200 dark:border-white/10 backdrop-blur-lg text-xs font-medium text-blue-600 dark:text-blue-200 tracking-wider">
         <span className="inline-block w-2 h-2 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-pulse" />
         <span>MAP MODE (MOCK)</span>
       </div>
-      <p className="text-lg font-semibold bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 bg-clip-text text-transparent mb-2">Interactive Map Coming Soon</p>
-      <p className="text-sm text-blue-300/80">Showing {providers.length} dynamic provider marker placeholders</p>
+      <p className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-blue-200 dark:via-purple-200 dark:to-pink-200 bg-clip-text text-transparent mb-2">Interactive Map Coming Soon</p>
+      <p className="text-sm text-gray-600 dark:text-blue-300/80">Showing {providers.length} dynamic provider marker placeholders</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3 max-w-xl">
         {providers.slice(0,8).map(p => (
-          <div key={p.id} className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 text-[11px] text-blue-200/80 backdrop-blur-md">
+          <div key={p.id} className="px-3 py-1.5 rounded-xl bg-gray-100/80 dark:bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border border-gray-200 dark:border-white/10 text-[11px] text-gray-600 dark:text-blue-200/80 backdrop-blur-md">
             {p.businessName.split(' ')[0]}
           </div>
         ))}
       </div>
     </div>
     {/* Decorative grid */}
-    <div className="absolute inset-0 opacity-20" style={{backgroundImage:'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize:'40px 40px'}} />
+    <div className="absolute inset-0 opacity-10 dark:opacity-20" style={{backgroundImage:'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)', backgroundSize:'40px 40px'}} />
   </div>
 );
 
@@ -85,8 +85,14 @@ const ProviderResultsScreen: React.FC = () => {
     }, 1300);
   };
 
-  return (
-    <div className="min-h-screen relative overflow-hidden">
+  return (    <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
+      <div className="bg-card-light dark:bg-card-dark shadow rounded-2xl p-6 mb-6">
+        <h2 className="text-3xl font-bold text-[#222] dark:text-white">Providers</h2>
+        <p className="text-[#333] dark:text-gray-300">Find the best local professionals for your needs.</p>
+        <a href="#" className="text-[#1a0dab] dark:text-blue-400 underline">Learn more</a>
+      </div>
+      <button className="px-4 py-2 rounded-lg bg-button-light dark:bg-button-dark text-text-primary dark:text-text-darkPrimary shadow hover:bg-gray-200 dark:hover:bg-gray-700 transition">Contact Provider</button>
+
       {/* Ambient gradient background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#1e3a8a_0%,transparent_60%),radial-gradient(circle_at_80%_30%,#7e22ce_0%,transparent_55%),radial-gradient(circle_at_50%_80%,#be185d_0%,transparent_55%)] opacity-[0.15] pointer-events-none" />
       <div className="absolute inset-0 bg-[linear-gradient(140deg,#05070d_0%,#090d17_45%,#0d1220_70%,#101727_100%)]" />

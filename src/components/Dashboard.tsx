@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
@@ -15,19 +15,20 @@ import {
   Award,
   DollarSign
 } from 'lucide-react';
+
 import PageTransition from './shared/PageTransition';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [now, setNow] = useState(new Date());
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  React.useEffect(()=>{
-    const t = setInterval(()=> setNow(new Date()), 60000);
-    return ()=> clearInterval(t);
-  },[]);
+  React.useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(t);
+  }, [setNow]);
 
   const greeting = React.useMemo(()=>{
     const h = now.getHours();
@@ -226,20 +227,19 @@ const Dashboard: React.FC = () => {
       isTransitioning={isTransitioning}
       onTransitionComplete={onTransitionComplete}
     >
-      <div className="min-h-screen bg-black relative overflow-hidden">
+      <div className="min-h-screen bg-background-light dark:bg-background-dark relative overflow-hidden transition-colors duration-300">
       {/* Background Effects - Same as Landing Page */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 via-black to-gray-900/50"></div>
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-500/10 to-purple-600/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-green-500/10 to-blue-600/10 rounded-full blur-3xl"></div>
-
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(34,34,59,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,34,59,0.02)_1px,transparent_1px)] bg-[size:50px_50px] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)]"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-100/50 via-background-light to-gray-100/50 dark:from-gray-900/50 dark:via-black dark:to-gray-900/50"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-200/10 to-purple-200/10 rounded-full blur-3xl dark:from-blue-500/10 dark:to-purple-600/10"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/10 to-blue-200/10 rounded-full blur-3xl dark:from-green-500/10 dark:to-blue-600/10"></div>
       <div className="relative z-10">
         {/* Redesigned Header */}
         <header className="fixed top-0 left-0 right-0 z-50">
           <div className="relative">
             {/* Ambient layers */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.05]" />
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0d141f]/90 via-[#0a111b]/80 to-[#090f18]/90 backdrop-blur-2xl" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(34,34,59,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(34,34,59,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.05] dark:bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-background-light/90 via-background-light/80 to-gray-100/90 backdrop-blur-2xl dark:from-[#0d141f]/90 dark:via-[#0a111b]/80 dark:to-[#090f18]/90" />
             <div className="absolute inset-0 pointer-events-none [mask-image:linear-gradient(to_bottom,black,black,transparent)]" />
             {/* Border glow */}
             <div className="absolute inset-0 rounded-none border-b border-white/10 before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_30%_120%,rgba(59,130,246,0.25),transparent_70%)] before:opacity-40" />
@@ -249,13 +249,13 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center gap-4 min-w-0">
                   <div className="relative">
                     <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg ring-1 ring-white/20">
-                      <Search className="w-5 h-5 text-white" />
+                      <Search className="w-5 h-5 text-accent-light dark:text-white" />
                     </div>
                     <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-blue-500/0 via-blue-500/20 to-purple-600/0 blur-lg opacity-0 group-hover:opacity-100" />
                   </div>
                   <div className="flex flex-col">
-                    <h1 className="text-base font-semibold tracking-wide bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">{greeting}, John</h1>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-blue-200/60 font-medium">
+                    <h1 className="text-base font-semibold tracking-wide text-[#222] dark:text-white">{greeting}, John</h1>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#555] dark:text-blue-200/60 font-medium">
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> New York, NY</span>
                       <span className="w-1 h-1 rounded-full bg-blue-300/50" />
                       <span>{now.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span>
@@ -266,16 +266,16 @@ const Dashboard: React.FC = () => {
                 </div>
                 {/* Right cluster */}
                 <div className="flex items-center gap-3">
-                  <button className="relative h-11 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center gap-2 text-xs font-medium text-blue-100 transition">
+                  <button className="relative h-11 px-4 rounded-xl bg-white/5 dark:bg-white/5 hover:bg-white/10 dark:hover:bg-white/10 border border-white/10 flex items-center gap-2 text-xs font-medium text-blue-800 dark:text-blue-100 transition">
                     <Bell className="w-4 h-4" />
                     <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-rose-500 to-pink-500 text-[10px] font-bold flex items-center justify-center shadow">3</span>
                   </button>
                   <div className="relative">
                     <button onClick={()=>setUserMenuOpen(o=>!o)} className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600/30 via-indigo-600/30 to-purple-600/30 border border-white/15 hover:border-white/30 flex items-center justify-center transition shadow-lg">
-                      <User className="w-5 h-5 text-white" />
+                      <User className="w-5 h-5 text-accent-light dark:text-white" />
                     </button>
                     {userMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-[#0d1522]/95 border border-white/10 backdrop-blur-xl p-2 shadow-2xl animate-fadeSlide z-50">
+                      <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-card-light dark:bg-[#0d1522]/95 border border-white/10 backdrop-blur-xl p-2 shadow-2xl animate-fadeSlide z-50">
                         {[
                           {label:'Profile', action:()=>navigate('/profile')},
                           {label:'History', action:()=>navigate('/history')},
@@ -292,7 +292,6 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              {/* (Mini stats & category pills intentionally removed) */}
             </div>
           </div>
         </header>
@@ -302,15 +301,17 @@ const Dashboard: React.FC = () => {
           {/* Enhanced AI Hero Section - Main Focus */}
           <div id="ai-search-card" className="px-4 py-6">
             {/* Welcome Message with Stats Preview */}
-            <div className="bg-gradient-to-r from-blue-500/10 to-purple-600/10 backdrop-blur-sm border border-white/10 rounded-3xl p-6 mb-6">
+            <div className="bg-gradient-to-r from-blue-500/10 to-purple-600/10 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-3xl p-6 mb-6 shadow-lg shadow-gray-200/50 dark:shadow-2xl">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-white font-bold text-lg mb-1">Welcome back, John! 👋</h3>
-                  <p className="text-gray-400 text-sm">Ready to find your next service provider?</p>
+                  <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-1">Welcome back, John! 👋</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">Ready to find your next service provider?</p>
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-white">24</div>
-                  <div className="text-xs text-gray-400">searches</div>
+                <div className="flex items-center space-x-4">
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">24</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">searches</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -320,17 +321,17 @@ const Dashboard: React.FC = () => {
               {/* Background decoration */}
               <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/5 to-purple-600/5 rounded-[2rem] blur-xl"></div>
               
-              <div className="relative bg-white/5 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+              <div className="relative bg-white/90 dark:bg-white/5 backdrop-blur-2xl border border-gray-200/50 dark:border-white/20 rounded-3xl p-8 shadow-lg shadow-gray-200/50 dark:shadow-2xl transition-colors duration-200">
                 {/* Floating elements for visual appeal */}
-                <div className="absolute top-4 right-4 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                <div className="absolute top-8 right-8 w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-                <div className="absolute bottom-8 left-6 w-2 h-2 bg-cyan-500 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+                <div className="absolute top-4 right-4 w-3 h-3 bg-blue-500 dark:bg-blue-400 rounded-full animate-pulse"></div>
+                <div className="absolute top-8 right-8 w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="absolute bottom-8 left-6 w-2 h-2 bg-cyan-500 dark:bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
                 
                 {/* AI Icon with enhanced design */}
                 <div className="flex justify-center mb-6">
                   <div className="relative">
-                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500/30 to-purple-600/30 backdrop-blur-sm border border-white/30 rounded-3xl flex items-center justify-center shadow-2xl">
-                      <Search className="w-10 h-10 text-blue-300" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500/30 to-purple-600/30 backdrop-blur-sm border border-gray-200 dark:border-white/30 rounded-3xl flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300">
+                      <Search className="w-10 h-10 text-blue-400 dark:text-blue-300" />
                     </div>
                     {/* Pulse rings */}
                     <div className="absolute inset-0 w-20 h-20 border-2 border-blue-500/30 rounded-3xl animate-ping"></div>
@@ -341,13 +342,13 @@ const Dashboard: React.FC = () => {
                 {/* Main heading with gradient text */}
                 <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold mb-3">
-                    <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-100 dark:to-white bg-clip-text text-transparent">
                       What service do you need?
                     </span>
                   </h2>
-                  <p className="text-gray-300 text-base leading-relaxed max-w-sm mx-auto">
+                  <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed max-w-sm mx-auto">
                     Tell me what you're looking for and I'll find the 
-                    <span className="text-blue-300 font-medium"> best providers</span> in your area
+                    <span className="text-blue-600 dark:text-blue-300 font-medium"> best providers</span> in your area
                   </p>
                 </div>
 
@@ -360,7 +361,7 @@ const Dashboard: React.FC = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleInputKeyPress}
                       placeholder="Try: 'I need a plumber for emergency leak repair'"
-                      className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl pl-6 pr-16 py-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 text-base"
+                      className="w-full bg-white dark:bg-gray-900 backdrop-blur-sm border border-gray-200 dark:border-white/20 rounded-2xl pl-6 pr-16 py-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-400/50 focus:border-blue-500/50 dark:focus:border-blue-400/50 transition-all duration-300 text-base"
                       style={{
                         fontSize: '16px', // Prevent iOS zoom
                         WebkitAppearance: 'none',
@@ -395,7 +396,7 @@ const Dashboard: React.FC = () => {
                     {/* Main button with gradient background */}
                     <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 rounded-2xl p-0.5 shadow-2xl group-hover:shadow-blue-500/30 transition-all duration-300 overflow-hidden group-active:scale-95">
                       {/* Inner button content */}
-                      <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl py-4 px-8 text-white font-bold transition-all duration-200 group-hover:from-blue-500 group-hover:to-purple-500">
+                      <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 rounded-2xl py-4 px-8 text-white font-bold transition-all duration-200 group-hover:from-blue-500 group-hover:to-purple-500">
                         {/* Button content */}
                         <div className="relative flex items-center justify-center space-x-3 z-10">
                           <div className="flex items-center space-x-3">
@@ -430,13 +431,13 @@ const Dashboard: React.FC = () => {
 
                 {/* Quick suggestions */}
                 <div className="mt-6 text-center">
-                  <p className="text-gray-400 text-xs mb-3">Popular searches:</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-xs mb-3">Popular searches:</p>
                   <div className="flex flex-wrap justify-center gap-2">
                     {['Plumber', 'Electrician', 'Cleaner', 'Handyman'].map((service) => (
                       <button
                         key={service}
                         onClick={handleStartChat}
-                        className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-full text-xs text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-300"
+                        className="px-3 py-1.5 bg-gray-800/90 hover:bg-gray-700/90 dark:bg-white/10 backdrop-blur-md border border-gray-700/50 dark:border-white/20 rounded-full text-xs text-white dark:text-gray-300 hover:text-white dark:hover:bg-white/20 dark:hover:text-white transition-all duration-300 shadow-lg"
                       >
                         {service}
                       </button>
@@ -445,21 +446,21 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Trust indicators */}
-                <div className="mt-6 pt-6 border-t border-white/10">
+                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-white/10">
                   <div className="flex items-center justify-center space-x-6 text-center">
                     <div>
-                      <div className="text-lg font-bold text-white">1000+</div>
-                      <div className="text-xs text-gray-400">Providers</div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">1000+</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Providers</div>
                     </div>
-                    <div className="w-px h-8 bg-white/20"></div>
+                    <div className="w-px h-8 bg-gray-200 dark:bg-white/20"></div>
                     <div>
-                      <div className="text-lg font-bold text-white">4.9★</div>
-                      <div className="text-xs text-gray-400">Rating</div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">4.9★</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Rating</div>
                     </div>
-                    <div className="w-px h-8 bg-white/20"></div>
+                    <div className="w-px h-8 bg-gray-200 dark:bg-white/20"></div>
                     <div>
-                      <div className="text-lg font-bold text-white">24/7</div>
-                      <div className="text-xs text-gray-400">Support</div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">24/7</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Support</div>
                     </div>
                   </div>
                 </div>
@@ -469,7 +470,7 @@ const Dashboard: React.FC = () => {
 
           {/* Enhanced Stats Cards - More Visual Appeal */}
           <div className="px-4 py-4">
-            <h3 className="text-lg font-bold text-white mb-4">Your Activity</h3>
+            <h3 className="text-lg font-bold text-gray-100 dark:text-white mb-4">Your Activity</h3>
             <div className="grid grid-cols-2 gap-4">
               {stats.slice(0, 4).map((stat, index) => {
                 const IconComponent = stat.icon;
@@ -479,8 +480,8 @@ const Dashboard: React.FC = () => {
                     key={index} 
                     className={`${isHighlighted 
                       ? 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500/30' 
-                      : 'bg-white/5 border-white/10'
-                    } backdrop-blur-sm border rounded-3xl p-5 hover:bg-white/10 transition-all duration-300 relative overflow-hidden group`}
+                      : 'bg-gray-900/90 dark:bg-white/5 border-gray-700 dark:border-white/10'
+                    } backdrop-blur-xl border rounded-3xl p-5 hover:bg-gray-800/90 dark:hover:bg-white/10 transition-all duration-300 relative overflow-hidden group shadow-lg`}
                   >
                     {/* Background pattern */}
                     <div className="absolute inset-0 opacity-5">
@@ -516,8 +517,8 @@ const Dashboard: React.FC = () => {
           {/* Recent Activity - Enhanced Design */}
           <div className="px-4 py-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-white">Recent Activity</h3>
-              <button onClick={() => navigate('/history')} className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors flex items-center space-x-1">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recent Activity</h3>
+              <button onClick={() => navigate('/history')} className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center space-x-1">
                 <span>View All</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -525,9 +526,9 @@ const Dashboard: React.FC = () => {
             
             <div className="space-y-4">
               {recentActivity.map((activity) => (
-                <div key={activity.id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-5 hover:bg-white/10 transition-all duration-300 group relative overflow-hidden">
+                <div key={activity.id} className="bg-white/95 dark:bg-white/5 backdrop-blur-sm border border-gray-300 dark:border-white/10 rounded-3xl p-5 hover:bg-gray-50/95 dark:hover:bg-white/10 transition-all duration-300 group relative overflow-hidden shadow-sm hover:shadow-md">
                   {/* Subtle gradient based on activity type */}
-                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-3xl ${
+                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-3xl ${
                     activity.type === 'search' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' :
                     activity.type === 'contact' ? 'bg-gradient-to-r from-green-500 to-emerald-500' :
                     'bg-gradient-to-r from-purple-500 to-pink-500'
@@ -535,26 +536,26 @@ const Dashboard: React.FC = () => {
                   
                   <div className="relative flex items-center space-x-4">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl flex-shrink-0 shadow-lg ${
-                      activity.type === 'search' ? 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30' :
-                      activity.type === 'contact' ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30' :
-                      'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30'
+                      activity.type === 'search' ? 'bg-gradient-to-br from-blue-500/30 to-cyan-500/30 border border-blue-500/40' :
+                      activity.type === 'contact' ? 'bg-gradient-to-br from-green-500/30 to-emerald-500/30 border border-green-500/40' :
+                      'bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-500/40'
                     } backdrop-blur-sm`}>
                       {activity.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-white text-sm group-hover:text-blue-300 transition-colors">{activity.title}</h4>
-                      <p className="text-xs text-gray-400 mt-1 line-clamp-1">{activity.subtitle}</p>
+                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">{activity.title}</h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1 font-medium">{activity.subtitle}</p>
                       <div className="flex items-center space-x-3 mt-2">
                         <div className="flex items-center space-x-1">
-                          <Clock className="w-3 h-3 text-gray-500" />
-                          <span className="text-xs text-gray-500">{activity.time}</span>
+                          <Clock className="w-3 h-3 text-gray-500 dark:text-gray-500" />
+                          <span className="text-xs text-gray-500 dark:text-gray-500 font-medium">{activity.time}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <span className={`inline-block w-2 h-2 rounded-full ${
-                            activity.status === 'completed' ? 'bg-green-500' : 
-                            activity.status === 'replied' ? 'bg-blue-500' : 'bg-gray-500'
+                            activity.status === 'completed' ? 'bg-green-400 dark:bg-green-500' : 
+                            activity.status === 'replied' ? 'bg-blue-400 dark:bg-blue-500' : 'bg-gray-400 dark:bg-gray-500'
                           }`}></span>
-                          <span className="text-xs text-gray-500 capitalize">{activity.status}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 capitalize font-medium">{activity.status}</span>
                         </div>
                       </div>
                     </div>

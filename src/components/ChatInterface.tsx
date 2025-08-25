@@ -1,7 +1,60 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Send, Mic, User, Sparkles, Star, MapPin, Clock, Phone, MessageCircle, Heart, ExternalLink, X, Check, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Mic, User, Sparkles, Star, MapPin, Clock, Phone, MessageCircle, Heart, ExternalLink, X, Check, Loader2, Sun, Moon } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ServiceProvider } from '../types';
+
+// Simple Theme Switcher Component
+type Theme = 'light' | 'dark';
+const THEME_KEY = 'theme-preference';
+
+const applyTheme = (theme: Theme) => {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.remove('light', 'dark');
+  document.documentElement.classList.add(theme);
+};
+
+const SimpleThemeSwitcher: React.FC<{ className?: string }> = ({ className = '' }) => {
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem(THEME_KEY) as Theme;
+      return savedTheme || 'dark';
+    }
+    return 'dark';
+  });
+
+  useEffect(() => {
+    applyTheme(theme);
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const saved = (localStorage.getItem(THEME_KEY) as Theme) || 'dark';
+    setTheme(saved);
+    applyTheme(saved);
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+  };
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className={`w-10 h-10 rounded-full backdrop-blur-xl border transition-all duration-300 flex items-center justify-center hover:scale-105 ${
+        theme === 'light'
+          ? 'bg-white/80 border-gray-300/50 text-gray-800 hover:bg-white shadow-md'
+          : 'bg-gray-800/80 border-white/20 text-white hover:bg-gray-700/80'
+      } ${className}`}
+      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+    >
+      {theme === 'light' ? (
+        <Moon size={18} className="transition-transform duration-300" />
+      ) : (
+        <Sun size={18} className="transition-transform duration-300" />
+      )}
+    </button>
+  );
+};
 
 interface Message {
   id: string;
@@ -44,6 +97,28 @@ const ChatInterface: React.FC = () => {
   const [waPrefill, setWaPrefill] = useState('');
   const [waSending, setWaSending] = useState(false);
   const [waSent, setWaSent] = useState(false);
+  // Theme state - now uses global theme system instead of local isSilverTheme
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
+
+  // Listen to global theme changes
+  useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setCurrentTheme(isDark ? 'dark' : 'light');
+    };
+
+    // Initial theme detection
+    updateTheme();
+
+    // Listen for theme changes
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
   // Container refs for precise scroll handling
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -311,19 +386,16 @@ const ChatInterface: React.FC = () => {
           opacity: 0;
           transform: translateX(-25px) scale(0.95) rotateY(5deg);
           filter: blur(3px);
-          box-shadow: 0 0 0 rgba(59, 130, 246, 0);
         }
         40% {
           opacity: 0.7;
           transform: translateX(5px) scale(1.03) rotateY(-1deg);
           filter: blur(1px);
-          box-shadow: 0 10px 40px rgba(59, 130, 246, 0.2);
         }
         100% {
           opacity: 1;
           transform: translateX(0) scale(1) rotateY(0deg);
           filter: blur(0px);
-          box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
         }
       }
       
@@ -414,20 +486,23 @@ const ChatInterface: React.FC = () => {
       @keyframes premiumPulse {
         0%, 100% {
           transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3), 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         50% {
           transform: scale(1.02);
-          box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.4), 0 20px 60px rgba(59, 130, 246, 0.2);
         }
       }
       
       @keyframes luxuryShimmer {
         0% {
           background-position: -200% 0;
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 0.8;
         }
         100% {
           background-position: 200% 0;
+          opacity: 0.5;
         }
       }
       
@@ -481,31 +556,23 @@ const ChatInterface: React.FC = () => {
       
       .luxury-bubble:hover {
         transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 40px rgba(59, 130, 246, 0.1);
         backdrop-filter: blur(24px);
       }
       
       .luxury-input-container {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
         transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
       }
       
       .luxury-input-container:hover {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
         border-color: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
       }
       
       .luxury-input-container.focused {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.12));
         border-color: rgba(59, 130, 246, 0.5);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 20px 60px rgba(59, 130, 246, 0.15);
       }
       
       .luxury-header {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
         backdrop-filter: blur(24px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       }
@@ -654,7 +721,6 @@ const ChatInterface: React.FC = () => {
         };
         
         setMessages([welcomeMessage]);
-  // Welcome state removed (visual cue no longer needed)
         setConversationStep(1);
         
         // Handle initial message from dashboard
@@ -917,41 +983,63 @@ const ChatInterface: React.FC = () => {
       </div>
 
       {/* Main Chat Container */}
-      <div className="relative z-10 flex flex-col h-[calc(var(--app-vh,1vh)*100)] overflow-hidden">
+      <div className={`relative z-10 flex flex-col h-[calc(var(--app-vh,1vh)*100)] overflow-hidden ${
+        currentTheme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
+      }`}>
         {/* Fixed Header with glassmorphic design */}
-        <div className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/5 border-b border-white/10 p-3 sm:p-4 pt-safe">
+        <div className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl p-3 sm:p-4 pt-safe ${
+          currentTheme === 'light'
+            ? 'bg-white/30 border-b border-gray-400/30 shadow-lg'
+            : 'bg-white/5 border-b border-white/10'
+        }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
+                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl backdrop-blur-sm border flex items-center justify-center hover:bg-white/20 transition-all duration-300 ${
+                  currentTheme === 'light'
+                    ? 'bg-white/40 border-gray-400/40 text-gray-800 hover:bg-white/60'
+                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                }`}
               >
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-white">Conversational Cosmos</h1>
-                <p className="text-xs sm:text-sm text-blue-300">AI Service Discovery</p>
+                <h1 className={`text-lg sm:text-xl font-bold ${
+                  currentTheme === 'light' ? 'text-slate-900' : 'text-white'
+                }`}>Conversational Cosmos</h1>
+                <p className={`text-xs sm:text-sm ${
+                  currentTheme === 'light' ? 'text-blue-600' : 'text-blue-300'
+                }`}>AI Service Discovery</p>
               </div>
             </div>
             
-            {/* Progress Visualization */}
-            <div className="flex items-center space-x-2">
-              {[...Array(5)].map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                    index < conversationStep 
-                      ? 'bg-blue-400 shadow-lg shadow-blue-400/50' 
-                      : 'bg-white/20'
-                  }`}
-                />
-              ))}
+            {/* Progress Visualization and Theme Switcher */}
+            <div className="flex items-center space-x-4">
+              {/* Simple Theme Switcher */}
+              <SimpleThemeSwitcher />
+              
+              {/* Progress dots */}
+              <div className="flex items-center space-x-2">
+                {[...Array(5)].map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                      index < conversationStep 
+                        ? 'bg-blue-400 shadow-lg shadow-blue-400/50' 
+                        : 'bg-white/20'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Messages Container with Dynamic Bottom Padding - Account for fixed header and input */}
-        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto pt-24 sm:pt-28 pb-56 sm:pb-60 px-3 sm:px-4 space-y-5 sm:space-y-6 scroll-smooth">
+        <div ref={messagesContainerRef} className={`flex-1 overflow-y-auto pt-24 sm:pt-28 pb-56 sm:pb-60 px-3 sm:px-4 space-y-5 sm:space-y-6 scroll-smooth ${
+          currentTheme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
+        }`}>
           {messages.map((message, index) => {
             // Check if this is the first user message (from dashboard)
             const isInitialUserMessage = message.type === 'user' && 
@@ -997,26 +1085,18 @@ const ChatInterface: React.FC = () => {
                       }
                     </div>
                     
-                    {/* Enhanced Professional Message Bubble */}
+                    {/* Enhanced Professional Message Bubble - Single Border Only */}
                     <div className={`relative message-bubble transition-all duration-300 ease-out hover:scale-[1.01] ${
                       message.type === 'user'
-                        ? 'bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/20'
-                        : 'bg-white/[0.08] backdrop-blur-2xl border border-white/20 text-white shadow-xl'
+                        ? currentTheme === 'light' 
+                          ? 'bg-blue-500/80 text-white shadow-lg'
+                          : 'bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/20'
+                        : currentTheme === 'light'
+                          ? 'bg-slate-200/90 text-slate-900 shadow-xl border border-slate-400/30'
+                          : 'bg-white/[0.08] backdrop-blur-2xl border border-white/20 text-white shadow-xl'
                     } rounded-2xl px-4 py-3 sm:px-5 sm:py-4 ${
                       isInitialUserMessage ? 'animate-messageGlow' : ''
                     }`}>
-                      {/* Enhanced glassmorphic effect for AI messages */}
-                      {message.type === 'ai' && (
-                        <>
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/8 to-pink-500/8 rounded-2xl"></div>
-                          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent rounded-2xl"></div>
-                        </>
-                      )}
-                      
-                      {/* User message glow effect */}
-                      {message.type === 'user' && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-2xl blur-sm"></div>
-                      )}
                       
                       <div className="relative z-10">
                         <p className="whitespace-pre-wrap text-[14px] sm:text-[15px] leading-relaxed font-medium tracking-wide md:leading-[1.55]">{message.content}</p>
@@ -1025,11 +1105,17 @@ const ChatInterface: React.FC = () => {
                         {message.serviceProviders && message.serviceProviders.length > 0 && (
                           <div className="mt-6">
                             <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-base sm:text-lg font-semibold text-white flex items-center">
+                              <h3 className={`text-base sm:text-lg font-semibold flex items-center ${
+                                currentTheme === 'light' ? 'text-slate-900' : 'text-white'
+                              }`}>
                                 <Sparkles className="w-5 h-5 mr-2 text-yellow-400" />
                                 Top Providers for You
                               </h3>
-                              <span className="text-xs sm:text-sm text-blue-200 bg-blue-500/20 px-2.5 py-0.5 rounded-full">
+                              <span className={`text-xs sm:text-sm px-2.5 py-0.5 rounded-full ${
+                                currentTheme === 'light' 
+                                  ? 'text-blue-700 bg-blue-200/60' 
+                                  : 'text-blue-200 bg-blue-500/20'
+                              }`}>
                                 {message.serviceProviders.length} found
                               </span>
                             </div>
@@ -1039,7 +1125,11 @@ const ChatInterface: React.FC = () => {
                               {/* Desktop Horizontal Layout */}
                               <div className="flex space-x-4 w-max pr-2">
                                 {message.serviceProviders.slice(0, 4).map((provider) => (
-                                  <div key={provider.id} className="flex-shrink-0 w-72 xl:w-80 bg-gradient-to-br from-white/8 to-white/4 backdrop-blur-xl border border-white/20 rounded-2xl p-5 hover:from-white/12 hover:to-white/8 transition-all duration-300 group shadow-xl hover:shadow-2xl">
+                                  <div key={provider.id} className={`flex-shrink-0 w-72 xl:w-80 backdrop-blur-xl rounded-2xl p-5 transition-all duration-300 group shadow-xl hover:shadow-2xl ${
+                                    currentTheme === 'light'
+                                      ? 'bg-slate-400/70 border border-slate-500/40 hover:bg-slate-400/80'
+                                      : 'bg-gradient-to-br from-white/8 to-white/4 border border-white/20 hover:from-white/12 hover:to-white/8'
+                                  }`}>
                                     {/* Header Section */}
                                     <div className="flex items-center space-x-4 mb-4">
                                       {/* Provider Image */}
@@ -1065,15 +1155,19 @@ const ChatInterface: React.FC = () => {
                                       
                                       {/* Provider Basic Info */}
                                       <div className="flex-1 min-w-0">
-                                        <h4 className="font-bold text-white text-sm sm:text-base truncate mb-1">{provider.businessName}</h4>
-                                        <p className="text-blue-200 text-xs sm:text-sm mb-2">{provider.category}</p>
+                                        <h4 className={`font-bold text-sm sm:text-base truncate mb-1 ${
+                                          currentTheme === 'light' ? 'text-slate-900' : 'text-white'
+                                        }`}>{provider.businessName}</h4>
+                                        <p className={`text-xs sm:text-sm mb-2 ${
+                                          currentTheme === 'light' ? 'text-blue-600' : 'text-blue-200'
+                                        }`}>{provider.category}</p>
                                         <div className="flex items-center space-x-3 text-xs">
                                           <div className="flex items-center space-x-1">
                                             <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                                            <span className="text-white font-semibold">{provider.rating}</span>
-                                            <span className="text-blue-200">({provider.reviewCount})</span>
+                                            <span className={`font-semibold ${currentTheme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
+                                            <span className={currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}>({provider.reviewCount})</span>
                                           </div>
-                                          <div className="flex items-center text-blue-200">
+                                          <div className={`flex items-center ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
                                             <MapPin className="w-3 h-3 mr-1" />
                                             {provider.distance}
                                           </div>
@@ -1083,24 +1177,23 @@ const ChatInterface: React.FC = () => {
                                     
                                     {/* Stats Row */}
                                     <div className="grid grid-cols-3 gap-3 mb-4 text-center">
-                                      <div className="bg-white/5 rounded-lg p-2">
+                                      <div className={`rounded-lg p-2 ${currentTheme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
                                         <div className="text-green-400 font-bold text-xs sm:text-sm">{provider.priceRange}</div>
-                                        <div className="text-blue-200 text-[10px] sm:text-xs">Price</div>
+                                        <div className={`text-[10px] sm:text-xs ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Price</div>
                                       </div>
-                                      <div className="bg-white/5 rounded-lg p-2">
+                                      <div className={`rounded-lg p-2 ${currentTheme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
                                         <div className="text-blue-300 font-bold text-xs sm:text-sm flex items-center justify-center">
                                           <Clock className="w-3 h-3 mr-1" />
                                           {provider.responseTime}
                                         </div>
-                                        <div className="text-blue-200 text-xs">Response</div>
+                                        <div className={`text-xs ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Response</div>
                                       </div>
-                                      <div className="bg-white/5 rounded-lg p-2">
+                                      <div className={`rounded-lg p-2 ${currentTheme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
                                         <div className="text-purple-300 font-bold text-xs sm:text-sm">{provider.completedJobs}</div>
-                                        <div className="text-blue-200 text-[10px] sm:text-xs">Jobs</div>
+                                        <div className={`text-[10px] sm:text-xs ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Jobs</div>
                                       </div>
                                     </div>
                                     
-                                    {/* Tags removed for cleaner compact card */}
                                     <div className="mt-1 mb-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                                     
                                     {/* Action Buttons */}
@@ -1129,7 +1222,11 @@ const ChatInterface: React.FC = () => {
                             {/* Mobile Vertical Layout */}
                             <div className="md:hidden space-y-4">
                               {message.serviceProviders.slice(0, 3).map((provider) => (
-                                <div key={provider.id} className="bg-gradient-to-br from-white/8 to-white/4 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:from-white/12 hover:to-white/8 transition-all duration-300 group shadow-xl">
+                                <div key={provider.id} className={`backdrop-blur-xl rounded-2xl p-3 transition-all duration-300 group shadow-xl ${
+                                  currentTheme === 'light'
+                                    ? 'bg-slate-400/70 border border-slate-500/40 hover:bg-slate-400/80'
+                                    : 'bg-gradient-to-br from-white/8 to-white/4 border border-white/20 hover:from-white/12 hover:to-white/8'
+                                }`}>
                                   {/* Mobile Header */}
                                   <div className="flex items-start space-x-3 mb-3">
                                     {/* Provider Image */}
@@ -1157,19 +1254,19 @@ const ChatInterface: React.FC = () => {
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-start justify-between mb-1">
                                         <div className="flex-1 min-w-0">
-                                          <h4 className="font-bold text-white text-xs truncate">{provider.businessName}</h4>
-                                          <p className="text-blue-200 text-[11px]">{provider.category}</p>
+                                          <h4 className={`font-bold text-xs truncate ${currentTheme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.businessName}</h4>
+                                          <p className={`text-[11px] ${currentTheme === 'light' ? 'text-blue-600' : 'text-blue-200'}`}>{provider.category}</p>
                                         </div>
                                         <div className="text-right flex-shrink-0 ml-2">
                                           <div className="flex items-center space-x-1">
                                             <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                                            <span className="text-white font-semibold text-xs">{provider.rating}</span>
+                                            <span className={`font-semibold text-xs ${currentTheme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
                                           </div>
                                         </div>
                                       </div>
                                       
                                       {/* Mobile Stats */}
-                                      <div className="flex items-center space-x-2 text-[11px] text-blue-200 mb-2">
+                                      <div className={`flex items-center space-x-2 text-[11px] mb-2 ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
                                         <span className="text-green-400 font-medium">{provider.priceRange}</span>
                                         <div className="flex items-center">
                                           <Clock className="w-3 h-3 mr-1" />
@@ -1183,7 +1280,6 @@ const ChatInterface: React.FC = () => {
                                     </div>
                                   </div>
                                   
-                                  {/* Tags removed for mobile card */}
                                   <div className="mb-2 h-px bg-white/10" />
                                   
                                   {/* Mobile Actions */}
@@ -1231,7 +1327,11 @@ const ChatInterface: React.FC = () => {
                               <button
                                 key={idx}
                                 onClick={() => handleSuggestionClick(suggestion)}
-                                className="px-3 py-2 sm:px-4 sm:py-2.5 bg-white/8 backdrop-blur-sm border border-white/15 rounded-lg text-blue-200 hover:bg-white/15 hover:border-blue-400/40 hover:text-white transition-all duration-300 text-[12px] sm:text-[13px] font-medium shadow-md hover:shadow-blue-500/10 flex items-center gap-2 group"
+                                className={`px-3 py-2 sm:px-4 sm:py-2.5 backdrop-blur-sm border rounded-lg transition-all duration-300 text-[12px] sm:text-[13px] font-medium shadow-md flex items-center gap-2 group cursor-pointer ${
+                                  currentTheme === 'light'
+                                    ? 'bg-white/50 border-gray-400/50 text-gray-800 hover:bg-white/70 hover:border-blue-300/50 hover:text-blue-600 hover:shadow-lg hover:scale-105'
+                                    : 'bg-white/8 border-white/15 text-blue-200 hover:bg-white/15 hover:border-blue-400/40 hover:text-white hover:shadow-blue-500/10'
+                                }`}
                               >
                                 <span className="whitespace-nowrap group-hover:translate-x-0.5 transition-transform duration-300">{suggestion}</span>
                                 <svg className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1245,7 +1345,9 @@ const ChatInterface: React.FC = () => {
                       
                       {/* Enhanced timestamp */}
                       <div className={`text-xs mt-3 flex items-center space-x-2 ${
-                        message.type === 'user' ? 'text-blue-200/70' : 'text-white/40'
+                        message.type === 'user' 
+                          ? currentTheme === 'light' ? 'text-blue-600/70' : 'text-blue-200/70'
+                          : currentTheme === 'light' ? 'text-slate-700/60' : 'text-white/40'
                       }`}>
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -1255,7 +1357,7 @@ const ChatInterface: React.FC = () => {
                           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                         {message.type === 'ai' && (
-                          <span className="text-white/30">• AI Response</span>
+                          <span className={currentTheme === 'light' ? 'text-slate-600/50' : 'text-white/30'}>• AI Response</span>
                         )}
                       </div>
                     </div>
@@ -1284,8 +1386,11 @@ const ChatInterface: React.FC = () => {
                       <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-spin"></div>
                     </div>
                   </div>
-                  <div className="message-bubble bg-white/[0.08] backdrop-blur-2xl border border-white/20 rounded-2xl px-5 py-4 shadow-xl">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/8 to-pink-500/8 rounded-2xl"></div>
+                  <div className={`message-bubble backdrop-blur-2xl rounded-2xl px-5 py-4 shadow-xl ${
+                    currentTheme === 'light' 
+                      ? 'bg-slate-200/90 text-slate-900 border border-slate-400/30'
+                      : 'bg-white/[0.08] border border-white/20 text-white'
+                  }`}>
                     <div className="relative z-10">
                       <div className="flex items-center space-x-3">
                         <div className="flex items-center space-x-1">
@@ -1293,7 +1398,9 @@ const ChatInterface: React.FC = () => {
                           <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
                           <div className="w-2 h-2 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                         </div>
-                        <span className="text-sm text-blue-300/80 font-medium">
+                        <span className={`text-sm font-medium ${
+                          currentTheme === 'light' ? 'text-blue-600/80' : 'text-blue-300/80'
+                        }`}>
                           {messageAnimating ? 'Analyzing your request...' : 'AI is thinking...'}
                         </span>
                       </div>
@@ -1312,7 +1419,11 @@ const ChatInterface: React.FC = () => {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
-                  <div className="bg-gradient-to-r from-blue-600/70 to-purple-600/70 backdrop-blur-xl border border-blue-400/30 rounded-2xl px-4 py-3 text-white">
+                  <div className={`rounded-2xl px-4 py-3 backdrop-blur-xl ${
+                    currentTheme === 'light' 
+                      ? 'bg-slate-200/80 text-slate-900 border border-slate-300/40'
+                      : 'bg-gradient-to-r from-blue-600/70 to-purple-600/70 text-white border border-blue-400/30'
+                  }`}>
                     <div className="flex items-center space-x-2">
                       <span className="text-sm opacity-80">{typingText.substring(0, 30)}{typingText.length > 30 ? '...' : ''}</span>
                       <div className="flex space-x-1">
@@ -1329,30 +1440,26 @@ const ChatInterface: React.FC = () => {
           
         </div>
 
-        {/* Fixed Luxury Premium Input Area */}
+        {/* Fixed Input Area */}
         <div className="fixed bottom-0 left-0 right-0 z-40 pb-safe">
-          {/* Luxury gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-gray-900/40 to-transparent"></div>
+          {/* Gradient background */}
+          <div className={`absolute inset-0 ${
+            currentTheme === 'light'
+              ? 'bg-gradient-to-t from-slate-300/60 via-slate-200/40 to-transparent'
+              : 'bg-gradient-to-t from-black/60 via-gray-900/40 to-transparent'
+          }`}></div>
           
           {/* Glassmorphic container */}
-          <div className="relative backdrop-blur-2xl bg-gradient-to-r from-white/8 via-white/5 to-white/8 border-t border-white/20 p-2.5 sm:p-3 md:p-4">
-            {/* Premium glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 rounded-t-3xl"></div>
-            
+          <div className={`relative backdrop-blur-2xl p-2.5 sm:p-3 md:p-4 ${
+            currentTheme === 'light'
+              ? 'bg-slate-200/70 border-t border-slate-400/40 shadow-lg'
+              : 'bg-gradient-to-r from-white/8 via-white/5 to-white/8 border-t border-white/20'
+          }`}>
             <div className="relative z-10">
               {/* Main input container */}
               <div className="flex items-end space-x-2 sm:space-x-3 md:space-x-4 mb-2 sm:mb-3">
                 {/* Luxury text input with sophisticated styling */}
                 <div className="flex-1 relative group">
-                  {/* Input background with multiple layers */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-gray-800/50 via-gray-700/30 to-gray-800/50 rounded-2xl"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
-                  
-                  {/* Animated border */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-blue-400/20 p-[1px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-500">
-                    <div className="w-full h-full bg-gray-900/80 rounded-2xl"></div>
-                  </div>
-                  
                   <textarea
                     ref={inputRef}
                     value={inputValue}
@@ -1363,7 +1470,11 @@ const ChatInterface: React.FC = () => {
                     rows={1}
                     spellCheck={false}
                     autoComplete="off"
-                    className="relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 bg-transparent text-white placeholder-blue-300/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden"
+                    className={`relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden ${
+                      currentTheme === 'light'
+                        ? 'bg-slate-200/70 backdrop-blur-lg text-slate-900 placeholder-slate-700 border border-slate-400/40 rounded-xl hover:bg-slate-200/80 focus:bg-slate-200/90 focus:border-blue-300/50 focus:shadow-lg'
+                        : 'bg-transparent text-white placeholder-white/50 border-0 bg-gradient-to-r from-gray-800/50 via-gray-700/30 to-gray-800/50 rounded-2xl border border-white/20'
+                    }`}
                     style={{ 
                       height: '48px',
                       minHeight: '48px',
@@ -1386,14 +1497,20 @@ const ChatInterface: React.FC = () => {
                     }}
                   />
                   
-                  {/* Luxury microphone button */}
-                  <button className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gradient-to-r from-gray-700/80 to-gray-600/80 backdrop-blur-sm border border-white/15 rounded-lg flex items-center justify-center text-white/90 hover:text-white hover:from-blue-600/70 hover:to-purple-600/70 hover:border-blue-400/40 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-blue-500/20">
-                    <Mic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  {/* Action button */}
+                  <button className={`absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 backdrop-blur-xl rounded-lg flex items-center justify-center transition-all duration-300 ${
+                    currentTheme === 'light'
+                      ? 'bg-gradient-to-r from-white/60 to-gray-200/60 border border-gray-300/50 text-gray-700 hover:text-blue-600 hover:from-white/70 hover:to-blue-50/70 hover:border-blue-300/50 hover:scale-105 hover:shadow-lg group'
+                      : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
+                  }`}>
+                    <Mic className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:scale-110`} />
                   </button>
                   
                   {/* Typing indicator */}
                   {inputValue && (
-                    <div className="absolute bottom-1.5 sm:bottom-2 left-4 sm:left-6 text-[10px] sm:text-xs text-blue-300/60">
+                    <div className={`absolute bottom-1.5 sm:bottom-2 left-4 sm:left-6 text-[10px] sm:text-xs ${
+                      currentTheme === 'light' ? 'text-blue-600/60' : 'text-blue-300/60'
+                    }`}>
                       {inputValue.length} chars
                     </div>
                   )}
@@ -1409,12 +1526,6 @@ const ChatInterface: React.FC = () => {
                       : 'bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 hover:shadow-blue-500/40 hover:scale-105 active:scale-95'
                   }`}
                 >
-                  {/* Button glow effect */}
-                  {inputValue.trim() && !isTyping && !messageAnimating && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-                  )}
-                  
-                  {/* Button content */}
                   <div className="relative z-10">
                     {(isTyping || messageAnimating) ? (
                       <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></div>
@@ -1422,40 +1533,35 @@ const ChatInterface: React.FC = () => {
                       <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </div>
-                  
-                  {/* Shimmer effect */}
-                  {inputValue.trim() && !isTyping && !messageAnimating && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 animate-shimmer opacity-0 group-hover:opacity-100 rounded-2xl"></div>
-                  )}
                 </button>
               </div>
               
               {/* Luxury quick suggestions */}
               <div className="space-y-1.5 sm:space-y-2 relative">
-                <div className="text-[10px] sm:text-xs text-gray-400/70 font-medium tracking-wide uppercase pl-1">Quick Actions</div>
+                <div className={`text-[10px] sm:text-xs font-medium tracking-wide uppercase pl-1 ${
+                  currentTheme === 'light' ? 'text-slate-700' : 'text-gray-400/70'
+                }`}>Quick Actions</div>
                 <div className="relative">
                   {/* Mobile: Grid layout, Desktop: Horizontal scroll */}
                   <div className="block sm:hidden">
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { text: '🚨 Emergency', fullText: '🚨 Emergency repair', color: 'from-red-500/20 to-orange-500/20', border: 'red-400/30' },
-                        { text: '💰 Quote', fullText: '💰 Budget quote', color: 'from-green-500/20 to-emerald-500/20', border: 'green-400/30' },
-                        { text: '📅 Schedule', fullText: '📅 Schedule appointment', color: 'from-blue-500/20 to-cyan-500/20', border: 'blue-400/30' },
-                        { text: '⭐ Reviews', fullText: '⭐ View reviews', color: 'from-purple-500/20 to-pink-500/20', border: 'purple-400/30' }
+                        { text: '🚨 Emergency', fullText: '🚨 Emergency repair', color: 'from-red-800 to-orange-700', border: 'red-700/60' },
+                        { text: '💰 Quote', fullText: '💰 Budget quote', color: 'from-emerald-800 to-green-700', border: 'emerald-700/60' },
+                        { text: '📅 Schedule', fullText: '📅 Schedule appointment', color: 'from-blue-800 to-cyan-700', border: 'blue-700/60' },
+                        { text: '⭐ Reviews', fullText: '⭐ View reviews', color: 'from-purple-800 to-pink-700', border: 'purple-700/60' }
                       ].map((suggestion, index) => (
                         <button
                           key={suggestion.text}
                           onClick={() => handleSendMessage(suggestion.fullText)}
                           disabled={isTyping || messageAnimating}
-                          className={`relative px-2 py-1.5 bg-gradient-to-r ${suggestion.color} backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[10px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group ${
+                          className={`relative px-2 py-1.5 bg-gradient-to-r ${suggestion.color} bg-opacity-90 backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[10px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group ${
                             (isTyping || messageAnimating)
                               ? 'text-gray-500/60 cursor-not-allowed opacity-40'
-                              : 'text-white/90 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
+                              : 'text-white font-semibold hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
                           }`}
                           style={{ animationDelay: `${index * 100 + 400}ms` }}
                         >
-                          {/* Button highlight effect */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
                           <span className="relative z-10">{suggestion.text}</span>
                         </button>
                       ))}
@@ -1464,15 +1570,12 @@ const ChatInterface: React.FC = () => {
                   
                   {/* Desktop: Horizontal scroll layout */}
                   <div className="hidden sm:block">
-                    {/* Gradient edge masks */}
-                    <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-[#0b0f17] via-[#0b0f17]/60 to-transparent rounded-l-xl z-10" />
-                    <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-[#0b0f17] via-[#0b0f17]/60 to-transparent rounded-r-xl z-10" />
                     <div className="flex gap-2.5 overflow-x-auto no-scrollbar pr-4 -ml-1 pl-1 snap-x snap-mandatory">
                       {[
-                        { text: '🚨 Emergency repair', color: 'from-red-500/20 to-orange-500/20', border: 'red-400/30' },
-                        { text: '💰 Budget quote', color: 'from-green-500/20 to-emerald-500/20', border: 'green-400/30' },
-                        { text: '📅 Schedule appointment', color: 'from-blue-500/20 to-cyan-500/20', border: 'blue-400/30' },
-                        { text: '⭐ View reviews', color: 'from-purple-500/20 to-pink-500/20', border: 'purple-400/30' }
+                        { text: '🚨 Emergency repair', color: 'from-red-800 to-orange-700', border: 'red-700/60' },
+                        { text: '💰 Budget quote', color: 'from-emerald-800 to-green-700', border: 'emerald-700/60' },
+                        { text: '📅 Schedule appointment', color: 'from-blue-800 to-cyan-700', border: 'blue-700/60' },
+                        { text: '⭐ View reviews', color: 'from-purple-800 to-pink-700', border: 'purple-700/60' }
                       ].map((suggestion, index) => (
                         <button
                           key={suggestion.text}
@@ -1485,8 +1588,6 @@ const ChatInterface: React.FC = () => {
                           }`}
                           style={{ animationDelay: `${index * 100 + 400}ms` }}
                         >
-                          {/* Button highlight effect */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
                           <span className="relative z-10">{suggestion.text}</span>
                         </button>
                       ))}
@@ -1515,8 +1616,6 @@ const ChatInterface: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setWaOpen(false)} />
           <div className="relative w-full max-w-lg rounded-3xl overflow-hidden bg-gradient-to-br from-[#101826]/90 via-[#0d1320]/85 to-[#161b2b]/90 border border-white/10 shadow-2xl">
-            <div className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none" style={{backgroundImage:'radial-gradient(circle at 15% 20%, rgba(59,130,246,.25) 0, transparent 55%), radial-gradient(circle at 85% 30%, rgba(147,51,234,.25) 0, transparent 60%), radial-gradient(circle at 60% 85%, rgba(236,72,153,.25) 0, transparent 60%)'}} />
-            <div className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_60%,rgba(255,255,255,0.07)_100%)]" />
             <div className="relative p-6 sm:p-8 space-y-6">
               <div className="flex items-start justify-between">
                 <div>

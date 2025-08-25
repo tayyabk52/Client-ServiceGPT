@@ -94,7 +94,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ className = '' }) => {
   };
 
   return (
-    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 ${className}`}>
+    <div className={`rounded-2xl p-6 bg-card-light dark:bg-card-dark shadow transition-colors duration-300 ${className}`}>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
         <button className="text-blue-400 hover:text-blue-300 text-sm">

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ArrowLeft, Filter, Search, Clock, MessageCircle, ChevronRight, RefreshCw, Layers, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Filter, Search, Clock, MessageCircle, ChevronRight, RefreshCw, Layers, CheckCircle2, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChatMessage } from '../types';
 
@@ -39,6 +39,7 @@ const ChatHistory: React.FC = () => {
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest');
   const [showFilters, setShowFilters] = useState(false);
   const [mountAnim, setMountAnim] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const categories = ['Plumbing', 'Electrical', 'Cleaning', 'Handyman'];
 
@@ -60,13 +61,22 @@ const ChatHistory: React.FC = () => {
     style.textContent = `
       @keyframes fadeSlideUp {0%{opacity:0;transform:translateY(18px) scale(.96)}60%{opacity:.85;transform:translateY(-4px) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}
       @keyframes pulseBorder {0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.0)}50%{box-shadow:0 0 22px 0 rgba(59,130,246,.35)}}
+      @keyframes pulseBorderLight {0%,100%{box-shadow:0 0 0 0 rgba(148,163,184,.0)}50%{box-shadow:0 0 18px 0 rgba(148,163,184,.4)}}
+      @keyframes shimmer {0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
       .animate-session-enter {animation:fadeSlideUp .65s cubic-bezier(.23,1,.32,1)}
       .live-ring {background:conic-gradient(from 180deg,var(--c1),var(--c2),var(--c3),var(--c1));animation:spin 6s linear infinite}
       @keyframes spin {to{transform:rotate(360deg)}}
       .gradient-border::before {content:'';position:absolute;inset:0;padding:1px;border-radius:inherit;background:linear-gradient(140deg,rgba(59,130,246,.4),rgba(168,85,247,.35),rgba(37,99,235,.35));-webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .5s}
       .gradient-border:hover::before {opacity:1}
+      .gradient-border-light::before {content:'';position:absolute;inset:0;padding:1px;border-radius:inherit;background:linear-gradient(140deg,rgba(148,163,184,.5),rgba(203,213,225,.4),rgba(148,163,184,.5));-webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .5s}
+      .gradient-border-light:hover::before {opacity:1}
       .chip-gradient {background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.15);}
       .chip-gradient:hover {border-color:rgba(255,255,255,.35);}
+      .chip-gradient-light {background:linear-gradient(135deg,rgba(148,163,184,.35),rgba(203,213,225,.25));border:1px solid rgba(148,163,184,.5);backdrop-filter:blur(20px);}
+      .chip-gradient-light:hover {border-color:rgba(71,85,105,.6);}
+      .theme-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+      .glass-shimmer {position:relative;overflow:hidden;}
+      .glass-shimmer::after {content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transform:translateX(-100%);animation:shimmer 3s infinite;}
     `;
     document.head.appendChild(style);
     requestAnimationFrame(()=>setMountAnim(true));
@@ -93,180 +103,247 @@ const ChatHistory: React.FC = () => {
   const totalCompleted = filtered.filter(s=>s.status==='completed').length;
   const totalOngoing = filtered.filter(s=>s.status==='ongoing').length;
 
+  // Theme-aware classes
+  const themeClasses = {
+    // Main backgrounds - Rich silver metallic base
+    mainBg: isDarkMode 
+      ? 'bg-gradient-to-b from-[#0b111a] via-[#080e16] to-[#05080d]' 
+      : 'bg-gradient-to-br from-[#e2e8f0] via-[#cbd5e1] to-[#94a3b8]',
+    
+    // Text colors - Better contrast for readability
+    primaryText: isDarkMode ? 'text-white' : 'text-slate-900',
+    secondaryText: isDarkMode ? 'text-blue-200/80' : 'text-slate-700',
+    mutedText: isDarkMode ? 'text-blue-300/70' : 'text-slate-600',
+    accentText: isDarkMode ? 'text-blue-200/60' : 'text-slate-500',
+    
+    // Backgrounds and borders - True glass effect with darker silver
+    cardBg: isDarkMode ? 'bg-white/5' : 'bg-gradient-to-br from-white/30 via-slate-100/40 to-white/20 backdrop-blur-xl',
+    cardBorder: isDarkMode ? 'border-white/10' : 'border-slate-300/60',
+    headerBg: isDarkMode 
+      ? 'backdrop-blur-2xl bg-black/50/60 border-b border-white/10' 
+      : 'backdrop-blur-2xl bg-gradient-to-r from-slate-200/60 via-slate-100/50 to-slate-200/60 border-b border-slate-300/70',
+    
+    // Buttons - Metallic silver appearance
+    buttonBg: isDarkMode 
+      ? 'bg-white/10 hover:bg-white/20' 
+      : 'bg-gradient-to-br from-slate-200/70 via-slate-100/60 to-slate-200/70 hover:from-slate-300/80 hover:to-slate-300/80 backdrop-blur-lg',
+    buttonBorder: isDarkMode ? 'border-white/15' : 'border-slate-400/60',
+    
+    // Input - Silver glass input field
+    inputBorder: isDarkMode 
+      ? 'border-white/10 group-focus-within:border-blue-400/40' 
+      : 'border-slate-400/50 group-focus-within:border-slate-500/70',
+    inputBg: isDarkMode 
+      ? 'bg-gradient-to-r from-white/10 via-white/5 to-white/10 group-focus-within:from-blue-500/20 group-focus-within:to-purple-500/20' 
+      : 'bg-gradient-to-r from-slate-200/40 via-slate-100/30 to-slate-200/40 group-focus-within:from-slate-300/50 group-focus-within:to-slate-300/50 backdrop-blur-xl',
+    
+    // Special elements
+    liveRing: isDarkMode ? 'animate-pulseBorder' : 'animate-pulseBorderLight',
+    gradientBorder: isDarkMode ? 'gradient-border' : 'gradient-border-light',
+    chipGradient: isDarkMode ? 'chip-gradient' : 'chip-gradient-light',
+    
+    // Ambient backgrounds - Rich metallic silver atmosphere
+    ambientBg1: isDarkMode 
+      ? 'bg-gradient-to-br from-blue-600/15 via-indigo-600/10 to-purple-600/10' 
+      : 'bg-gradient-to-br from-slate-400/25 via-zinc-400/20 to-gray-400/20',
+    ambientBg2: isDarkMode 
+      ? 'bg-gradient-to-tr from-fuchsia-500/10 via-purple-500/10 to-sky-500/10' 
+      : 'bg-gradient-to-tr from-slate-300/30 via-zinc-300/25 to-gray-300/25',
+    ambientBg3: isDarkMode 
+      ? 'bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-emerald-500/5' 
+      : 'bg-gradient-to-br from-slate-500/20 via-zinc-500/15 to-gray-500/15',
+    
+    // Grid pattern - Metallic grid overlay
+    gridPattern: isDarkMode 
+      ? 'bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] opacity-[0.07]' 
+      : 'bg-[linear-gradient(rgba(71,85,105,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(71,85,105,0.12)_1px,transparent_1px)] opacity-[0.4]'
+  };
+
   return (
-    <div className="min-h-screen flex flex-col relative text-white">
+    <div className={`min-h-screen flex flex-col relative theme-transition ${themeClasses.primaryText}`}>
       {/* Ambient Background Layers */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-blue-600/15 via-indigo-600/10 to-purple-600/10 blur-3xl rounded-full" />
-        <div className="absolute top-1/3 -right-40 w-[32rem] h-[32rem] bg-gradient-to-tr from-fuchsia-500/10 via-purple-500/10 to-sky-500/10 blur-[140px] rounded-full" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[46rem] h-[46rem] bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-emerald-500/5 blur-[160px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(59,130,246,0.08),transparent_60%)]" />
+        <div className={`absolute -top-32 -left-32 w-96 h-96 ${themeClasses.ambientBg1} blur-3xl rounded-full theme-transition`} />
+        <div className={`absolute top-1/3 -right-40 w-[32rem] h-[32rem] ${themeClasses.ambientBg2} blur-[140px] rounded-full theme-transition`} />
+        <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-[46rem] h-[46rem] ${themeClasses.ambientBg3} blur-[160px] theme-transition`} />
+        <div className={`absolute inset-0 ${isDarkMode ? 'bg-[radial-gradient(circle_at_70%_20%,rgba(59,130,246,0.08),transparent_60%)]' : 'bg-[radial-gradient(circle_at_70%_20%,rgba(148,163,184,0.12),transparent_60%)]'} theme-transition`} />
       </div>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.07]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0b111a] via-[#080e16] to-[#05080d]" />
+      <div className={`absolute inset-0 ${themeClasses.gridPattern} bg-[size:60px_60px] theme-transition`} />
+      <div className={`absolute inset-0 ${themeClasses.mainBg} theme-transition`} />
+      
       <div className="relative flex flex-col flex-1">
-      {/* Header */}
-      <div className="sticky top-0 z-30 backdrop-blur-2xl bg-black/50/60 border-b border-white/10 px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="text-lg sm:text-xl font-bold tracking-wide bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">My Conversations</h1>
-            <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-blue-300/70 font-medium">History & Insights</p>
+        {/* Header */}
+        <div className={`sticky top-0 z-30 ${themeClasses.headerBg} px-4 py-4 flex items-center justify-between theme-transition`}>
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(-1)} className={`w-10 h-10 rounded-xl ${themeClasses.buttonBg} ${themeClasses.buttonBorder} border transition flex items-center justify-center theme-transition`}>
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className={`text-lg sm:text-xl font-bold tracking-wide ${isDarkMode ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent' : 'bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent'} theme-transition`}>My Conversations</h1>
+              <p className={`text-[10px] sm:text-[11px] uppercase tracking-[0.25em] ${isDarkMode ? 'text-blue-300/70' : 'text-slate-500/80'} font-medium theme-transition`}>History & Insights</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsDarkMode(!isDarkMode)} 
+              className={`w-10 h-10 rounded-xl ${themeClasses.buttonBg} ${themeClasses.buttonBorder} border flex items-center justify-center transition theme-transition`}
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button onClick={()=>setShowFilters(f=>!f)} className={`w-10 h-10 rounded-xl border ${themeClasses.buttonBorder} flex items-center justify-center transition ${showFilters ? (isDarkMode ? 'bg-blue-600/30 text-blue-200 border-blue-400/40' : 'bg-slate-400/30 text-slate-800 border-slate-500/50') : `${themeClasses.buttonBg} ${themeClasses.primaryText}`} theme-transition`}> 
+              <Filter className="w-5 h-5"/> 
+            </button>
+            <button onClick={()=>setSearch('')} className={`w-10 h-10 rounded-xl ${themeClasses.buttonBg} ${themeClasses.buttonBorder} border flex items-center justify-center ${themeClasses.mutedText} hover:${themeClasses.primaryText} transition theme-transition`}>
+              <RefreshCw className="w-5 h-5"/>
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={()=>setShowFilters(f=>!f)} className={`w-10 h-10 rounded-xl border border-white/15 flex items-center justify-center transition ${showFilters ? 'bg-blue-600/30 text-blue-200 border-blue-400/40' : 'bg-white/5 hover:bg-white/10 text-white/80 hover:text-white'}`}> <Filter className="w-5 h-5"/> </button>
-          <button onClick={()=>setSearch('')} className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white/70 hover:text-white"><RefreshCw className="w-5 h-5"/></button>
-        </div>
-      </div>
 
-      {/* Search Bar */}
-      <div className="px-4 pt-4">
-        <div className="relative group">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/10 via-white/5 to-white/10 group-focus-within:from-blue-500/20 group-focus-within:to-purple-500/20 transition"></div>
-          <div className="absolute inset-0 rounded-2xl border border-white/10 group-focus-within:border-blue-400/40"></div>
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300/60" />
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search conversations..." className="w-full bg-transparent rounded-2xl pl-12 pr-4 py-3 outline-none text-sm placeholder:text-blue-300/40" />
+        {/* Search Bar */}
+        <div className="px-4 pt-4">
+          <div className="relative group">
+            <div className={`absolute inset-0 rounded-2xl ${themeClasses.inputBg} transition theme-transition`}></div>
+            <div className={`absolute inset-0 rounded-2xl border ${themeClasses.inputBorder} theme-transition`}></div>
+            <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDarkMode ? 'text-blue-300/60' : 'text-slate-500/70'} theme-transition`} />
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search conversations..." className={`w-full bg-transparent rounded-2xl pl-12 pr-4 py-3 outline-none text-sm ${isDarkMode ? 'placeholder:text-blue-300/40' : 'placeholder:text-slate-500/60'} theme-transition`} />
+          </div>
         </div>
-      </div>
 
-      {/* Summary Metrics */}
-      <div className="px-4 mt-5">
-        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
-          {[
-            { label:'Total', value: filtered.length, accent:'from-blue-500 to-cyan-500' },
-            { label:'Completed', value: totalCompleted, accent:'from-emerald-500 to-green-600' },
-            { label:'Ongoing', value: totalOngoing, accent:'from-amber-500 to-orange-500' },
-            { label:'All Time', value: mockSessions.length, accent:'from-purple-500 to-pink-500' }
-          ].map(m => (
-            <div key={m.label} className="min-w-[130px] relative group">
-              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-white/10 to-white/5 opacity-30 group-hover:opacity-60 transition-all" />
-              <div className="relative rounded-2xl px-4 py-3 bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col">
-                <span className="text-[11px] tracking-wide uppercase text-blue-200/60 font-medium">{m.label}</span>
-                <span className="mt-1 text-xl font-semibold bg-gradient-to-r {m.accent} bg-clip-text text-transparent">{m.value}</span>
-                <div className={`mt-2 h-1 rounded-full bg-gradient-to-r ${m.accent}`} />
+        {/* Summary Metrics */}
+        <div className="px-4 mt-5">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+            {[
+              { label:'Total', value: filtered.length, accent:'from-slate-500 to-slate-600' },
+              { label:'Completed', value: totalCompleted, accent:'from-emerald-500 to-green-600' },
+              { label:'Ongoing', value: totalOngoing, accent:'from-amber-500 to-orange-500' },
+              { label:'All Time', value: mockSessions.length, accent:'from-slate-600 to-slate-700' }
+            ].map(m => (
+              <div key={m.label} className="min-w-[130px] relative group">
+                <div className={`absolute -inset-[1px] rounded-2xl ${isDarkMode ? 'bg-gradient-to-r from-white/10 to-white/5' : 'bg-gradient-to-r from-white/40 to-white/20'} opacity-30 group-hover:opacity-60 transition-all theme-transition`} />
+                <div className={`relative rounded-2xl px-4 py-3 ${themeClasses.cardBg} border ${themeClasses.cardBorder} flex flex-col theme-transition glass-shimmer`}>
+                  <span className={`text-[11px] tracking-wide uppercase ${themeClasses.accentText} font-medium theme-transition`}>{m.label}</span>
+                  <span className={`mt-1 text-xl font-semibold bg-gradient-to-r ${isDarkMode ? m.accent : (m.label === 'Total' || m.label === 'All Time' ? 'from-slate-600 to-slate-700' : m.accent)} bg-clip-text text-transparent`}>{m.value}</span>
+                  <div className={`mt-2 h-1 rounded-full bg-gradient-to-r ${isDarkMode ? m.accent : (m.label === 'Total' || m.label === 'All Time' ? 'from-slate-500 to-slate-600' : m.accent)}`} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="px-4 mt-4 animate-fadeIn">
+            <div className={`p-4 rounded-2xl ${themeClasses.cardBg} border ${themeClasses.cardBorder} space-y-4 ${themeClasses.gradientBorder} relative overflow-hidden theme-transition`}>
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
+                <button onClick={()=>setCategoryFilter('all')} className={`px-4 py-2 rounded-xl text-[11px] font-semibold ${themeClasses.chipGradient} whitespace-nowrap ${categoryFilter==='all' ? (isDarkMode ? '!bg-blue-600/30 !text-white !border-blue-400/40' : '!bg-slate-400/40 !text-slate-800 !border-slate-500/50') : (isDarkMode ? 'text-blue-200/70' : 'text-slate-700/80')} theme-transition`}>All</button>
+                {categories.map(cat => (
+                  <button key={cat} onClick={()=>setCategoryFilter(cat)} className={`px-4 py-2 rounded-xl text-[11px] font-semibold ${themeClasses.chipGradient} whitespace-nowrap ${categoryFilter===cat ? (isDarkMode ? '!bg-blue-600/30 !text-white !border-blue-400/40' : '!bg-slate-400/40 !text-slate-800 !border-slate-500/50') : (isDarkMode ? 'text-blue-200/70' : 'text-slate-700/80')} theme-transition`}>{cat}</button>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                {(['all','ongoing','completed'] as const).map(st => (
+                  <button key={st} onClick={()=>setStatusFilter(st)} className={`flex-1 px-3 py-2 rounded-xl text-[11px] font-semibold ${themeClasses.chipGradient} ${statusFilter===st ? (isDarkMode ? '!bg-emerald-600/30 !text-white !border-emerald-400/40' : '!bg-emerald-500/40 !text-slate-800 !border-emerald-500/60') : (isDarkMode ? 'text-blue-200/70' : 'text-slate-700/80')} theme-transition`}>{st.charAt(0).toUpperCase()+st.slice(1)}</button>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={()=>setSort('newest')} className={`flex-1 px-3 py-2 rounded-xl text-[11px] font-semibold ${themeClasses.chipGradient} ${sort==='newest' ? (isDarkMode ? '!bg-purple-600/30 !text-white !border-purple-400/40' : '!bg-slate-500/40 !text-slate-800 !border-slate-600/60') : (isDarkMode ? 'text-blue-200/70' : 'text-slate-700/80')} theme-transition`}>Newest</button>
+                <button onClick={()=>setSort('oldest')} className={`flex-1 px-3 py-2 rounded-xl text-[11px] font-semibold ${themeClasses.chipGradient} ${sort==='oldest' ? (isDarkMode ? '!bg-purple-600/30 !text-white !border-purple-400/40' : '!bg-slate-500/40 !text-slate-800 !border-slate-600/60') : (isDarkMode ? 'text-blue-200/70' : 'text-slate-700/80')} theme-transition`}>Oldest</button>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Filters Panel */}
-      {showFilters && (
-        <div className="px-4 mt-4 animate-fadeIn">
-          <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 space-y-4 gradient-border relative overflow-hidden">
-            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
-              <button onClick={()=>setCategoryFilter('all')} className={`px-4 py-2 rounded-xl text-[11px] font-semibold chip-gradient whitespace-nowrap ${categoryFilter==='all' ? '!bg-blue-600/30 !text-white !border-blue-400/40' : 'text-blue-200/70'}`}>All</button>
-              {categories.map(cat => (
-                <button key={cat} onClick={()=>setCategoryFilter(cat)} className={`px-4 py-2 rounded-xl text-[11px] font-semibold chip-gradient whitespace-nowrap ${categoryFilter===cat ? '!bg-blue-600/30 !text-white !border-blue-400/40' : 'text-blue-200/70'}`}>{cat}</button>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              {(['all','ongoing','completed'] as const).map(st => (
-                <button key={st} onClick={()=>setStatusFilter(st)} className={`flex-1 px-3 py-2 rounded-xl text-[11px] font-semibold chip-gradient ${statusFilter===st ? '!bg-emerald-600/30 !text-white !border-emerald-400/40' : 'text-blue-200/70'}`}>{st.charAt(0).toUpperCase()+st.slice(1)}</button>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <button onClick={()=>setSort('newest')} className={`flex-1 px-3 py-2 rounded-xl text-[11px] font-semibold chip-gradient ${sort==='newest' ? '!bg-purple-600/30 !text-white !border-purple-400/40' : 'text-blue-200/70'}`}>Newest</button>
-              <button onClick={()=>setSort('oldest')} className={`flex-1 px-3 py-2 rounded-xl text-[11px] font-semibold chip-gradient ${sort==='oldest' ? '!bg-purple-600/30 !text-white !border-purple-400/40' : 'text-blue-200/70'}`}>Oldest</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Sessions List */}
-      <div className="flex-1 px-4 mt-6 pb-32 space-y-8 overflow-y-auto relative">
-        {filtered.length === 0 && (
-          <div className="text-center py-16 rounded-3xl border border-dashed border-white/15 bg-white/5 backdrop-blur-xl">
-            <p className="text-sm text-blue-300/70 mb-3">No conversations match your filters</p>
-            <button onClick={()=>{setSearch(''); setCategoryFilter('all'); setStatusFilter('all');}} className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-semibold shadow-lg">Reset Filters</button>
           </div>
         )}
-        {Object.entries(grouped).map(([label, sessions]) => (
-          sessions.length > 0 && (
-            <div key={label} className="space-y-3 animate-fadeIn">
-              <div className="flex items-center gap-3 pl-1">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
-                <span className="text-[11px] tracking-[0.3em] uppercase text-blue-200/60 font-semibold">{label}</span>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
-              </div>
-              <div className="space-y-4">
-                {sessions.map((session, idx) => {
-                  const live = session.status==='ongoing';
-                  return (
-                    <button key={session.id} onClick={()=> navigate('/chat', { state: { resumeSession: session.id } })} className={`w-full text-left group relative rounded-2xl overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 transition-all ${mountAnim ? 'animate-session-enter' : ''}`} style={{animationDelay:`${Math.min(idx*60,300)}ms`}}>
-                      {/* Glow / gradient backdrop */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/8 via-white/5 to-white/10 opacity-80 group-hover:opacity-100 transition" />
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500" style={{background:'radial-gradient(circle at 85% 20%, rgba(59,130,246,0.25), transparent 60%)'}} />
-                      {/* Live animated ring accent */}
-                      {live && <div className="absolute -inset-[1px] rounded-[1.1rem] animate-pulseBorder pointer-events-none" />}
-                      <div className="relative p-4 sm:p-5 flex items-start gap-4 backdrop-blur-xl border border-white/10 rounded-2xl hover:border-white/20 transition-colors gradient-border">
-                        {/* Category Icon Block */}
-                        <div className="relative flex flex-col items-center w-16 sm:w-20">
-                          <div className="relative">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg text-lg sm:text-xl">
-                              <span>{catIcon[session.category] || session.category.charAt(0)}</span>
-                            </div>
-                            {live && (
-                              <div
-                                className="absolute -inset-1 rounded-2xl live-ring opacity-40"
-                                style={{
-                                  ['--c1' as string]: '#2563eb55',
-                                  ['--c2' as string]: '#9333ea55',
-                                  ['--c3' as string]: '#2563eb55'
-                                } as React.CSSProperties}
-                              ></div>
-                            )}
-                          </div>
-                          <div className="mt-2 text-[10px] text-blue-200/60 font-medium text-center leading-tight">
-                            {session.startedAt.toLocaleDateString(undefined,{month:'short', day:'numeric'})}\n{session.startedAt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-                          </div>
-                        </div>
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <h3 className="font-semibold text-[13px] sm:text-sm tracking-wide text-white truncate flex items-center gap-2">
-                              {session.category} Service Inquiry
-                              {live && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 text-[10px] font-semibold"><span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />Live</span>}
-                              {session.status==='completed' && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 text-[10px] font-semibold"><CheckCircle2 className="w-3 h-3" />Done</span>}
-                            </h3>
-                          </div>
-                          <p className="text-[12px] text-blue-200/80 line-clamp-2 mb-3 leading-relaxed tracking-wide">{session.preview}</p>
-                          <div className="flex items-center flex-wrap gap-2">
-                            <span className="px-2 py-1 rounded-lg text-[10px] font-medium bg-gradient-to-r from-blue-500/15 to-indigo-500/15 text-blue-200/80 border border-blue-400/20 flex items-center gap-1"><Layers className="w-3 h-3" />{session.providerCount}</span>
-                            <span className="px-2 py-1 rounded-lg text-[10px] font-medium bg-gradient-to-r from-purple-500/15 to-pink-500/15 text-purple-200/80 border border-purple-400/20 flex items-center gap-1"><Clock className="w-3 h-3" />{Math.max(1, Math.round((Date.now()-session.startedAt.getTime())/60000))}m</span>
-                            <span className="px-2 py-1 rounded-lg text-[10px] font-medium bg-gradient-to-r from-emerald-500/15 to-green-500/15 text-emerald-200/80 border border-emerald-400/20 flex items-center gap-1"><MessageCircle className="w-3 h-3" />{session.messages.length}</span>
-                          </div>
-                        </div>
-                        <div className="self-center opacity-30 group-hover:opacity-90 transition-transform group-hover:translate-x-1">
-                          <ChevronRight className="w-5 h-5" />
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )
-        ))}
-      </div>
 
-      {/* Bottom CTA / Summary Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 pb-5 pt-4 bg-gradient-to-t from-[#05080d]/90 via-[#05080d]/70 to-transparent backdrop-blur-2xl border-t border-white/10">
-        <div className="flex items-center justify-between gap-4 max-w-3xl mx-auto">
-          <div className="flex-1">
-            <p className="text-[11px] text-blue-200/60 uppercase tracking-wider">Sessions</p>
-            <p className="text-sm font-semibold flex items-center gap-2"><span>{filtered.length}</span><span className="text-white/30 text-[11px]">of {mockSessions.length}</span></p>
-          </div>
+        {/* Sessions List */}
+        <div className="flex-1 px-4 mt-6 pb-32 space-y-8 overflow-y-auto relative">
+          {filtered.length === 0 && (
+            <div className={`text-center py-16 rounded-3xl border border-dashed ${isDarkMode ? 'border-white/15 bg-white/5' : 'border-slate-400/50 bg-slate-200/30'} backdrop-blur-xl theme-transition`}>
+              <p className={`text-sm ${themeClasses.mutedText} mb-3 theme-transition`}>No conversations match your filters</p>
+              <button onClick={()=>{setSearch(''); setCategoryFilter('all'); setStatusFilter('all');}} className={`px-4 py-2.5 rounded-xl text-white text-xs font-semibold shadow-lg ${isDarkMode ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-slate-700 to-slate-800'}`}>Reset Filters</button>
+            </div>
+          )}
+          {Object.entries(grouped).map(([label, sessions]) => (
+            sessions.length > 0 && (
+              <div key={label} className="space-y-3 animate-fadeIn">
+                <div className="flex items-center gap-3 pl-1">
+                  <div className={`h-px flex-1 ${isDarkMode ? 'bg-gradient-to-r from-transparent via-blue-500/40 to-transparent' : 'bg-gradient-to-r from-transparent via-slate-500/60 to-transparent'} theme-transition`} />
+                  <span className={`text-[11px] tracking-[0.3em] uppercase ${themeClasses.accentText} font-semibold theme-transition`}>{label}</span>
+                  <div className={`h-px flex-1 ${isDarkMode ? 'bg-gradient-to-r from-transparent via-blue-500/40 to-transparent' : 'bg-gradient-to-r from-transparent via-slate-500/60 to-transparent'} theme-transition`} />
+                </div>
+                <div className="space-y-4">
+                  {sessions.map((session, idx) => {
+                    const live = session.status==='ongoing';
+                    return (
+                      <button key={session.id} onClick={()=> navigate('/chat', { state: { resumeSession: session.id } })} className={`w-full text-left group relative rounded-2xl overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 transition-all ${mountAnim ? 'animate-session-enter' : ''} theme-transition`} style={{animationDelay:`${Math.min(idx*60,300)}ms`}}>
+                        {/* Glow / gradient backdrop */}
+                        <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-br from-white/8 via-white/5 to-white/10' : 'bg-gradient-to-br from-white/60 via-white/40 to-white/60'} opacity-80 group-hover:opacity-100 transition theme-transition`} />
+                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 theme-transition`} style={{background: isDarkMode ? 'radial-gradient(circle at 85% 20%, rgba(59,130,246,0.25), transparent 60%)' : 'radial-gradient(circle at 85% 20%, rgba(148,163,184,0.3), transparent 60%)'}} />
+                        {/* Live animated ring accent */}
+                        {live && <div className={`absolute -inset-[1px] rounded-[1.1rem] ${themeClasses.liveRing} pointer-events-none theme-transition`} />}
+                        <div className={`relative p-4 sm:p-5 flex items-start gap-4 backdrop-blur-xl border ${themeClasses.cardBorder} rounded-2xl hover:${isDarkMode ? 'border-white/20' : 'border-white/60'} transition-colors ${themeClasses.gradientBorder} theme-transition glass-shimmer`}>
+                          {/* Category Icon Block */}
+                          <div className="relative flex flex-col items-center w-16 sm:w-20">
+                            <div className="relative">
+                              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl ${isDarkMode ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600' : 'bg-gradient-to-br from-slate-500 via-slate-600 to-slate-700'} flex items-center justify-center shadow-lg text-lg sm:text-xl text-white`}>
+                                <span>{catIcon[session.category] || session.category.charAt(0)}</span>
+                              </div>
+                              {live && (
+                                <div
+                                  className="absolute -inset-1 rounded-2xl live-ring opacity-40"
+                                  style={{
+                                    ['--c1' as string]: isDarkMode ? '#2563eb55' : '#64748b55',
+                                    ['--c2' as string]: isDarkMode ? '#9333ea55' : '#94a3b855',
+                                    ['--c3' as string]: isDarkMode ? '#2563eb55' : '#64748b55'
+                                  } as React.CSSProperties}
+                                ></div>
+                              )}
+                            </div>
+                            <div className={`mt-2 text-[10px] ${themeClasses.accentText} font-medium text-center leading-tight theme-transition`}>
+                              {session.startedAt.toLocaleDateString(undefined,{month:'short', day:'numeric'})}<br/>{session.startedAt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                            </div>
+                          </div>
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <h3 className={`font-semibold text-[13px] sm:text-sm tracking-wide ${themeClasses.primaryText} truncate flex items-center gap-2 theme-transition`}>
+                                {session.category} Service Inquiry
+                                {live && <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-amber-500/15 text-amber-300' : 'bg-amber-500/25 text-amber-700'} text-[10px] font-semibold theme-transition`}><span className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-amber-300' : 'bg-amber-600'} animate-pulse theme-transition`} />Live</span>}
+                                {session.status==='completed' && <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-emerald-500/15 text-emerald-300' : 'bg-emerald-500/25 text-emerald-700'} text-[10px] font-semibold theme-transition`}><CheckCircle2 className="w-3 h-3" />Done</span>}
+                              </h3>
+                            </div>
+                            <p className={`text-[12px] ${themeClasses.secondaryText} line-clamp-2 mb-3 leading-relaxed tracking-wide theme-transition`}>{session.preview}</p>
+                            <div className="flex items-center flex-wrap gap-2">
+                              <span className={`px-2 py-1 rounded-lg text-[10px] font-medium ${isDarkMode ? 'bg-gradient-to-r from-blue-500/15 to-indigo-500/15 text-blue-200/80 border border-blue-400/20' : 'bg-gradient-to-r from-slate-400/25 to-slate-500/25 text-slate-700 border border-slate-400/40'} flex items-center gap-1 theme-transition backdrop-blur-sm`}><Layers className="w-3 h-3" />{session.providerCount}</span>
+                              <span className={`px-2 py-1 rounded-lg text-[10px] font-medium ${isDarkMode ? 'bg-gradient-to-r from-purple-500/15 to-pink-500/15 text-purple-200/80 border border-purple-400/20' : 'bg-gradient-to-r from-slate-500/25 to-slate-600/25 text-slate-700 border border-slate-500/40'} flex items-center gap-1 theme-transition backdrop-blur-sm`}><Clock className="w-3 h-3" />{Math.max(1, Math.round((Date.now()-session.startedAt.getTime())/60000))}m</span>
+                              <span className={`px-2 py-1 rounded-lg text-[10px] font-medium ${isDarkMode ? 'bg-gradient-to-r from-emerald-500/15 to-green-500/15 text-emerald-200/80 border border-emerald-400/20' : 'bg-gradient-to-r from-slate-600/25 to-slate-700/25 text-slate-700 border border-slate-600/40'} flex items-center gap-1 theme-transition backdrop-blur-sm`}><MessageCircle className="w-3 h-3" />{session.messages.length}</span>
+                            </div>
+                          </div>
+                          <div className={`self-center ${isDarkMode ? 'opacity-30 group-hover:opacity-90' : 'opacity-50 group-hover:opacity-90'} transition-transform group-hover:translate-x-1 theme-transition`}>
+                            <ChevronRight className="w-5 h-5" />
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )
+          ))}
+        </div>
+
+        {/* Bottom CTA / Summary Bar */}
+        <div className={`fixed bottom-0 left-0 right-0 z-20 px-4 pb-5 pt-4 ${isDarkMode ? 'bg-gradient-to-t from-[#05080d]/90 via-[#05080d]/70 to-transparent backdrop-blur-2xl border-t border-white/10' : 'bg-gradient-to-t from-slate-100/90 via-slate-100/70 to-transparent backdrop-blur-2xl border-t border-white/40'} theme-transition`}>
+          <div className="flex items-center justify-between gap-4 max-w-3xl mx-auto">
+            <div className="flex-1">
+              <p className={`text-[11px] ${themeClasses.accentText} uppercase tracking-wider theme-transition`}>Sessions</p>
+              <p className={`text-sm font-semibold flex items-center gap-2 ${themeClasses.primaryText} theme-transition`}><span>{filtered.length}</span><span className={`${isDarkMode ? 'text-white/30' : 'text-slate-500/60'} text-[11px] theme-transition`}>of {mockSessions.length}</span></p>
+            </div>
             <button onClick={()=>navigate('/chat')} className="flex-1 h-11 rounded-2xl relative group overflow-hidden font-semibold text-sm text-white">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-500 group-hover:to-pink-500 transition-all" />
+              <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-500 group-hover:to-pink-500' : 'bg-gradient-to-r from-slate-600 via-slate-700 to-slate-800 group-hover:from-slate-500 group-hover:to-slate-700'} transition-all`} />
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.25),transparent_60%)]" />
               <span className="relative">Start New</span>
             </button>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );
