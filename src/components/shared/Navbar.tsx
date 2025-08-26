@@ -34,9 +34,9 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 p-4 bg-white/5 dark:bg-black/20 backdrop-blur-xl transition-all duration-500">
+    <nav className="fixed top-0 left-0 right-0 z-[9999] p-4 bg-white/5 dark:bg-black/20 backdrop-blur-xl transition-all duration-500" style={{WebkitBackdropFilter: 'blur(12px)'}}>
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white/90 dark:bg-black/40 backdrop-blur-xl border border-gray-300/60 dark:border-white/10 rounded-2xl px-6 py-4 shadow-xl shadow-gray-900/20 dark:shadow-none transition-all duration-500">
+        <div className="bg-white/90 dark:bg-black/40 backdrop-blur-xl border border-gray-300/60 dark:border-white/10 rounded-2xl px-6 py-4 shadow-xl shadow-gray-900/20 dark:shadow-none transition-all duration-500" style={{WebkitBackdropFilter: 'blur(12px)'}}>
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center space-x-3">
@@ -52,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({
             </div>
             
             {/* Navigation Links */}
-            <div className="hidden lg:flex items-center bg-gray-200/80 dark:bg-white/5 backdrop-blur-lg border border-gray-400/50 dark:border-white/10 rounded-full px-4 py-3 shadow-lg shadow-gray-900/10 dark:shadow-none transition-all duration-500 hover:shadow-xl hover:bg-gray-200/90 dark:hover:bg-white/8">
+            <div className="hidden md:flex items-center bg-gray-200/80 dark:bg-white/5 backdrop-blur-lg border border-gray-400/50 dark:border-white/10 rounded-full px-4 py-3 shadow-lg shadow-gray-900/10 dark:shadow-none transition-all duration-500 hover:shadow-xl hover:bg-gray-200/90 dark:hover:bg-white/8">
               <button 
                 onClick={onHome}
                 className={`px-8 py-2.5 rounded-full transition-all duration-300 font-medium relative overflow-hidden ${
@@ -89,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Right Side Actions */}
-            <div className="hidden lg:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-6">
               <button 
                 onClick={onSignIn}
                 className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-6 py-2.5 rounded-lg hover:bg-white/60 dark:hover:bg-white/10 hover:shadow-md transition-all duration-300 font-medium hover:scale-105"
@@ -110,7 +110,7 @@ const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Menu Button */}
             <button 
               onClick={toggleMobileMenu}
-              className="lg:hidden text-gray-700 dark:text-white hover:bg-white/60 dark:hover:bg-white/10 p-3 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-md"
+              className="md:hidden text-gray-700 dark:text-white hover:bg-white/60 dark:hover:bg-white/10 p-3 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-md"
             >
               <div className="relative">
                 {isMobileMenuOpen ? (
@@ -124,7 +124,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden mt-6 pt-6 border-t border-gray-300/60 dark:border-white/10 transition-all duration-500 animate-in slide-in-from-top-2 fade-in">
+            <div className="md:hidden mt-6 pt-6 border-t border-gray-300/60 dark:border-white/10 transition-all duration-500 opacity-100 translate-y-0">
               <div className="flex flex-col space-y-4">
                 <button 
                   onClick={onHome}
