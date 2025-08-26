@@ -21,8 +21,10 @@ const LandingScreen: React.FC = () => {
       {/* Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:50px_50px] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)]"></div>
       <div className="relative z-[60]"> {/* Ensure toggle is visible above grid */}</div>
+      
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-100/50 via-white to-gray-100/50 dark:from-gray-900/50 dark:via-black dark:to-gray-900/50"></div>
+      
       {/* Large Gradient Blobs */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl dark:from-blue-500/20 dark:to-purple-600/20"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl dark:from-green-500/20 dark:to-blue-600/20"></div>
@@ -76,16 +78,14 @@ const LandingScreen: React.FC = () => {
         </div>
       ))}
 
-      {/* Main Content */}
-      <div className="relative z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 md:pt-36 pb-16">
+      {/* Main Content - Reduced top padding and spacing */}
+      <div className="relative z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-16">
         <div className="text-center">
-          <div className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-6 py-2 mb-8">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span className="text-gray-300 text-sm">Unlock Your Service Needs</span>
-            <ArrowRight className="w-4 h-4 text-gray-400" />
+          <div className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-6 py-2 mb-6">
+            
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-8 text-[#222] dark:text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 text-[#222] dark:text-white leading-tight">
             <span>One-click for Service</span>
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
@@ -93,11 +93,11 @@ const LandingScreen: React.FC = () => {
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0 text-[#333] dark:text-gray-300">
+          <p className="text-lg sm:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0 text-[#333] dark:text-gray-300">
             Dive into the art of services, where innovative technology meets professional expertise
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12 sm:mb-16 px-4 sm:px-0">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-8 sm:mb-10 px-4 sm:px-0">
             <button 
               onClick={onGetStarted}
               className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
@@ -113,8 +113,8 @@ const LandingScreen: React.FC = () => {
             </button>
           </div>
 
-          {/* Service Categories */}
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-16">
+          {/* Service Categories - Reduced margin and optimized for viewport */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 mb-6">
             {[{
               label:'Plumbing', icon:Droplets, gradient:'from-cyan-500 to-blue-600'
             },{
@@ -131,28 +131,25 @@ const LandingScreen: React.FC = () => {
               <button
                 key={item.label}
                 onClick={onGetStarted}
-                className="group relative bg-white/80 dark:bg-white/[0.04] backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-2xl p-4 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-500 cursor-pointer overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none"
+                className="group relative bg-white/80 dark:bg-white/[0.04] backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-2xl p-3 sm:p-4 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-500 cursor-pointer overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none transform hover:-translate-y-1"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_65%)] transition-opacity" />
-                <div className={`w-12 h-12 mb-3 mx-auto rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg shadow-black/40 group-hover:scale-110 group-active:scale-95 transition-transform`}>
-                  <item.icon className="w-6 h-6 text-white" />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3 mx-auto rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg shadow-black/40 group-hover:scale-110 group-active:scale-95 transition-transform`}>
+                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <p className="text-gray-900 dark:text-white text-sm font-medium tracking-wide">{item.label}</p>
+                <p className="text-gray-900 dark:text-white text-xs sm:text-sm font-medium tracking-wide">{item.label}</p>
                 <div className="mt-2 h-px w-8 mx-auto bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             ))}
           </div>
         </div>
-
-
-    
       </div>
       
       {/* Admin Portal Link */}
       <div className="absolute bottom-4 right-4">
         <button
           onClick={() => navigate('/admin/login')}
-          className="text-gray-500 hover:text-gray-300 text-xs transition-colors"
+          className="text-slate-500 hover:text-slate-700 dark:text-gray-500 dark:hover:text-gray-300 text-xs transition-colors"
         >
           Admin Portal
         </button>
