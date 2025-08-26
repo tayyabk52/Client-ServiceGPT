@@ -36,9 +36,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users', badge: 3 },
-    { id: 'providers', label: 'Providers', icon: Building2, path: '/admin/providers' },
     { id: 'search-logs', label: 'Search Logs', icon: Search, path: '/admin/search-logs' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/admin/settings' },
   ];
@@ -71,7 +69,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -126,7 +124,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
           {/* Footer */}
           <div className="p-4 border-t border-white/10">
             <div className="text-xs text-gray-400 text-center">
-              ServiceGPT Admin v2.0
+              HireLocalGPT Admin v2.0
             </div>
           </div>
         </div>

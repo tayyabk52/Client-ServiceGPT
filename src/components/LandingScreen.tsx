@@ -144,56 +144,8 @@ const LandingScreen: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-4 gap-6 my-12">
-          <div className="flex flex-col items-center">
-            <span className="text-3xl font-bold text-[#222] dark:text-white">50K+</span>
-            <span className="text-[#555] dark:text-blue-200/60">Active Professionals</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-3xl font-bold text-[#222] dark:text-white">1M+</span>
-            <span className="text-[#555] dark:text-blue-200/60">Completed Services</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-3xl font-bold text-[#222] dark:text-white">4.9★</span>
-            <span className="text-[#555] dark:text-blue-200/60">Average Rating</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-3xl font-bold text-[#222] dark:text-white">&lt;30min</span>
-            <span className="text-[#555] dark:text-blue-200/60">Response Time</span>
-          </div>
-        </div>
 
-        {/* Features Section */}
-        <div className="grid grid-cols-3 gap-8 my-16">
-          <div className="bg-card-light dark:bg-card-dark shadow-lg rounded-2xl p-6">
-            <div className="flex items-center mb-4">
-              <span className="inline-block w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
-                <Shield className="w-6 h-6" />
-              </span>
-            </div>
-            <h3 className="text-xl font-bold text-[#222] dark:text-white mb-2">Verified Professionals</h3>
-            <p className="text-[#555] dark:text-blue-200/60">All service providers are background-checked and verified for your safety</p>
-          </div>
-          <div className="bg-card-light dark:bg-card-dark shadow-lg rounded-2xl p-6">
-            <div className="flex items-center mb-4">
-              <span className="inline-block w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
-                <Clock className="w-6 h-6" />
-              </span>
-            </div>
-            <h3 className="text-xl font-bold text-[#222] dark:text-white mb-2">Instant Matching</h3>
-            <p className="text-[#555] dark:text-blue-200/60">Get connected with qualified professionals in minutes, not hours</p>
-          </div>
-          <div className="bg-card-light dark:bg-card-dark shadow-lg rounded-2xl p-6">
-            <div className="flex items-center mb-4">
-              <span className="inline-block w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
-                <Users className="w-6 h-6" />
-              </span>
-            </div>
-            <h3 className="text-xl font-bold text-[#222] dark:text-white mb-2">Community Driven</h3>
-            <p className="text-[#555] dark:text-blue-200/60">Real reviews from real customers help you make informed decisions</p>
-          </div>
-        </div>
+    
       </div>
       
       {/* Admin Portal Link */}

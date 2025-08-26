@@ -1,4 +1,4 @@
-// Types for the ServiceGPT application
+// Types for the HireLocalGPT application
 
 export interface Provider {
   id: string;

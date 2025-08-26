@@ -17,7 +17,7 @@ const AdminLogin: React.FC = () => {
     
     // Mock authentication
     setTimeout(() => {
-      if (formData.email === 'admin@servicegpt.com' && formData.password === 'admin123') {
+      if (formData.email === 'admin@hirelocalgpt.com' && formData.password === 'admin123') {
         // Store authentication data
         localStorage.setItem('adminToken', 'mock-admin-token-' + Date.now());
         sessionStorage.setItem('adminSession', JSON.stringify({
@@ -27,7 +27,7 @@ const AdminLogin: React.FC = () => {
         
         navigate('/admin');
       } else {
-        alert('Invalid credentials. Use admin@servicegpt.com / admin123');
+        alert('Invalid credentials. Use admin@hirelocalgpt.com / admin123');
       }
       setIsLoading(false);
     }, 1000);
@@ -41,7 +41,7 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
@@ -57,7 +57,7 @@ const AdminLogin: React.FC = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-2xl">
               <Search className="w-6 h-6 text-white" />
             </div>
-            <div className="text-2xl font-bold text-white">ServiceGPT</div>
+            <div className="text-2xl font-bold text-white">HireLocalGPT</div>
           </div>
           <div className="flex items-center justify-center space-x-2 mb-2">
             <Shield className="w-5 h-5 text-blue-400" />
@@ -85,7 +85,7 @@ const AdminLogin: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="admin@servicegpt.com"
+                  placeholder="admin@hirelocalgpt.com"
                   required
                 />
               </div>
@@ -169,7 +169,7 @@ const AdminLogin: React.FC = () => {
           <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
             <div className="text-blue-400 text-sm font-medium mb-2">Demo Credentials:</div>
             <div className="text-gray-300 text-sm">
-              <div>Email: admin@servicegpt.com</div>
+              <div>Email: admin@hirelocalgpt.com</div>
               <div>Password: admin123</div>
             </div>
           </div>

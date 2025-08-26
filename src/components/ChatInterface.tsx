@@ -269,7 +269,7 @@ const ChatInterface: React.FC = () => {
   // Build/update prefilled message whenever selected provider changes
   useEffect(() => {
     if (waProvider) {
-      const base = `Hello ${waProvider.businessName}! I discovered your ${waProvider.category.toLowerCase()} services via ServiceGPT. I have a requirement and would like to know availability & pricing.`;
+      const base = `Hello ${waProvider.businessName}! I discovered your ${waProvider.category.toLowerCase()} services via HireLocalGPT. I have a requirement and would like to know availability & pricing.`;
       setWaPrefill(base + '\n\nDetails: [Add specifics here]\nTimeline: [e.g. ASAP / This week]\nBudget: [optional]\nLocation: [area]\n\nThanks!');
     }
   }, [waProvider]);
@@ -1569,7 +1569,7 @@ const ChatInterface: React.FC = () => {
                   <span>{isTyping || messageAnimating ? 'AI is processing...' : 'Ready to help'}</span>
                 </div>
                 <div className="text-gray-500/40">
-                  Powered by ServiceGPT AI
+                  Powered by HireLocalGPT AI
                 </div>
               </div>
             </div>

@@ -104,171 +104,169 @@ const AnalyticsDashboard: React.FC = () => {
 
   return (
     <AdminLayout currentPage="analytics">
-      <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
-        <div className="space-y-8">
-          {/* Header with Controls */}
-          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between space-y-4 xl:space-y-0">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Analytics Dashboard</h1>
-              <p className="text-gray-400 mt-1">Deep insights into platform performance and user behavior</p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-              <TimeRangeSelector 
-                value={timeRange} 
-                onChange={setTimeRange}
-              />
-              <ExportButtons onExport={handleExport} />
-            </div>
+      <div className="space-y-8">
+        {/* Header with Controls */}
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between space-y-4 xl:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Analytics Dashboard</h1>
+            <p className="text-gray-400 mt-1">Deep insights into platform performance and user behavior</p>
           </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <TimeRangeSelector 
+              value={timeRange} 
+              onChange={setTimeRange}
+            />
+            <ExportButtons onExport={handleExport} />
+          </div>
+        </div>
 
-          {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {metricsCards.map((metric, index) => {
-              const Icon = metric.icon;
-              return (
-                <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 group">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${metric.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="text-green-400 text-sm font-medium bg-green-400/10 px-2 py-1 rounded-lg">
-                      {metric.change}
-                    </div>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {metricsCards.map((metric, index) => {
+            const Icon = metric.icon;
+            return (
+              <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 group">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-12 h-12 bg-gradient-to-br ${metric.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
+                    <Icon className="w-6 h-6 text-white" />
                   </div>
-                  <div className="space-y-1">
-                    <h3 className="text-2xl lg:text-3xl font-bold text-white">{metric.value}</h3>
-                    <p className="text-gray-400 text-sm">{metric.title}</p>
+                  <div className="text-green-400 text-sm font-medium bg-green-400/10 px-2 py-1 rounded-lg">
+                    {metric.change}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Token Usage and User Engagement */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <ChartCard 
-              title="Token Usage Trends"
-              className="xl:col-span-2"
-              actions={
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-400">Current month:</span>
-                  <span className="text-white font-semibold">74,231 tokens</span>
+                <div className="space-y-1">
+                  <h3 className="text-2xl lg:text-3xl font-bold text-white">{metric.value}</h3>
+                  <p className="text-gray-400 text-sm">{metric.title}</p>
                 </div>
-              }
-            >
-              <LineChart data={tokenUsageData} color="#F59E0B" />
-            </ChartCard>
+              </div>
+            );
+          })}
+        </div>
 
-            <ChartCard title="User Engagement">
-              <DonutChart data={userEngagementData} />
-            </ChartCard>
-          </div>
+        {/* Token Usage and User Engagement */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <ChartCard 
+            title="Token Usage Trends"
+            className="xl:col-span-2"
+            actions={
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-400">Current month:</span>
+                <span className="text-white font-semibold">74,231 tokens</span>
+              </div>
+            }
+          >
+            <LineChart data={tokenUsageData} color="#F59E0B" />
+          </ChartCard>
 
-          {/* Search Analytics */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <ChartCard 
-              title="Search Volume Trends"
-              actions={
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400 text-sm">+15.2%</span>
-                </div>
-              }
-            >
-              <LineChart data={searchVolumeData} color="#10B981" />
-            </ChartCard>
+          <ChartCard title="User Engagement">
+            <DonutChart data={userEngagementData} />
+          </ChartCard>
+        </div>
 
-            <ChartCard title="Category Popularity">
-              <DonutChart data={categoryPopularityData} />
-            </ChartCard>
-          </div>
+        {/* Search Analytics */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <ChartCard 
+            title="Search Volume Trends"
+            actions={
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-green-400" />
+                <span className="text-green-400 text-sm">+15.2%</span>
+              </div>
+            }
+          >
+            <LineChart data={searchVolumeData} color="#10B981" />
+          </ChartCard>
 
-          {/* Performance and Peak Hours */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <ChartCard 
-              title="Response Times"
-              actions={
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-blue-400" />
-                  <span className="text-blue-400 text-sm">Avg: 2.3s</span>
-                </div>
-              }
-            >
-              <LineChart data={responseTimeData} color="#3B82F6" />
-            </ChartCard>
+          <ChartCard title="Category Popularity">
+            <DonutChart data={categoryPopularityData} />
+          </ChartCard>
+        </div>
 
-            <ChartCard 
-              title="Peak Usage Hours"
-              actions={
-                <button className="text-blue-400 hover:text-blue-300 text-sm transition-colors">
-                  View Detailed Report
-                </button>
-              }
-            >
-              <HeatMap data={peakHoursData} />
-            </ChartCard>
-          </div>
+        {/* Performance and Peak Hours */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <ChartCard 
+            title="Response Times"
+            actions={
+              <div className="flex items-center space-x-2">
+                <Clock className="w-4 h-4 text-blue-400" />
+                <span className="text-blue-400 text-sm">Avg: 2.3s</span>
+              </div>
+            }
+          >
+            <LineChart data={responseTimeData} color="#3B82F6" />
+          </ChartCard>
 
-          {/* Detailed Metrics Table */}
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-2 sm:space-y-0">
-              <h3 className="text-lg font-semibold text-white">Detailed Metrics</h3>
-              <button className="text-blue-400 hover:text-blue-300 text-sm transition-colors self-start sm:self-auto">
-                Export Full Report
+          <ChartCard 
+            title="Peak Usage Hours"
+            actions={
+              <button className="text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                View Detailed Report
               </button>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left py-3 text-gray-400 font-medium">Metric</th>
-                    <th className="text-left py-3 text-gray-400 font-medium">Current</th>
-                    <th className="text-left py-3 text-gray-400 font-medium">Previous</th>
-                    <th className="text-left py-3 text-gray-400 font-medium">Change</th>
-                    <th className="text-left py-3 text-gray-400 font-medium">Trend</th>
-                  </tr>
-                </thead>
-                <tbody className="space-y-2">
-                  <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                    <td className="py-3 text-white font-medium">Daily Active Users</td>
-                    <td className="py-3 text-white">8,459</td>
-                    <td className="py-3 text-gray-400">7,831</td>
-                    <td className="py-3 text-green-400 font-medium">+8.0%</td>
-                    <td className="py-3">
-                      <TrendingUp className="w-4 h-4 text-green-400" />
-                    </td>
-                  </tr>
-                  <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                    <td className="py-3 text-white font-medium">Search Success Rate</td>
-                    <td className="py-3 text-white">94.2%</td>
-                    <td className="py-3 text-gray-400">92.1%</td>
-                    <td className="py-3 text-green-400 font-medium">+2.1%</td>
-                    <td className="py-3">
-                      <TrendingUp className="w-4 h-4 text-green-400" />
-                    </td>
-                  </tr>
-                  <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                    <td className="py-3 text-white font-medium">API Calls per User</td>
-                    <td className="py-3 text-white">12.3</td>
-                    <td className="py-3 text-gray-400">11.8</td>
-                    <td className="py-3 text-green-400 font-medium">+4.2%</td>
-                    <td className="py-3">
-                      <TrendingUp className="w-4 h-4 text-green-400" />
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-white/5 transition-colors">
-                    <td className="py-3 text-white font-medium">Provider Response Rate</td>
-                    <td className="py-3 text-white">87.5%</td>
-                    <td className="py-3 text-gray-400">89.2%</td>
-                    <td className="py-3 text-red-400 font-medium">-1.7%</td>
-                    <td className="py-3">
-                      <TrendingUp className="w-4 h-4 text-red-400 rotate-180" />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            }
+          >
+            <HeatMap data={peakHoursData} />
+          </ChartCard>
+        </div>
+
+        {/* Detailed Metrics Table */}
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-2 sm:space-y-0">
+            <h3 className="text-lg font-semibold text-white">Detailed Metrics</h3>
+            <button className="text-blue-400 hover:text-blue-300 text-sm transition-colors self-start sm:self-auto">
+              Export Full Report
+            </button>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px]">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="text-left py-3 text-gray-400 font-medium">Metric</th>
+                  <th className="text-left py-3 text-gray-400 font-medium">Current</th>
+                  <th className="text-left py-3 text-gray-400 font-medium">Previous</th>
+                  <th className="text-left py-3 text-gray-400 font-medium">Change</th>
+                  <th className="text-left py-3 text-gray-400 font-medium">Trend</th>
+                </tr>
+              </thead>
+              <tbody className="space-y-2">
+                <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-3 text-white font-medium">Daily Active Users</td>
+                  <td className="py-3 text-white">8,459</td>
+                  <td className="py-3 text-gray-400">7,831</td>
+                  <td className="py-3 text-green-400 font-medium">+8.0%</td>
+                  <td className="py-3">
+                    <TrendingUp className="w-4 h-4 text-green-400" />
+                  </td>
+                </tr>
+                <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-3 text-white font-medium">Search Success Rate</td>
+                  <td className="py-3 text-white">94.2%</td>
+                  <td className="py-3 text-gray-400">92.1%</td>
+                  <td className="py-3 text-green-400 font-medium">+2.1%</td>
+                  <td className="py-3">
+                    <TrendingUp className="w-4 h-4 text-green-400" />
+                  </td>
+                </tr>
+                <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-3 text-white font-medium">API Calls per User</td>
+                  <td className="py-3 text-white">12.3</td>
+                  <td className="py-3 text-gray-400">11.8</td>
+                  <td className="py-3 text-green-400 font-medium">+4.2%</td>
+                  <td className="py-3">
+                    <TrendingUp className="w-4 h-4 text-green-400" />
+                  </td>
+                </tr>
+                <tr className="hover:bg-white/5 transition-colors">
+                  <td className="py-3 text-white font-medium">Provider Response Rate</td>
+                  <td className="py-3 text-white">87.5%</td>
+                  <td className="py-3 text-gray-400">89.2%</td>
+                  <td className="py-3 text-red-400 font-medium">-1.7%</td>
+                  <td className="py-3">
+                    <TrendingUp className="w-4 h-4 text-red-400 rotate-180" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

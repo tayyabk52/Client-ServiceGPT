@@ -118,7 +118,7 @@ const HowItWorksScreen: React.FC = () => {
     {
       name: "Mike Chen",
       role: "Business Owner",
-      content: "ServiceGPT saved me hours of research. The plumber they recommended was professional, reasonably priced, and fixed my issue perfectly.",
+      content: "HireLocalGPT saved me hours of research. The plumber they recommended was professional, reasonably priced, and fixed my issue perfectly.",
       rating: 5,
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"
     },
@@ -157,7 +157,7 @@ const HowItWorksScreen: React.FC = () => {
           <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6 px-4">
             <span className="text-white">How </span>
             <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              ServiceGPT
+              HireLocalGPT
             </span>
             <span className="text-white"> Works</span>
           </h1>
@@ -287,7 +287,7 @@ const HowItWorksScreen: React.FC = () => {
         {/* Features Section */}
         <div className="mb-16 md:mb-20 px-4">
           <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">Why Choose ServiceGPT?</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">Why Choose HireLocalGPT?</h2>
             <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
               Built with cutting-edge AI technology to provide the best service discovery experience
             </p>
