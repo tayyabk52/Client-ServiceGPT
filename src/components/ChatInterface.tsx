@@ -1,60 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Send, Mic, User, Sparkles, Star, MapPin, Clock, Phone, MessageCircle, Heart, ExternalLink, X, Check, Loader2, Sun, Moon } from 'lucide-react';
+import { UnifiedThemeToggle } from './shared';
+import { ArrowLeft, Send, Mic, User, Sparkles, Star, MapPin, Clock, Phone, MessageCircle, Heart, ExternalLink, X, Check, Loader2 } from 'lucide-react';
+import { useTheme } from '../theme/useTheme';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ServiceProvider } from '../types';
-
-// Simple Theme Switcher Component
-type Theme = 'light' | 'dark';
-const THEME_KEY = 'theme-preference';
-
-const applyTheme = (theme: Theme) => {
-  if (typeof document === 'undefined') return;
-  document.documentElement.classList.remove('light', 'dark');
-  document.documentElement.classList.add(theme);
-};
-
-const SimpleThemeSwitcher: React.FC<{ className?: string }> = ({ className = '' }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem(THEME_KEY) as Theme;
-      return savedTheme || 'dark';
-    }
-    return 'dark';
-  });
-
-  useEffect(() => {
-    applyTheme(theme);
-    localStorage.setItem(THEME_KEY, theme);
-  }, [theme]);
-
-  useEffect(() => {
-    const saved = (localStorage.getItem(THEME_KEY) as Theme) || 'dark';
-    setTheme(saved);
-    applyTheme(saved);
-  }, []);
-
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
-  return (
-    <button
-      onClick={toggleTheme}
-      className={`w-10 h-10 rounded-full backdrop-blur-xl border transition-all duration-300 flex items-center justify-center hover:scale-105 ${
-        theme === 'light'
-          ? 'bg-white/80 border-gray-300/50 text-gray-800 hover:bg-white shadow-md'
-          : 'bg-gray-800/80 border-white/20 text-white hover:bg-gray-700/80'
-      } ${className}`}
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-    >
-      {theme === 'light' ? (
-        <Moon size={18} className="transition-transform duration-300" />
-      ) : (
-        <Sun size={18} className="transition-transform duration-300" />
-      )}
-    </button>
-  );
-};
 
 interface Message {
   id: string;
@@ -97,34 +46,52 @@ const ChatInterface: React.FC = () => {
   const [waPrefill, setWaPrefill] = useState('');
   const [waSending, setWaSending] = useState(false);
   const [waSent, setWaSent] = useState(false);
-  // Theme state - now uses global theme system instead of local isSilverTheme
-  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
+  const { theme } = useTheme();
+  
+  // Get initial message from navigation state
+  const initialMessage = location.state?.initialMessage;
 
-  // Listen to global theme changes
+  // Initialize the chat interface
   useEffect(() => {
-    const updateTheme = () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      setCurrentTheme(isDark ? 'dark' : 'light');
-    };
+    // Set initial message if provided through navigation
+    if (initialMessage && !hasInitialMessage) {
+      setMessages([
+        {
+          id: Date.now().toString(),
+          type: 'user',
+          content: initialMessage,
+          timestamp: new Date()
+        }
+      ]);
+      setHasInitialMessage(true);
+    }
 
-    // Initial theme detection
-    updateTheme();
+    // Show welcome message
+    setTimeout(() => {
+      if (!hasInitialMessage) {
+        setMessages([
+          {
+            id: Date.now().toString(),
+            type: 'ai',
+            content: "Hello! 👋 I'm your AI service assistant. I'm here to help you find the perfect local service provider. What kind of service are you looking for today?",
+            timestamp: new Date(),
+            suggestions: [
+              "I need a plumber for a leaky faucet",
+              "Looking for electrical work",
+              "Need house cleaning services",
+              "Handyman for home repairs"
+            ]
+          }
+        ]);
+      }
+      setIsInitializing(false);
+      setIsReady(true);
+    }, 1000);
+  }, [initialMessage, hasInitialMessage]);
 
-    // Listen for theme changes
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-
-    return () => observer.disconnect();
-  }, []);
   // Container refs for precise scroll handling
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  // Get initial message from navigation state
-  const initialMessage = location.state?.initialMessage;
 
   // Mock AI responses with sophisticated conversation flow
   const aiResponses = [
@@ -984,11 +951,11 @@ const ChatInterface: React.FC = () => {
 
       {/* Main Chat Container */}
       <div className={`relative z-10 flex flex-col h-[calc(var(--app-vh,1vh)*100)] overflow-hidden ${
-        currentTheme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
+        theme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
       }`}>
         {/* Fixed Header with glassmorphic design */}
         <div className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl p-3 sm:p-4 pt-safe ${
-          currentTheme === 'light'
+          theme === 'light'
             ? 'bg-white/30 border-b border-gray-400/30 shadow-lg'
             : 'bg-white/5 border-b border-white/10'
         }`}>
@@ -997,7 +964,7 @@ const ChatInterface: React.FC = () => {
               <button
                 onClick={() => navigate('/dashboard')}
                 className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl backdrop-blur-sm border flex items-center justify-center hover:bg-white/20 transition-all duration-300 ${
-                  currentTheme === 'light'
+                  theme === 'light'
                     ? 'bg-white/40 border-gray-400/40 text-gray-800 hover:bg-white/60'
                     : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
                 }`}
@@ -1006,19 +973,16 @@ const ChatInterface: React.FC = () => {
               </button>
               <div>
                 <h1 className={`text-lg sm:text-xl font-bold ${
-                  currentTheme === 'light' ? 'text-slate-900' : 'text-white'
+                  theme === 'light' ? 'text-slate-900' : 'text-white'
                 }`}>Conversational Cosmos</h1>
                 <p className={`text-xs sm:text-sm ${
-                  currentTheme === 'light' ? 'text-blue-600' : 'text-blue-300'
+                  theme === 'light' ? 'text-blue-600' : 'text-blue-300'
                 }`}>AI Service Discovery</p>
               </div>
             </div>
             
             {/* Progress Visualization and Theme Switcher */}
             <div className="flex items-center space-x-4">
-              {/* Simple Theme Switcher */}
-              <SimpleThemeSwitcher />
-              
               {/* Progress dots */}
               <div className="flex items-center space-x-2">
                 {[...Array(5)].map((_, index) => (
@@ -1038,7 +1002,7 @@ const ChatInterface: React.FC = () => {
 
         {/* Messages Container with Dynamic Bottom Padding - Account for fixed header and input */}
         <div ref={messagesContainerRef} className={`flex-1 overflow-y-auto pt-24 sm:pt-28 pb-56 sm:pb-60 px-3 sm:px-4 space-y-5 sm:space-y-6 scroll-smooth ${
-          currentTheme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
+          theme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
         }`}>
           {messages.map((message, index) => {
             // Check if this is the first user message (from dashboard)
@@ -1088,10 +1052,10 @@ const ChatInterface: React.FC = () => {
                     {/* Enhanced Professional Message Bubble - Single Border Only */}
                     <div className={`relative message-bubble transition-all duration-300 ease-out hover:scale-[1.01] ${
                       message.type === 'user'
-                        ? currentTheme === 'light' 
+                        ? theme === 'light' 
                           ? 'bg-blue-500/80 text-white shadow-lg'
                           : 'bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/20'
-                        : currentTheme === 'light'
+                        : theme === 'light'
                           ? 'bg-slate-200/90 text-slate-900 shadow-xl border border-slate-400/30'
                           : 'bg-white/[0.08] backdrop-blur-2xl border border-white/20 text-white shadow-xl'
                     } rounded-2xl px-4 py-3 sm:px-5 sm:py-4 ${
@@ -1106,13 +1070,13 @@ const ChatInterface: React.FC = () => {
                           <div className="mt-6">
                             <div className="flex items-center justify-between mb-4">
                               <h3 className={`text-base sm:text-lg font-semibold flex items-center ${
-                                currentTheme === 'light' ? 'text-slate-900' : 'text-white'
+                                theme === 'light' ? 'text-slate-900' : 'text-white'
                               }`}>
                                 <Sparkles className="w-5 h-5 mr-2 text-yellow-400" />
                                 Top Providers for You
                               </h3>
                               <span className={`text-xs sm:text-sm px-2.5 py-0.5 rounded-full ${
-                                currentTheme === 'light' 
+                                theme === 'light' 
                                   ? 'text-blue-700 bg-blue-200/60' 
                                   : 'text-blue-200 bg-blue-500/20'
                               }`}>
@@ -1126,7 +1090,7 @@ const ChatInterface: React.FC = () => {
                               <div className="flex space-x-4 w-max pr-2">
                                 {message.serviceProviders.slice(0, 4).map((provider) => (
                                   <div key={provider.id} className={`flex-shrink-0 w-72 xl:w-80 backdrop-blur-xl rounded-2xl p-5 transition-all duration-300 group shadow-xl hover:shadow-2xl ${
-                                    currentTheme === 'light'
+                                    theme === 'light'
                                       ? 'bg-slate-400/70 border border-slate-500/40 hover:bg-slate-400/80'
                                       : 'bg-gradient-to-br from-white/8 to-white/4 border border-white/20 hover:from-white/12 hover:to-white/8'
                                   }`}>
@@ -1156,18 +1120,18 @@ const ChatInterface: React.FC = () => {
                                       {/* Provider Basic Info */}
                                       <div className="flex-1 min-w-0">
                                         <h4 className={`font-bold text-sm sm:text-base truncate mb-1 ${
-                                          currentTheme === 'light' ? 'text-slate-900' : 'text-white'
+                                          theme === 'light' ? 'text-slate-900' : 'text-white'
                                         }`}>{provider.businessName}</h4>
                                         <p className={`text-xs sm:text-sm mb-2 ${
-                                          currentTheme === 'light' ? 'text-blue-600' : 'text-blue-200'
+                                          theme === 'light' ? 'text-blue-600' : 'text-blue-200'
                                         }`}>{provider.category}</p>
                                         <div className="flex items-center space-x-3 text-xs">
                                           <div className="flex items-center space-x-1">
                                             <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                                            <span className={`font-semibold ${currentTheme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
-                                            <span className={currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}>({provider.reviewCount})</span>
+                                            <span className={`font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
+                                            <span className={theme === 'light' ? 'text-slate-700' : 'text-blue-200'}>({provider.reviewCount})</span>
                                           </div>
-                                          <div className={`flex items-center ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
+                                          <div className={`flex items-center ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
                                             <MapPin className="w-3 h-3 mr-1" />
                                             {provider.distance}
                                           </div>
@@ -1177,20 +1141,20 @@ const ChatInterface: React.FC = () => {
                                     
                                     {/* Stats Row */}
                                     <div className="grid grid-cols-3 gap-3 mb-4 text-center">
-                                      <div className={`rounded-lg p-2 ${currentTheme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
+                                      <div className={`rounded-lg p-2 ${theme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
                                         <div className="text-green-400 font-bold text-xs sm:text-sm">{provider.priceRange}</div>
-                                        <div className={`text-[10px] sm:text-xs ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Price</div>
+                                        <div className={`text-[10px] sm:text-xs ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Price</div>
                                       </div>
-                                      <div className={`rounded-lg p-2 ${currentTheme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
+                                      <div className={`rounded-lg p-2 ${theme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
                                         <div className="text-blue-300 font-bold text-xs sm:text-sm flex items-center justify-center">
                                           <Clock className="w-3 h-3 mr-1" />
                                           {provider.responseTime}
                                         </div>
-                                        <div className={`text-xs ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Response</div>
+                                        <div className={`text-xs ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Response</div>
                                       </div>
-                                      <div className={`rounded-lg p-2 ${currentTheme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
+                                      <div className={`rounded-lg p-2 ${theme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
                                         <div className="text-purple-300 font-bold text-xs sm:text-sm">{provider.completedJobs}</div>
-                                        <div className={`text-[10px] sm:text-xs ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Jobs</div>
+                                        <div className={`text-[10px] sm:text-xs ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Jobs</div>
                                       </div>
                                     </div>
                                     
@@ -1223,7 +1187,7 @@ const ChatInterface: React.FC = () => {
                             <div className="md:hidden space-y-4">
                               {message.serviceProviders.slice(0, 3).map((provider) => (
                                 <div key={provider.id} className={`backdrop-blur-xl rounded-2xl p-3 transition-all duration-300 group shadow-xl ${
-                                  currentTheme === 'light'
+                                  theme === 'light'
                                     ? 'bg-slate-400/70 border border-slate-500/40 hover:bg-slate-400/80'
                                     : 'bg-gradient-to-br from-white/8 to-white/4 border border-white/20 hover:from-white/12 hover:to-white/8'
                                 }`}>
@@ -1254,19 +1218,19 @@ const ChatInterface: React.FC = () => {
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-start justify-between mb-1">
                                         <div className="flex-1 min-w-0">
-                                          <h4 className={`font-bold text-xs truncate ${currentTheme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.businessName}</h4>
-                                          <p className={`text-[11px] ${currentTheme === 'light' ? 'text-blue-600' : 'text-blue-200'}`}>{provider.category}</p>
+                                          <h4 className={`font-bold text-xs truncate ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.businessName}</h4>
+                                          <p className={`text-[11px] ${theme === 'light' ? 'text-blue-600' : 'text-blue-200'}`}>{provider.category}</p>
                                         </div>
                                         <div className="text-right flex-shrink-0 ml-2">
                                           <div className="flex items-center space-x-1">
                                             <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                                            <span className={`font-semibold text-xs ${currentTheme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
+                                            <span className={`font-semibold text-xs ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
                                           </div>
                                         </div>
                                       </div>
                                       
                                       {/* Mobile Stats */}
-                                      <div className={`flex items-center space-x-2 text-[11px] mb-2 ${currentTheme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
+                                      <div className={`flex items-center space-x-2 text-[11px] mb-2 ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
                                         <span className="text-green-400 font-medium">{provider.priceRange}</span>
                                         <div className="flex items-center">
                                           <Clock className="w-3 h-3 mr-1" />
@@ -1328,7 +1292,7 @@ const ChatInterface: React.FC = () => {
                                 key={idx}
                                 onClick={() => handleSuggestionClick(suggestion)}
                                 className={`px-3 py-2 sm:px-4 sm:py-2.5 backdrop-blur-sm border rounded-lg transition-all duration-300 text-[12px] sm:text-[13px] font-medium shadow-md flex items-center gap-2 group cursor-pointer ${
-                                  currentTheme === 'light'
+                                  theme === 'light'
                                     ? 'bg-white/50 border-gray-400/50 text-gray-800 hover:bg-white/70 hover:border-blue-300/50 hover:text-blue-600 hover:shadow-lg hover:scale-105'
                                     : 'bg-white/8 border-white/15 text-blue-200 hover:bg-white/15 hover:border-blue-400/40 hover:text-white hover:shadow-blue-500/10'
                                 }`}
@@ -1346,8 +1310,8 @@ const ChatInterface: React.FC = () => {
                       {/* Enhanced timestamp */}
                       <div className={`text-xs mt-3 flex items-center space-x-2 ${
                         message.type === 'user' 
-                          ? currentTheme === 'light' ? 'text-blue-600/70' : 'text-blue-200/70'
-                          : currentTheme === 'light' ? 'text-slate-700/60' : 'text-white/40'
+                          ? theme === 'light' ? 'text-blue-600/70' : 'text-blue-200/70'
+                          : theme === 'light' ? 'text-slate-700/60' : 'text-white/40'
                       }`}>
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -1357,7 +1321,7 @@ const ChatInterface: React.FC = () => {
                           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                         {message.type === 'ai' && (
-                          <span className={currentTheme === 'light' ? 'text-slate-600/50' : 'text-white/30'}>• AI Response</span>
+                          <span className={theme === 'light' ? 'text-slate-600/50' : 'text-white/30'}>• AI Response</span>
                         )}
                       </div>
                     </div>
@@ -1387,7 +1351,7 @@ const ChatInterface: React.FC = () => {
                     </div>
                   </div>
                   <div className={`message-bubble backdrop-blur-2xl rounded-2xl px-5 py-4 shadow-xl ${
-                    currentTheme === 'light' 
+                    theme === 'light' 
                       ? 'bg-slate-200/90 text-slate-900 border border-slate-400/30'
                       : 'bg-white/[0.08] border border-white/20 text-white'
                   }`}>
@@ -1399,7 +1363,7 @@ const ChatInterface: React.FC = () => {
                           <div className="w-2 h-2 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                         </div>
                         <span className={`text-sm font-medium ${
-                          currentTheme === 'light' ? 'text-blue-600/80' : 'text-blue-300/80'
+                          theme === 'light' ? 'text-blue-600/80' : 'text-blue-300/80'
                         }`}>
                           {messageAnimating ? 'Analyzing your request...' : 'AI is thinking...'}
                         </span>
@@ -1420,7 +1384,7 @@ const ChatInterface: React.FC = () => {
                     <User className="w-4 h-4 text-white" />
                   </div>
                   <div className={`rounded-2xl px-4 py-3 backdrop-blur-xl ${
-                    currentTheme === 'light' 
+                    theme === 'light' 
                       ? 'bg-slate-200/80 text-slate-900 border border-slate-300/40'
                       : 'bg-gradient-to-r from-blue-600/70 to-purple-600/70 text-white border border-blue-400/30'
                   }`}>
@@ -1444,14 +1408,14 @@ const ChatInterface: React.FC = () => {
         <div className="fixed bottom-0 left-0 right-0 z-40 pb-safe">
           {/* Gradient background */}
           <div className={`absolute inset-0 ${
-            currentTheme === 'light'
+            theme === 'light'
               ? 'bg-gradient-to-t from-slate-300/60 via-slate-200/40 to-transparent'
               : 'bg-gradient-to-t from-black/60 via-gray-900/40 to-transparent'
           }`}></div>
           
           {/* Glassmorphic container */}
           <div className={`relative backdrop-blur-2xl p-2.5 sm:p-3 md:p-4 ${
-            currentTheme === 'light'
+            theme === 'light'
               ? 'bg-slate-200/70 border-t border-slate-400/40 shadow-lg'
               : 'bg-gradient-to-r from-white/8 via-white/5 to-white/8 border-t border-white/20'
           }`}>
@@ -1471,9 +1435,9 @@ const ChatInterface: React.FC = () => {
                     spellCheck={false}
                     autoComplete="off"
                     className={`relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden ${
-                      currentTheme === 'light'
+                      theme === 'light'
                         ? 'bg-slate-200/70 backdrop-blur-lg text-slate-900 placeholder-slate-700 border border-slate-400/40 rounded-xl hover:bg-slate-200/80 focus:bg-slate-200/90 focus:border-blue-300/50 focus:shadow-lg'
-                        : 'bg-transparent text-white placeholder-white/50 border-0 bg-gradient-to-r from-gray-800/50 via-gray-700/30 to-gray-800/50 rounded-2xl border border-white/20'
+                        : 'bg-transparent text-white placeholder-white/50 bg-gradient-to-r from-gray-800/50 via-gray-700/30 to-gray-800/50 rounded-2xl border border-white/20'
                     }`}
                     style={{ 
                       height: '48px',
@@ -1499,7 +1463,7 @@ const ChatInterface: React.FC = () => {
                   
                   {/* Action button */}
                   <button className={`absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 backdrop-blur-xl rounded-lg flex items-center justify-center transition-all duration-300 ${
-                    currentTheme === 'light'
+                    theme === 'light'
                       ? 'bg-gradient-to-r from-white/60 to-gray-200/60 border border-gray-300/50 text-gray-700 hover:text-blue-600 hover:from-white/70 hover:to-blue-50/70 hover:border-blue-300/50 hover:scale-105 hover:shadow-lg group'
                       : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
                   }`}>
@@ -1509,7 +1473,7 @@ const ChatInterface: React.FC = () => {
                   {/* Typing indicator */}
                   {inputValue && (
                     <div className={`absolute bottom-1.5 sm:bottom-2 left-4 sm:left-6 text-[10px] sm:text-xs ${
-                      currentTheme === 'light' ? 'text-blue-600/60' : 'text-blue-300/60'
+                      theme === 'light' ? 'text-blue-600/60' : 'text-blue-300/60'
                     }`}>
                       {inputValue.length} chars
                     </div>
@@ -1539,7 +1503,7 @@ const ChatInterface: React.FC = () => {
               {/* Luxury quick suggestions */}
               <div className="space-y-1.5 sm:space-y-2 relative">
                 <div className={`text-[10px] sm:text-xs font-medium tracking-wide uppercase pl-1 ${
-                  currentTheme === 'light' ? 'text-slate-700' : 'text-gray-400/70'
+                  theme === 'light' ? 'text-slate-700' : 'text-gray-400/70'
                 }`}>Quick Actions</div>
                 <div className="relative">
                   {/* Mobile: Grid layout, Desktop: Horizontal scroll */}

@@ -105,16 +105,6 @@ const ProviderResultsScreen: React.FC = () => {
         ? 'bg-background-dark' 
         : 'bg-gradient-to-br from-slate-50 via-gray-100 to-blue-50'
     }`}>
-      {/* Ambient gradient background */}
-      {isDark && (
-        <>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#1e3a8a_0%,transparent_60%),radial-gradient(circle_at_80%_30%,#7e22ce_0%,transparent_55%),radial-gradient(circle_at_50%_80%,#be185d_0%,transparent_55%)] opacity-[0.15] pointer-events-none" />
-          <div className="absolute inset-0 bg-[linear-gradient(140deg,#05070d_0%,#090d17_45%,#0d1220_70%,#101727_100%)]" />
-          <div className="absolute inset-0 backdrop-blur-[2px]" />
-          <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{backgroundImage:'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27160%27 height=%27160%27 viewBox=%270 0 160 160%27%3E%3Cpath fill=%27%23fff%27 fill-opacity=%270.08%27 d=%27M0 0h1v1H0z%27/%3E%3C/svg%3E")'}} />
-        </>
-      )}
-
       {/* Fixed Header / Filters */}
       <div className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl transition-all duration-500 ${
         isDark 
@@ -189,19 +179,12 @@ const ProviderResultsScreen: React.FC = () => {
                 {visibleProviders.map(provider => (
                   <div
                     key={provider.id}
-                    className={`group relative rounded-3xl p-5 sm:p-6 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 ${
+                    className={`group relative rounded-3xl p-5 sm:p-6 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 flex flex-col ${
                       isDark 
                         ? 'bg-gradient-to-br from-white/[0.07] via-white/[0.05] to-white/[0.04] border border-white/10 shadow-[0_4px_30px_-6px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_40px_-8px_rgba(0,0,0,0.55)]'
                         : 'bg-white/60 hover:bg-white/80 border border-slate-200/30 shadow-xl hover:shadow-2xl'
                     }`}
                   >
-                    {isDark && (
-                      <>
-                        <div className="absolute -left-px top-4 h-10 w-[3px] rounded-r-full bg-gradient-to-b from-blue-400 via-purple-400 to-pink-400 opacity-70 group-hover:opacity-100 group-hover:h-14 transition-all" />
-                        <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-white/10 group-hover:ring-blue-400/30 transition-all" />
-                        <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 blur-xl transition-opacity" />
-                      </>
-                    )}
                     {/* Provider Card Content */}
                     <div className="flex items-start gap-4 mb-4">
                       <div className="relative">
@@ -297,22 +280,15 @@ const ProviderResultsScreen: React.FC = () => {
               ? 'bg-gradient-to-br from-[#101826]/90 via-[#0d1320]/85 to-[#161b2b]/90 border-white/10'
               : 'bg-white/90 backdrop-blur-xl border-slate-200/50'
           }`}>
-            {isDark && (
-              <>
-                {/* Decorative gradients */}
-                <div className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none" style={{backgroundImage:'radial-gradient(circle at 15% 20%, rgba(59,130,246,.25) 0, transparent 55%), radial-gradient(circle at 85% 30%, rgba(147,51,234,.25) 0, transparent 60%), radial-gradient(circle at 60% 85%, rgba(236,72,153,.25) 0, transparent 60%)'}} />
-                <div className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_60%,rgba(255,255,255,0.07)_100%)] pointer-events-none" />
-              </>
-            )}
             <div className="relative p-6 sm:p-8 space-y-6">
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className={`text-xl font-semibold ${
-                    isDark ? 'bg-gradient-to-r from-white via-blue-50 to-purple-200 bg-clip-text text-transparent' : 'text-slate-800'
-                  }`}>Outreach to {selectedProvider.businessName}</h2>
+                    isDark ? 'text-white' : 'text-slate-800'
+                  }`}>Message {selectedProvider.businessName}</h2>
                   <p className={`text-xs tracking-wide uppercase mt-1 ${
                     isDark ? 'text-blue-200/70' : 'text-slate-500'
-                  }`}>WhatsApp Mock Automation</p>
+                  }`}>WhatsApp Preview</p>
                 </div>
                 <button
                   onClick={() => setShowWhatsApp(false)}
@@ -325,23 +301,6 @@ const ProviderResultsScreen: React.FC = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-
-              {isDark && (
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl overflow-hidden ring-2 ring-white/10">
-                    <img src={selectedProvider.profileImage} alt={selectedProvider.businessName} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{selectedProvider.businessName}</p>
-                    <p className="text-[11px] text-blue-300/70 uppercase tracking-wider">{selectedProvider.category}</p>
-                    <div className="flex items-center gap-3 mt-2 text-[11px] text-blue-200/60">
-                      <span className="inline-flex items-center gap-1"><Star className="w-3.5 h-3.5 text-amber-400" />{selectedProvider.rating.toFixed(1)}</span>
-                      <span>{selectedProvider.distance}</span>
-                      <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-300/90 font-medium">Verified</span>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Message content */}
               <div>

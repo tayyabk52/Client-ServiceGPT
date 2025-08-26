@@ -1,8 +1,21 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, Star, Search, Filter, MapPin, MessageCircle, Phone, Tag, Trash2, Share2, Loader2, BookmarkCheck, Sun, Moon } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../theme/useTheme';
+import { ArrowLeft, Star, Search, Filter, MapPin, MessageCircle, Phone, Tag, Trash2, Share2, Loader2, BookmarkCheck } from 'lucide-react';
+
+interface ButtonProps {
+  onClick: () => void;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'subtle' | 'whatsapp' | 'danger';
+  leftIcon?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+  loading?: boolean;
+  [key: string]: any;
+}
 
 // Mock Button component
-const Button = ({ onClick, size = 'md', variant = 'primary', leftIcon, children, className = '', loading = false, ...props }) => {
+const Button: React.FC<ButtonProps> = ({ onClick, size = 'md', variant = 'primary', leftIcon, children, className = '', loading = false, ...props }) => {
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-xs',
     md: 'px-4 py-2 text-sm',
@@ -29,17 +42,14 @@ const Button = ({ onClick, size = 'md', variant = 'primary', leftIcon, children,
   );
 };
 
-/**
- * SavedProvidersScreen with Light/Dark Theme Toggle
- */
 const SavedProvidersScreen = () => {
-  const [isDarkTheme, setIsDarkTheme] = useState(true);
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [sort, setSort] = useState('recent');
   const [showFilters, setShowFilters] = useState(false);
-  const [removingId, setRemovingId] = useState(null);
-  const [sharingId, setSharingId] = useState(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const categories = ['All','Plumbing','Electrical','Cleaning','Landscaping','Renovation','IT','Misc'];
@@ -66,116 +76,103 @@ const SavedProvidersScreen = () => {
       return a.name.localeCompare(b.name);
     });
 
-  const removeProvider = (id) => {
+  const removeProvider = (id: string) => {
     setRemovingId(id);
     setTimeout(() => setRemovingId(null), 900);
   };
 
-  const shareProvider = (id) => {
+  const shareProvider = (id: string) => {
     setSharingId(id);
     setTimeout(() => setSharingId(null), 1200);
   };
 
-  const toggleTheme = () => {
-    setIsDarkTheme(!isDarkTheme);
-  };
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
-  // Theme-specific classes
+  // Theme-specific classes  
   const themeClasses = {
     // Background classes
-    background: isDarkTheme 
+    background: isDark 
       ? 'bg-background-light dark:bg-background-dark' 
       : 'bg-gradient-to-br from-slate-400 via-gray-500 to-zinc-600',
     
-    // Header classes
-    header: isDarkTheme
+    // Header classes  
+    header: isDark
       ? 'backdrop-blur-2xl bg-black/55 border-b border-white/10'
       : 'backdrop-blur-2xl bg-slate-800/70 border-b border-slate-400/30 shadow-lg',
     
     // Title classes
-    title: isDarkTheme
+    title: isDark
       ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent'
       : 'bg-gradient-to-r from-slate-100 via-zinc-200 to-gray-100 bg-clip-text text-transparent',
     
     // Subtitle classes
-    subtitle: isDarkTheme
-      ? 'text-blue-300/70'
+    subtitle: isDark
+      ? 'text-blue-300/70' 
       : 'text-slate-300/90',
     
     // Filter bar classes
-    filterBar: isDarkTheme
+    filterBar: isDark
       ? 'bg-[#0b131c]/80 backdrop-blur-lg border-b border-white/10'
       : 'bg-slate-700/80 backdrop-blur-lg border-b border-slate-400/20 shadow-md',
     
     // Input classes
-    input: isDarkTheme
+    input: isDark
       ? 'bg-white/[0.05] border-white/10 focus:border-blue-500/50 text-white placeholder-blue-200/40'
       : 'bg-slate-600/40 border-slate-400/30 focus:border-slate-300/60 text-slate-100 placeholder-slate-300/60',
     
     // Select classes
-    select: isDarkTheme
+    select: isDark
       ? 'bg-white/[0.05] border-white/10 focus:border-blue-500/50 text-white'
       : 'bg-slate-600/40 border-slate-400/30 focus:border-slate-300/60 text-slate-100',
     
     // Card classes
-    card: isDarkTheme
+    card: isDark
       ? 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20'
       : 'bg-slate-800/40 backdrop-blur-xl border-slate-400/30 hover:border-slate-300/50 shadow-lg hover:shadow-xl',
     
     // Text classes
-    primaryText: isDarkTheme ? 'text-white' : 'text-slate-100',
-    secondaryText: isDarkTheme ? 'text-blue-200/60' : 'text-slate-300/80',
+    primaryText: isDark ? 'text-white' : 'text-slate-100',
+    secondaryText: isDark ? 'text-blue-200/60' : 'text-slate-300/80',
     
     // Category badge classes
-    categoryBadge: isDarkTheme
+    categoryBadge: isDark
       ? 'bg-blue-600/25 border-blue-400/30 text-white'
       : 'bg-slate-600/50 border-slate-400/40 text-slate-200',
     
     // Empty state classes
-    emptyStateBox: isDarkTheme
+    emptyStateBox: isDark
       ? 'bg-white/[0.06]'
       : 'bg-slate-700/30',
     
-    emptyStateText: isDarkTheme
+    emptyStateText: isDark
       ? 'text-blue-200/70'
       : 'text-slate-300/80'
   };
 
-  // Light theme ambient background
-  const lightThemeBackground = (
+  // Ambient background with theme-aware gradients
+  const ambientBackground = (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute -top-24 -left-36 w-[520px] h-[520px] bg-gradient-to-br from-slate-700/25 via-gray-600/20 to-zinc-700/25 rounded-full blur-3xl" />
-      <div className="absolute top-1/3 -right-36 w-[480px] h-[480px] bg-gradient-to-tr from-slate-600/20 via-zinc-600/15 to-gray-600/15 rounded-full blur-[140px]" />
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[620px] h-[620px] bg-gradient-to-br from-gray-700/15 via-slate-700/15 to-zinc-700/15 blur-[160px]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_25%,rgba(71,85,105,0.20),transparent_60%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.12]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-600/40 via-gray-700/50 to-zinc-800/60" />
-    </div>
-  );
-
-  // Dark theme ambient background (original)
-  const darkThemeBackground = (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute -top-24 -left-36 w-[520px] h-[520px] bg-gradient-to-br from-blue-600/15 via-indigo-600/15 to-purple-600/15 rounded-full blur-3xl" />
-      <div className="absolute top-1/3 -right-36 w-[480px] h-[480px] bg-gradient-to-tr from-fuchsia-500/15 via-purple-500/10 to-sky-500/10 rounded-full blur-[140px]" />
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[620px] h-[620px] bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-emerald-500/10 blur-[160px]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_25%,rgba(59,130,246,0.12),transparent_60%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.07]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0b111a] via-[#080e16] to-[#05080d]" />
+      <div className="absolute -top-24 -left-36 w-[520px] h-[520px] bg-gradient-to-br from-slate-700/25 via-gray-600/20 to-zinc-700/25 dark:from-blue-600/15 dark:via-indigo-600/15 dark:to-purple-600/15 rounded-full blur-3xl" />
+      <div className="absolute top-1/3 -right-36 w-[480px] h-[480px] bg-gradient-to-tr from-slate-600/20 via-zinc-600/15 to-gray-600/15 dark:from-fuchsia-500/15 dark:via-purple-500/10 dark:to-sky-500/10 rounded-full blur-[140px]" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[620px] h-[620px] bg-gradient-to-br from-gray-700/15 via-slate-700/15 to-zinc-700/15 dark:from-cyan-500/10 dark:via-blue-500/10 dark:to-emerald-500/10 blur-[160px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_25%,rgba(71,85,105,0.20),transparent_60%)] dark:bg-[radial-gradient(circle_at_65%_25%,rgba(59,130,246,0.12),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.12] dark:opacity-[0.07]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-600/40 via-gray-700/50 to-zinc-800/60 dark:from-[#0b111a] dark:via-[#080e16] dark:to-[#05080d]" />
     </div>
   );
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${themeClasses.background}`}>
+    <div className="min-h-screen transition-all duration-500 bg-gray-100 dark:bg-[#05070d]">
       {/* Ambient Background */}
-      {isDarkTheme ? darkThemeBackground : lightThemeBackground}
+      {ambientBackground}
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Fixed Header */}
         <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${themeClasses.header} px-4 py-3 sm:py-4 flex items-center justify-between`}>
           <div className="flex items-center gap-3">
             <Button
-              onClick={() => console.log('Go back')}
+              onClick={() => navigate(-1)}
               size="sm"
               variant="subtle"
               className="!h-9 !w-9 sm:!h-10 sm:!w-10 !px-0 rounded-xl"
@@ -193,19 +190,6 @@ const SavedProvidersScreen = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
-                isDarkTheme 
-                  ? 'bg-white/10 hover:bg-white/20 text-yellow-400' 
-                  : 'bg-slate-700/40 hover:bg-slate-600/60 text-slate-200'
-              }`}
-              aria-label={isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'}
-            >
-              {isDarkTheme ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-            
             <Button 
               size="md" 
               variant="primary" 
@@ -223,14 +207,12 @@ const SavedProvidersScreen = () => {
           <div className={`fixed top-16 sm:top-20 left-0 right-0 z-40 px-4 py-3 space-y-3 transition-all duration-300 ${themeClasses.filterBar}`}>
             <div className="flex gap-2">
               <div className="flex-1 relative">
-                <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${
-                  isDarkTheme ? 'text-blue-200/40' : 'text-slate-300/70'
-                }`} />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 transition-colors duration-300 text-slate-300/70 dark:text-blue-200/40" />
                 <input 
                   value={search} 
                   onChange={e => setSearch(e.target.value)} 
                   placeholder="Search saved..." 
-                  className={`w-full pl-9 pr-3 h-9 sm:h-10 rounded-lg transition-all duration-300 text-xs sm:text-[13px] ${themeClasses.input}`} 
+                  className="w-full pl-9 pr-3 h-9 sm:h-10 rounded-lg transition-all duration-300 text-xs sm:text-[13px] bg-white/90 dark:bg-slate-800/90 border border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-slate-200 placeholder-slate-400/70 dark:placeholder-slate-500" 
                 />
               </div>
               <div className="w-28 sm:w-36">
@@ -252,11 +234,7 @@ const SavedProvidersScreen = () => {
                   size="sm"
                   variant={category === c ? 'primary' : 'subtle'}
                   onClick={() => setCategory(c)}
-                  className={`text-[10px] font-medium px-4 rounded-full !h-8 transition-all duration-300 ${
-                    category === c ? 'shadow-none' : 
-                    isDarkTheme ? 'bg-white/5 hover:bg-white/10 border-white/10' :
-                    'bg-slate-600/30 hover:bg-slate-500/40 border-slate-400/30 text-slate-200'
-                  }`}
+                  className="text-[10px] font-medium px-4 rounded-full !h-8 transition-all duration-300 bg-slate-600/30 dark:bg-white/5 hover:bg-slate-500/40 dark:hover:bg-white/10 border-slate-400/30 dark:border-white/10 text-slate-200"
                 >
                   {c}
                 </Button>
@@ -270,10 +248,8 @@ const SavedProvidersScreen = () => {
           {loading && (
             <div className="flex items-center justify-center py-20">
               <div className="flex flex-col items-center gap-4">
-                <Loader2 className={`w-8 h-8 animate-spin transition-colors duration-300 ${
-                  isDarkTheme ? 'text-blue-400' : 'text-slate-600'
-                }`} />
-                <p className={`text-sm transition-colors duration-300 ${themeClasses.emptyStateText}`}>
+                <Loader2 className="w-8 h-8 animate-spin transition-colors duration-300 text-slate-600 dark:text-blue-400" />
+                <p className="text-sm transition-colors duration-300 text-slate-600 dark:text-slate-300">
                   Loading your saved providers...
                 </p>
               </div>
@@ -312,7 +288,7 @@ const SavedProvidersScreen = () => {
                 <div key={p.id} className={`relative rounded-3xl p-5 overflow-hidden group transition-all duration-300 hover:scale-[1.02] ${themeClasses.card}`}>
                   <div 
                     className="absolute inset-0 opacity-50 mix-blend-overlay pointer-events-none transition-all duration-300" 
-                    style={{backgroundImage: isDarkTheme ? darkCardOverlay : lightCardOverlay}} 
+                    style={{backgroundImage: isDark ? darkCardOverlay : lightCardOverlay}} 
                   />
                   <div className="relative flex gap-5">
                     <div className="relative">
@@ -320,7 +296,7 @@ const SavedProvidersScreen = () => {
                         src={p.avatar} 
                         alt={p.name} 
                         className={`w-20 h-20 rounded-2xl object-cover shadow-lg transition-all duration-300 ${
-                          isDarkTheme ? 'border border-white/10' : 'border border-slate-400/40 shadow-slate-800/30'
+                          isDark ? 'border border-white/10' : 'border border-slate-400/40 shadow-slate-800/30'
                         }`} 
                       />
                     </div>
@@ -369,7 +345,7 @@ const SavedProvidersScreen = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         .hide-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;

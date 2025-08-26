@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Shield, Bell, MapPin, User, Lock, LogOut, Edit3, Mail, Phone, CheckCircle2, ChevronDown, ChevronUp, Link2, Loader2, AlertTriangle, X, CheckCircle, Sun, Moon } from 'lucide-react';
+import { ArrowLeft, Camera, Shield, Bell, MapPin, User, Lock, LogOut, Edit3, Mail, Phone, CheckCircle2, ChevronDown, ChevronUp, Link2, Loader2, AlertTriangle, X, CheckCircle } from 'lucide-react';
+import { useTheme } from '../theme/useTheme';
 
 const UserProfileScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -13,7 +15,7 @@ const UserProfileScreen: React.FC = () => {
   const [pwdError, setPwdError] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [selectedLocaleType, setSelectedLocaleType] = useState<'Urban'|'Suburban'|'Rural'>('Urban');
-  const [darkMode, setDarkMode] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [toasts, setToasts] = useState<Array<{ id: string; title: string; type?: 'success' | 'error' | 'info'; desc?: string }>>([]);
@@ -241,24 +243,24 @@ const UserProfileScreen: React.FC = () => {
   };
 
   const sectionWrapper = (id: string, title: string, icon: React.ReactNode, children: React.ReactNode, subtitle?: string) => (
-    <div className={`relative rounded-2xl p-5 sm:p-6 ${darkMode 
+    <div className={`relative rounded-2xl p-5 sm:p-6 ${theme === 'dark'
       ? 'bg-white/5 backdrop-blur-xl border border-white/10 section-gradient' 
       : 'silver-card section-gradient-light'
-    } transition-all duration-300 animate-section ${expanded[id] ? (darkMode ? 'ring-1 ring-white/10' : 'ring-1 ring-slate-300/20') : ''}`}> 
+    } transition-all duration-300 animate-section ${expanded[id] ? (theme === 'dark' ? 'ring-1 ring-white/10' : 'ring-1 ring-slate-300/20') : ''}`}> 
       <button onClick={() => toggleExpand(id)} className="focus-reset w-full flex items-center justify-between group mb-3" aria-expanded={expanded[id]} aria-controls={`section-${id}`}>
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl ${darkMode 
+          <div className={`w-10 h-10 rounded-xl ${theme === 'dark' 
             ? 'bg-gradient-to-br from-blue-600/30 via-indigo-600/30 to-purple-600/30' 
             : 'bg-gradient-to-br from-slate-400/40 via-slate-500/40 to-slate-600/40'
-          } flex items-center justify-center ${darkMode ? 'text-white' : 'text-slate-700'} shadow-inner`}>
+          } flex items-center justify-center ${theme === 'dark' ? 'text-white' : 'text-slate-700'} shadow-inner`}>
             {icon}
           </div>
           <div className="text-left">
-            <h3 className={`font-semibold text-sm sm:text-base tracking-wide ${darkMode ? 'text-white' : 'text-slate-800'}`}>{title}</h3>
-            {subtitle && <p className={`text-[11px] mt-0.5 ${darkMode ? 'text-blue-200/60' : 'text-slate-700/90'}`}>{subtitle}</p>}
+            <h3 className={`font-semibold text-sm sm:text-base tracking-wide ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{title}</h3>
+            {subtitle && <p className={`text-[11px] mt-0.5 ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-700/90'}`}>{subtitle}</p>}
           </div>
         </div>
-        <div className={`w-8 h-8 rounded-lg ${darkMode ? 'bg-white/10' : 'bg-slate-200/60'} flex items-center justify-center ${darkMode ? 'text-white/70 group-hover:text-white' : 'text-slate-600 group-hover:text-slate-800'} transition-all ${expanded[id] ? 'rotate-180' : ''}`}>
+        <div className={`w-8 h-8 rounded-lg ${theme === 'dark' ? 'bg-white/10' : 'bg-slate-200/60'} flex items-center justify-center ${theme === 'dark' ? 'text-white/70 group-hover:text-white' : 'text-slate-600 group-hover:text-slate-800'} transition-all ${expanded[id] ? 'rotate-180' : ''}`}>
           {expanded[id] ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </button>
@@ -267,9 +269,9 @@ const UserProfileScreen: React.FC = () => {
   );
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${darkMode ? '' : 'light-bg'}`}>
+    <div className={`min-h-screen transition-all duration-500 ${theme === 'dark' ? '' : 'light-bg'}`}>
       {/* Dark Mode Backgrounds */}
-      {darkMode && (
+      {theme === 'dark' && (
         <>
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="absolute -top-28 -left-40 w-[520px] h-[520px] bg-gradient-to-br from-blue-600/20 via-indigo-600/15 to-purple-600/15 rounded-full blur-3xl" />
@@ -284,43 +286,34 @@ const UserProfileScreen: React.FC = () => {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Fixed Header */}
-        <div className={`fixed top-0 left-0 right-0 z-50 ${darkMode 
+        <div className={`fixed top-0 left-0 right-0 z-50 ${theme === 'dark' 
           ? 'backdrop-blur-2xl bg-black/50 border-b border-white/10' 
           : 'backdrop-blur-2xl bg-white/60 border-b border-slate-200/40'
         } px-4 py-3 sm:py-4 flex items-center justify-between transition-all duration-300`}>
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${darkMode 
+            <button onClick={() => navigate(-1)} className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${theme === 'dark' 
               ? 'bg-white/10 hover:bg-white/20' 
               : 'silver-button hover:scale-105'
             } transition-all flex items-center justify-center`}>
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <div>
-              <h1 className={`text-base sm:text-lg md:text-xl font-bold tracking-wide ${darkMode 
+              <h1 className={`text-base sm:text-lg md:text-xl font-bold tracking-wide ${theme === 'dark'
                 ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent' 
                 : 'metallic-text'
               }`}>Profile</h1>
-              <p className={`text-[10px] sm:text-[11px] uppercase tracking-[0.25em] font-medium ${darkMode 
+              <p className={`text-[10px] sm:text-[11px] uppercase tracking-[0.25em] font-medium ${theme === 'dark'
                 ? 'text-blue-300/70' 
                 : 'text-slate-500'
               }`}>User Settings</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setDarkMode(!darkMode)} 
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${darkMode 
-                ? 'bg-white/10 hover:bg-white/20' 
-                : 'silver-button hover:scale-105'
-              } transition-all flex items-center justify-center`}
-            >
-              {darkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
-            </button>
-            <button onClick={() => setEditing(e=>{ if(!e) pushToast('Edit Mode Enabled','info','Changes are local only'); else if(isDirty) pushToast('Unsaved Changes','info','Remember to save'); return !e;})} className={`px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold relative group overflow-hidden transition-all ${darkMode ? '' : 'silver-button hover:scale-105'}`}>
-              {darkMode && (
+            <button onClick={() => setEditing(e=>{ if(!e) pushToast('Edit Mode Enabled','info','Changes are local only'); else if(isDirty) pushToast('Unsaved Changes','info','Remember to save'); return !e;})} className={`px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold relative group overflow-hidden transition-all ${theme === 'dark' ? '' : 'silver-button hover:scale-105'}`}>
+              {theme === 'dark' && (
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-500 group-hover:to-pink-500 transition" />
               )}
-              <span className={`relative flex items-center gap-1.5 sm:gap-2 ${darkMode ? 'text-white' : 'text-slate-800'}`}>
+              <span className={`relative flex items-center gap-1.5 sm:gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                 <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
                 {editing ? 'Exit' : 'Edit'}
               </span>
@@ -330,53 +323,53 @@ const UserProfileScreen: React.FC = () => {
 
         <div className="flex-1 overflow-y-auto px-4 pt-20 sm:pt-24 pb-40 space-y-8">
           {/* Profile Header */}
-          <div className={`relative rounded-3xl p-6 sm:p-8 overflow-hidden ${darkMode 
+          <div className={`relative rounded-3xl p-6 sm:p-8 overflow-hidden ${theme === 'dark'
             ? 'bg-white/5 backdrop-blur-xl border border-white/10 gradient-ring' 
             : 'silver-card gradient-ring-light'
           } transition-all duration-300`}>
-            {darkMode && (
+            {theme === 'dark' && (
               <div className="absolute inset-0 opacity-60 mix-blend-overlay" style={{backgroundImage:'radial-gradient(circle at 20% 25%, rgba(59,130,246,.25) 0, transparent 60%), radial-gradient(circle at 80% 35%, rgba(147,51,234,.25) 0, transparent 65%), radial-gradient(circle at 55% 85%, rgba(236,72,153,.25) 0, transparent 65%)'}} />
             )}
             <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
               <div className="relative w-32 h-32 sm:w-40 sm:h-40">
-                <img src={profile.avatar} alt={profile.name} className={`w-full h-full object-cover rounded-3xl shadow-2xl ${darkMode ? 'ring-4 ring-white/10' : 'ring-4 ring-slate-300/30'}`} />
-                <button onClick={triggerAvatarUpload} disabled={!editing} className={`absolute -bottom-2 -right-2 w-11 h-11 rounded-2xl ${darkMode 
+                <img src={profile.avatar} alt={profile.name} className={`w-full h-full object-cover rounded-3xl shadow-2xl ${theme === 'dark' ? 'ring-4 ring-white/10' : 'ring-4 ring-slate-300/30'}`} />
+                <button onClick={triggerAvatarUpload} disabled={!editing} className={`absolute -bottom-2 -right-2 w-11 h-11 rounded-2xl ${theme === 'dark' 
                   ? 'bg-gradient-to-br from-blue-600 to-purple-600' 
                   : 'silver-button'
-                } flex items-center justify-center shadow-xl ${darkMode ? 'border border-white/20' : ''} hover:scale-105 transition disabled:opacity-40 disabled:cursor-not-allowed`}>
+                } flex items-center justify-center shadow-xl ${theme === 'dark' ? 'border border-white/20' : ''} hover:scale-105 transition disabled:opacity-40 disabled:cursor-not-allowed`}>
                   {avatarUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
                 </button>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onAvatarSelected} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 flex-wrap mb-2">
-                  <h2 className={`text-2xl sm:text-3xl font-bold tracking-wide ${darkMode ? 'text-white' : 'metallic-text'}`}>{profile.name}</h2>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${darkMode 
+                  <h2 className={`text-2xl sm:text-3xl font-bold tracking-wide ${theme === 'dark' ? 'text-white' : 'metallic-text'}`}>{profile.name}</h2>
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${theme === 'dark' 
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' 
                     : 'silver-button text-slate-700'
                   }`}>{profile.accountType} ACCOUNT</span>
                 </div>
-                <div className={`flex flex-col sm:flex-row sm:items-center gap-4 text-sm ${darkMode ? 'text-blue-200/80' : 'text-slate-700'}`}>
+                <div className={`flex flex-col sm:flex-row sm:items-center gap-4 text-sm ${theme === 'dark' ? 'text-blue-200/80' : 'text-slate-700'}`}>
                   <div className="flex items-center gap-2"><Mail className="w-4 h-4" /> {profile.email}</div>
                   <div className="flex items-center gap-2"><Phone className="w-4 h-4" /> {profile.phone}</div>
                 </div>
                 <div className="mt-5 grid grid-cols-3 gap-4">
                   {[{label:'Total Searches', value:24},{label:'Providers Contacted', value:15},{label:'Saved Providers', value:42}].map(m => (
                     <div key={m.label} className="text-center">
-                      <div className={`text-xl sm:text-2xl font-bold ${darkMode 
+                      <div className={`text-xl sm:text-2xl font-bold ${theme === 'dark' 
                         ? 'bg-gradient-to-br from-white via-blue-100 to-white bg-clip-text text-transparent' 
                         : 'metallic-text'
                       }`}>{m.value}</div>
-                      <div className={`text-[11px] uppercase tracking-wide mt-1 ${darkMode ? 'text-blue-200/60' : 'text-slate-600'}`}>{m.label}</div>
+                      <div className={`text-[11px] uppercase tracking-wide mt-1 ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-600'}`}>{m.label}</div>
                     </div>
                   ))}
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <button onClick={() => setEditing(true)} className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-40 ${darkMode 
+                  <button onClick={() => setEditing(true)} className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-40 ${theme === 'dark' 
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-pink-500 text-white' 
                     : 'silver-button hover:scale-105'
                   }`} disabled={editing}>Edit Profile</button>
-                  <button onClick={openPasswordModal} className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 ${darkMode 
+                  <button onClick={openPasswordModal} className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 ${theme === 'dark' 
                     ? 'bg-white/10 hover:bg-white/15 text-white' 
                     : 'silver-button hover:scale-105'
                   }`}><Lock className="w-4 h-4" /> Change Password</button>
@@ -390,29 +383,29 @@ const UserProfileScreen: React.FC = () => {
           {sectionWrapper('personal', 'Personal Information', <User className="w-5 h-5" />, (
             <div className="grid sm:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className={`text-xs font-medium tracking-wide ${darkMode ? 'text-blue-200/60' : 'text-slate-700'}`}>Full Name</label>
-                <input disabled={!editing} value={profile.name} onChange={e=>setProfile(p=>({...p, name:e.target.value}))} className={`w-full rounded-xl px-4 py-3 text-sm transition disabled:opacity-60 disabled:cursor-not-allowed ${darkMode 
+                <label className={`text-xs font-medium tracking-wide ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-700'}`}>Full Name</label>
+                <input disabled={!editing} value={profile.name} onChange={e=>setProfile(p=>({...p, name:e.target.value}))} className={`w-full rounded-xl px-4 py-3 text-sm transition disabled:opacity-60 disabled:cursor-not-allowed ${theme === 'dark' 
                   ? 'glass-input text-white' 
                   : 'glass-input-light text-slate-800'
                 }`} />
               </div>
               <div className="space-y-2">
-                <label className={`text-xs font-medium tracking-wide ${darkMode ? 'text-blue-200/60' : 'text-slate-700'}`}>Email</label>
-                <input disabled value={profile.email} className={`w-full rounded-xl px-4 py-3 text-sm disabled:opacity-60 ${darkMode 
+                <label className={`text-xs font-medium tracking-wide ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-700'}`}>Email</label>
+                <input disabled value={profile.email} className={`w-full rounded-xl px-4 py-3 text-sm disabled:opacity-60 ${theme === 'dark' 
                   ? 'glass-input text-white' 
                   : 'glass-input-light text-slate-800'
                 }`} />
               </div>
               <div className="space-y-2">
-                <label className={`text-xs font-medium tracking-wide ${darkMode ? 'text-blue-200/60' : 'text-slate-700'}`}>Phone</label>
-                <input disabled={!editing} value={profile.phone} onChange={e=>setProfile(p=>({...p, phone:e.target.value}))} className={`w-full rounded-xl px-4 py-3 text-sm transition disabled:opacity-60 disabled:cursor-not-allowed ${darkMode 
+                <label className={`text-xs font-medium tracking-wide ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-700'}`}>Phone</label>
+                <input disabled={!editing} value={profile.phone} onChange={e=>setProfile(p=>({...p, phone:e.target.value}))} className={`w-full rounded-xl px-4 py-3 text-sm transition disabled:opacity-60 disabled:cursor-not-allowed ${theme === 'dark' 
                   ? 'glass-input text-white' 
                   : 'glass-input-light text-slate-800'
                 }`} />
               </div>
               <div className="space-y-2">
-                <label className={`text-xs font-medium tracking-wide ${darkMode ? 'text-blue-200/60' : 'text-slate-700'}`}>Account Type</label>
-                <input disabled value={profile.accountType} className={`w-full rounded-xl px-4 py-3 text-sm disabled:opacity-60 ${darkMode 
+                <label className={`text-xs font-medium tracking-wide ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-700'}`}>Account Type</label>
+                <input disabled value={profile.accountType} className={`w-full rounded-xl px-4 py-3 text-sm disabled:opacity-60 ${theme === 'dark' 
                   ? 'glass-input text-white' 
                   : 'glass-input-light text-slate-800'
                 }`} />
@@ -423,33 +416,33 @@ const UserProfileScreen: React.FC = () => {
           {sectionWrapper('location', 'Location Preferences', <MapPin className="w-5 h-5" />, (
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className={`text-xs font-medium tracking-wide ${darkMode ? 'text-blue-200/60' : 'text-slate-600'}`}>Primary Address</label>
-                <input disabled={!editing} value={profile.address} onChange={e=>setProfile(p=>({...p, address:e.target.value}))} className={`w-full rounded-xl px-4 py-3 text-sm transition disabled:opacity-60 disabled:cursor-not-allowed ${darkMode 
+                <label className={`text-xs font-medium tracking-wide ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-600'}`}>Primary Address</label>
+                <input disabled={!editing} value={profile.address} onChange={e=>setProfile(p=>({...p, address:e.target.value}))} className={`w-full rounded-xl px-4 py-3 text-sm transition disabled:opacity-60 disabled:cursor-not-allowed ${theme === 'dark' 
                   ? 'glass-input text-white' 
                   : 'glass-input-light text-slate-800'
                 }`} />
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className={`text-xs font-medium tracking-wide ${darkMode ? 'text-blue-200/60' : 'text-slate-600'}`}>Search Radius (km)</label>
-                  <span className={`text-xs font-semibold ${darkMode ? 'text-blue-200/70' : 'text-slate-600'}`}>{profile.radiusKm} km</span>
+                  <label className={`text-xs font-medium tracking-wide ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-600'}`}>Search Radius (km)</label>
+                  <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-blue-200/70' : 'text-slate-600'}`}>{profile.radiusKm} km</span>
                 </div>
-                <input type="range" min={5} max={100} step={5} disabled={!editing} value={profile.radiusKm} onChange={e=>setProfile(p=>({...p, radiusKm: Number(e.target.value)}))} className={`w-full ${darkMode ? 'accent-blue-500' : 'accent-slate-500'}`} />
-                <div className={`flex justify-between text-[10px] ${darkMode ? 'text-blue-200/40' : 'text-slate-600/80'}`}>
+                <input type="range" min={5} max={100} step={5} disabled={!editing} value={profile.radiusKm} onChange={e=>setProfile(p=>({...p, radiusKm: Number(e.target.value)}))} className={`w-full ${theme === 'dark' ? 'accent-blue-500' : 'accent-slate-500'}`} />
+                <div className={`flex justify-between text-[10px] ${theme === 'dark' ? 'text-blue-200/40' : 'text-slate-600/80'}`}>
                   <span>5</span><span>25</span><span>50</span><span>75</span><span>100</span>
                 </div>
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
                 {(['Urban','Suburban','Rural'] as Array<'Urban'|'Suburban'|'Rural'>).map(t => (
-                  <button key={t} onClick={()=>guardEdit(()=>setSelectedLocaleType(t))} className={`px-4 py-2.5 rounded-xl text-xs font-semibold border transition relative ${selectedLocaleType===t ? (darkMode 
+                  <button key={t} onClick={()=>guardEdit(()=>setSelectedLocaleType(t))} className={`px-4 py-2.5 rounded-xl text-xs font-semibold border transition relative ${selectedLocaleType===t ? (theme === 'dark' 
                     ? 'bg-blue-600/30 border-blue-400/40 text-white ring-1 ring-blue-300/40' 
                     : 'bg-slate-400/30 border-slate-500/40 text-slate-800 ring-1 ring-slate-400/40'
-                  ) : (darkMode 
+                  ) : (theme === 'dark' 
                     ? 'bg-white/5 border-white/10 text-blue-200/70 hover:bg-white/10' 
                     : 'silver-button hover:scale-105'
                   )} ${!editing && 'opacity-60 cursor-not-allowed'}`}>
                     {t}
-                    {selectedLocaleType===t && <span className={`absolute -top-2 -right-2 text-white text-[10px] px-1.5 py-0.5 rounded-full ${darkMode ? 'bg-blue-500' : 'bg-slate-600'}`}>Active</span>}
+                    {selectedLocaleType===t && <span className={`absolute -top-2 -right-2 text-white text-[10px] px-1.5 py-0.5 rounded-full ${theme === 'dark' ? 'bg-blue-500' : 'bg-slate-600'}`}>Active</span>}
                   </button>
                 ))}
               </div>
@@ -465,19 +458,19 @@ const UserProfileScreen: React.FC = () => {
                 { key:'marketing', label:'Promotions & Offers', desc:'Occasional deals and seasonal offers' },
                 { key:'security', label:'Security Alerts', desc:'Password, login & unusual activity' }
               ].map(opt => (
-                <div key={opt.key} className={`flex items-start gap-3 p-3 rounded-xl border transition ${darkMode 
+                <div key={opt.key} className={`flex items-start gap-3 p-3 rounded-xl border transition ${theme === 'dark' 
                   ? 'bg-white/5 border-white/10 hover:border-white/20' 
                   : 'bg-white/60 border-slate-200/50 hover:border-slate-300/60 backdrop-blur-sm'
                 }`}>
-                  <button onClick={()=>toggleSetting('notif', opt.key)} disabled={!editing} className={`relative w-11 h-6 rounded-full toggle-base ${notifSettings[opt.key as keyof typeof notifSettings] ? (darkMode 
+                  <button onClick={()=>toggleSetting('notif', opt.key)} disabled={!editing} className={`relative w-11 h-6 rounded-full toggle-base ${notifSettings[opt.key as keyof typeof notifSettings] ? (theme === 'dark' 
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-500' 
                     : 'bg-gradient-to-r from-slate-500 to-slate-600'
-                  ) : (darkMode ? 'bg-white/15' : 'bg-slate-300/60')} flex items-center px-1 disabled:opacity-40 disabled:cursor-not-allowed`}> 
+                  ) : (theme === 'dark' ? 'bg-white/15' : 'bg-slate-300/60')} flex items-center px-1 disabled:opacity-40 disabled:cursor-not-allowed`}> 
                     <span className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${notifSettings[opt.key as keyof typeof notifSettings] ? 'translate-x-5' : ''}`}></span>
                   </button>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-[13px] font-medium ${darkMode ? 'text-white' : 'text-slate-800'}`}>{opt.label}</p>
-                    <p className={`text-[11px] mt-1 leading-relaxed ${darkMode ? 'text-blue-200/60' : 'text-slate-600/80'}`}>{opt.desc}</p>
+                    <p className={`text-[13px] font-medium ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{opt.label}</p>
+                    <p className={`text-[11px] mt-1 leading-relaxed ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-600/80'}`}>{opt.desc}</p>
                   </div>
                 </div>
               ))}
@@ -492,19 +485,19 @@ const UserProfileScreen: React.FC = () => {
                 { key:'aiPersonalization', label:'AI Personalization', desc:'Use activity to tailor AI responses' },
                 { key:'dataCollection', label:'Data Collection', desc:'Help improve the platform experience' }
               ].map(opt => (
-                <div key={opt.key} className={`flex items-start gap-3 p-3 rounded-xl border transition ${darkMode 
+                <div key={opt.key} className={`flex items-start gap-3 p-3 rounded-xl border transition ${theme === 'dark' 
                   ? 'bg-white/5 border-white/10 hover:border-white/20' 
                   : 'bg-white/60 border-slate-200/50 hover:border-slate-300/60 backdrop-blur-sm'
                 }`}>
-                  <button onClick={()=>toggleSetting('privacy', opt.key)} disabled={!editing} className={`relative w-11 h-6 rounded-full toggle-base ${privacySettings[opt.key as keyof typeof privacySettings] ? (darkMode 
+                  <button onClick={()=>toggleSetting('privacy', opt.key)} disabled={!editing} className={`relative w-11 h-6 rounded-full toggle-base ${privacySettings[opt.key as keyof typeof privacySettings] ? (theme === 'dark' 
                     ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
                     : 'bg-gradient-to-r from-slate-500 to-slate-600'
-                  ) : (darkMode ? 'bg-white/15' : 'bg-slate-300/60')} flex items-center px-1 disabled:opacity-40 disabled:cursor-not-allowed`}> 
+                  ) : (theme === 'dark' ? 'bg-white/15' : 'bg-slate-300/60')} flex items-center px-1 disabled:opacity-40 disabled:cursor-not-allowed`}> 
                     <span className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${privacySettings[opt.key as keyof typeof privacySettings] ? 'translate-x-5' : ''}`}></span>
                   </button>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-[13px] font-medium ${darkMode ? 'text-white' : 'text-slate-800'}`}>{opt.label}</p>
-                    <p className={`text-[11px] mt-1 leading-relaxed ${darkMode ? 'text-blue-200/60' : 'text-slate-600/80'}`}>{opt.desc}</p>
+                    <p className={`text-[13px] font-medium ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{opt.label}</p>
+                    <p className={`text-[11px] mt-1 leading-relaxed ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-600/80'}`}>{opt.desc}</p>
                   </div>
                 </div>
               ))}
@@ -517,18 +510,18 @@ const UserProfileScreen: React.FC = () => {
                 { key:'google', label:'Google', desc:'Used for quick sign-in & syncing', color:'from-red-500 via-orange-500 to-yellow-500' },
                 { key:'facebook', label:'Facebook', desc:'Social login & profile sync', color:'from-blue-600 to-indigo-600' }
               ].map(acc => (
-                <div key={acc.key} className={`flex items-center justify-between p-4 rounded-xl border transition ${darkMode 
+                <div key={acc.key} className={`flex items-center justify-between p-4 rounded-xl border transition ${theme === 'dark' 
                   ? 'bg-white/5 border-white/10 hover:border-white/20' 
                   : 'bg-white/60 border-slate-200/50 hover:border-slate-300/60 backdrop-blur-sm'
                 }`}>
                   <div className="flex items-start gap-3">
                     <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${acc.color} flex items-center justify-center text-white font-semibold text-sm`}>{acc.label.charAt(0)}</div>
                     <div>
-                      <p className={`text-sm font-medium flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-800'}`}>{acc.label} {connectedAccounts[acc.key as keyof typeof connectedAccounts] && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}</p>
-                      <p className={`text-[11px] mt-1 ${darkMode ? 'text-blue-200/60' : 'text-slate-600/80'}`}>{acc.desc}</p>
+                      <p className={`text-sm font-medium flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{acc.label} {connectedAccounts[acc.key as keyof typeof connectedAccounts] && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}</p>
+                      <p className={`text-[11px] mt-1 ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-600/80'}`}>{acc.desc}</p>
                     </div>
                   </div>
-                  <button onClick={()=>toggleAccount(acc.key as 'google' | 'facebook')} disabled={!editing} className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${connectedAccounts[acc.key as keyof typeof connectedAccounts] ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : (darkMode 
+                  <button onClick={()=>toggleAccount(acc.key as 'google' | 'facebook')} disabled={!editing} className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${connectedAccounts[acc.key as keyof typeof connectedAccounts] ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : (theme === 'dark' 
                     ? 'bg-white/10 hover:bg-white/15 text-white border border-white/15' 
                     : 'silver-button hover:scale-105'
                   )} disabled:opacity-40 disabled:cursor-not-allowed`}>{connectedAccounts[acc.key as keyof typeof connectedAccounts] ? 'Connected' : 'Connect'}</button>
@@ -539,29 +532,29 @@ const UserProfileScreen: React.FC = () => {
         </div>
 
         {/* Bottom Floating Bar */}
-        <div className={`fixed bottom-0 left-0 right-0 px-4 pb-5 pt-4 ${darkMode 
+        <div className={`fixed bottom-0 left-0 right-0 px-4 pb-5 pt-4 ${theme === 'dark' 
           ? 'bg-gradient-to-t from-black/85 via-black/60 to-transparent backdrop-blur-2xl border-t border-white/10' 
           : 'bg-gradient-to-t from-slate-200/90 via-slate-100/70 to-transparent backdrop-blur-2xl border-t border-slate-300/30'
         } flex items-center justify-between gap-4 z-50 transition-all duration-300`}>
           <div className="flex-1 hidden sm:block">
-            <p className={`text-[11px] uppercase tracking-wider ${darkMode ? 'text-blue-200/60' : 'text-slate-500'}`}>Status</p>
-            <p className={`text-xs font-medium flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-700'}`}>
+            <p className={`text-[11px] uppercase tracking-wider ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-500'}`}>Status</p>
+            <p className={`text-xs font-medium flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-700'}`}>
               <Shield className="w-3 h-3 text-emerald-400" /> 
               Secure • 
-              <span className={darkMode ? 'text-blue-200/50' : 'text-slate-500'}>All changes local (mock)</span>
-              {lastSaved && <span className={darkMode ? 'text-blue-300/60' : 'text-slate-600'}> • Saved {lastSaved.toLocaleTimeString()}</span>}
+              <span className={theme === 'dark' ? 'text-blue-200/50' : 'text-slate-500'}>All changes local (mock)</span>
+              {lastSaved && <span className={theme === 'dark' ? 'text-blue-300/60' : 'text-slate-600'}> • Saved {lastSaved.toLocaleTimeString()}</span>}
             </p>
           </div>
           <div className="flex-1 flex sm:justify-end gap-3">
-            <button onClick={handleCancel} disabled={!editing || (!isDirty && !saving)} className={`h-11 px-5 rounded-2xl text-sm font-semibold transition relative overflow-hidden ${editing && (isDirty || saving) ? (darkMode 
+            <button onClick={handleCancel} disabled={!editing || (!isDirty && !saving)} className={`h-11 px-5 rounded-2xl text-sm font-semibold transition relative overflow-hidden ${editing && (isDirty || saving) ? (theme === 'dark' 
               ? 'bg-white/10 hover:bg-white/15 text-white' 
-              : 'silver-button hover:scale-105'
-            ) : 'bg-white/5 opacity-40 cursor-not-allowed'}`}>{saving ? '...' : 'Cancel'}</button>
+              : 'silver-button hover:scale-105 text-slate-700'
+            ) : (theme === 'dark' ? 'bg-white/5 opacity-40' : 'bg-slate-200/50 text-slate-400') + ' cursor-not-allowed'}`}>{saving ? '...' : 'Cancel'}</button>
             <button onClick={handleSave} disabled={!editing || !isDirty || saving} className={`h-11 px-6 rounded-2xl text-sm font-semibold relative overflow-hidden group ${editing && isDirty && !saving ? 'text-white' : 'text-white/50 cursor-not-allowed'}`}>
-              <span className={`absolute inset-0 ${darkMode 
+              <span className={`absolute inset-0 ${theme === 'dark' 
                 ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600' 
                 : 'bg-gradient-to-r from-slate-600 via-slate-700 to-slate-800'
-              } ${editing && isDirty && !saving ? (darkMode ? 'group-hover:from-blue-500 group-hover:to-pink-500' : 'group-hover:from-slate-500 group-hover:to-slate-700') : 'opacity-30'} transition`} />
+              } ${editing && isDirty && !saving ? (theme === 'dark' ? 'group-hover:from-blue-500 group-hover:to-pink-500' : 'group-hover:from-slate-500 group-hover:to-slate-700') : 'opacity-30'} transition`} />
               <span className="relative flex items-center gap-2">{saving && <Loader2 className="w-4 h-4 animate-spin" />} {saving ? 'Saving...' : isDirty ? 'Save Changes' : 'No Changes'}</span>
             </button>
           </div>
@@ -573,18 +566,18 @@ const UserProfileScreen: React.FC = () => {
           <div key={t.id} className={`pointer-events-auto w-[92%] sm:w-auto max-w-sm px-4 py-3 rounded-2xl backdrop-blur-xl border flex gap-3 items-start shadow-lg animate-section ${
             t.type==='success' ? 'border-emerald-400/30 bg-emerald-500/15' : 
             t.type==='error' ? 'border-red-400/30 bg-red-500/15' : 
-            darkMode ? 'border-white/15 bg-white/10' : 'border-slate-300/40 bg-white/80'
+            theme === 'dark' ? 'border-white/15 bg-white/10' : 'border-slate-300/40 bg-white/80'
           }`}> 
             <div className="mt-0.5">
               {t.type==='success' && <CheckCircle className="w-4 h-4 text-emerald-400" />}
               {t.type==='error' && <AlertTriangle className="w-4 h-4 text-red-400" />}
-              {t.type==='info' && <Bell className={`w-4 h-4 ${darkMode ? 'text-blue-300' : 'text-slate-600'}`} />}
+              {t.type==='info' && <Bell className={`w-4 h-4 ${theme === 'dark' ? 'text-blue-300' : 'text-slate-600'}`} />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-medium leading-tight ${darkMode ? 'text-white' : 'text-slate-800'}`}>{t.title}</p>
-              {t.desc && <p className={`text-[11px] mt-0.5 leading-relaxed ${darkMode ? 'text-blue-200/70' : 'text-slate-600/80'}`}>{t.desc}</p>}
+              <p className={`text-sm font-medium leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{t.title}</p>
+              {t.desc && <p className={`text-[11px] mt-0.5 leading-relaxed ${theme === 'dark' ? 'text-blue-200/70' : 'text-slate-600/80'}`}>{t.desc}</p>}
             </div>
-            <button className={`${darkMode ? 'text-white/50 hover:text-white' : 'text-slate-500 hover:text-slate-800'} transition`} onClick={()=>setToasts(ts=>ts.filter(x=>x.id!==t.id))}><X className="w-4 h-4" /></button>
+            <button className={`${theme === 'dark' ? 'text-white/50 hover:text-white' : 'text-slate-500 hover:text-slate-800'} transition`} onClick={()=>setToasts(ts=>ts.filter(x=>x.id!==t.id))}><X className="w-4 h-4" /></button>
           </div>
         ))}
       </div>
@@ -593,13 +586,13 @@ const UserProfileScreen: React.FC = () => {
       {showPwdModal && (
         <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-6">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={()=>!pwdSubmitting && setShowPwdModal(false)} />
-          <div className={`relative ${darkMode 
+          <div className={`relative ${theme === 'dark' 
             ? 'bg-[#0d1522]/95 border-white/10' 
             : 'bg-slate-50/95 border-slate-300/40'
           } border rounded-t-3xl sm:rounded-3xl w-full sm:w-[440px] p-6 space-y-5 animate-section backdrop-blur-2xl`}>
             <div className="flex items-center justify-between">
-              <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-slate-800'}`}>Change Password</h3>
-              <button onClick={()=>!pwdSubmitting && setShowPwdModal(false)} className={`w-9 h-9 rounded-xl flex items-center justify-center transition ${darkMode 
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>Change Password</h3>
+              <button onClick={()=>!pwdSubmitting && setShowPwdModal(false)} className={`w-9 h-9 rounded-xl flex items-center justify-center transition ${theme === 'dark' 
                 ? 'bg-white/10 hover:bg-white/15' 
                 : 'silver-button hover:scale-105'
               }`}><X className="w-4 h-4" /></button>
@@ -607,8 +600,8 @@ const UserProfileScreen: React.FC = () => {
             <div className="space-y-4">
               {['current','next','confirm'].map(f => (
                 <div key={f} className="space-y-1">
-                  <label className={`text-[11px] tracking-wide uppercase font-medium ${darkMode ? 'text-blue-200/50' : 'text-slate-500'}`}>{f==='current'?'Current Password': f==='next' ? 'New Password' : 'Confirm Password'}</label>
-                  <input type="password" value={pwdForm[f as keyof typeof pwdForm]} onChange={e=>setPwdForm(p=>({...p,[f]:e.target.value}))} disabled={pwdSubmitting} className={`w-full rounded-xl px-4 py-3 text-sm transition ${darkMode 
+                  <label className={`text-[11px] tracking-wide uppercase font-medium ${theme === 'dark' ? 'text-blue-200/50' : 'text-slate-500'}`}>{f==='current'?'Current Password': f==='next' ? 'New Password' : 'Confirm Password'}</label>
+                  <input type="password" value={pwdForm[f as keyof typeof pwdForm]} onChange={e=>setPwdForm(p=>({...p,[f]:e.target.value}))} disabled={pwdSubmitting} className={`w-full rounded-xl px-4 py-3 text-sm transition ${theme === 'dark' 
                     ? 'glass-input text-white' 
                     : 'glass-input-light text-slate-800'
                   }`} />
@@ -617,19 +610,19 @@ const UserProfileScreen: React.FC = () => {
               {pwdError && <p className="text-xs text-red-400 flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> {pwdError}</p>}
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={()=>setShowPwdModal(false)} disabled={pwdSubmitting} className={`h-11 flex-1 rounded-2xl text-sm font-semibold disabled:opacity-40 transition ${darkMode 
+              <button onClick={()=>setShowPwdModal(false)} disabled={pwdSubmitting} className={`h-11 flex-1 rounded-2xl text-sm font-semibold disabled:opacity-40 transition ${theme === 'dark' 
                 ? 'bg-white/10 hover:bg-white/15 text-white' 
                 : 'silver-button hover:scale-105'
               }`}>Cancel</button>
               <button onClick={submitPassword} disabled={pwdSubmitting} className="h-11 flex-1 rounded-2xl text-sm font-semibold relative overflow-hidden group">
-                <span className={`absolute inset-0 ${darkMode 
+                <span className={`absolute inset-0 ${theme === 'dark' 
                   ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600' 
                   : 'bg-gradient-to-r from-slate-600 via-slate-700 to-slate-800'
-                } ${!pwdSubmitting && (darkMode ? 'group-hover:from-blue-500 group-hover:to-pink-500' : 'group-hover:from-slate-500 group-hover:to-slate-700')} transition`} />
+                } ${!pwdSubmitting && (theme === 'dark' ? 'group-hover:from-blue-500 group-hover:to-pink-500' : 'group-hover:from-slate-500 group-hover:to-slate-700')} transition`} />
                 <span className="relative flex items-center justify-center gap-2 text-white">{pwdSubmitting && <Loader2 className="w-4 h-4 animate-spin" />} {pwdSubmitting ? 'Updating...' : 'Update Password'}</span>
               </button>
             </div>
-            <p className={`text-[11px] leading-relaxed ${darkMode ? 'text-blue-200/40' : 'text-slate-500/70'}`}>Security tip: choose a strong password with at least 10 characters, mixing letters, numbers & symbols. This is a mock flow.</p>
+            <p className={`text-[11px] leading-relaxed ${theme === 'dark' ? 'text-blue-200/40' : 'text-slate-500/70'}`}>Security tip: choose a strong password with at least 10 characters, mixing letters, numbers & symbols. This is a mock flow.</p>
           </div>
         </div>
       )}
@@ -638,26 +631,26 @@ const UserProfileScreen: React.FC = () => {
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-6">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={()=>setShowLogoutConfirm(false)} />
-          <div className={`relative ${darkMode 
+          <div className={`relative ${theme === 'dark'
             ? 'bg-[#0d1522]/95 border-white/10' 
             : 'bg-slate-50/95 border-slate-300/40'
           } border rounded-t-3xl sm:rounded-3xl w-full sm:w-[420px] p-6 space-y-5 animate-section backdrop-blur-2xl`}>
             <div className="flex items-center justify-between">
-              <h3 className={`text-lg font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-800'}`}><AlertTriangle className="w-5 h-5 text-amber-400" /> Confirm Logout</h3>
-              <button onClick={()=>setShowLogoutConfirm(false)} className={`w-9 h-9 rounded-xl flex items-center justify-center transition ${darkMode 
+              <h3 className={`text-lg font-semibold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}><AlertTriangle className="w-5 h-5 text-amber-400" /> Confirm Logout</h3>
+              <button onClick={()=>setShowLogoutConfirm(false)} className={`w-9 h-9 rounded-xl flex items-center justify-center transition ${theme === 'dark' 
                 ? 'bg-white/10 hover:bg-white/15' 
                 : 'silver-button hover:scale-105'
               }`}><X className="w-4 h-4" /></button>
             </div>
-            <p className={`text-sm leading-relaxed ${darkMode ? 'text-blue-100/70' : 'text-slate-600'}`}>You will be returned to the landing page. Session clearing is simulated here (no real auth yet).</p>
+            <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-blue-100/70' : 'text-slate-600'}`}>You will be returned to the landing page. Session clearing is simulated here (no real auth yet).</p>
             <div className="flex gap-3 pt-2">
-              <button onClick={()=>setShowLogoutConfirm(false)} className={`h-11 flex-1 rounded-2xl text-sm font-semibold transition ${darkMode 
+              <button onClick={()=>setShowLogoutConfirm(false)} className={`h-11 flex-1 rounded-2xl text-sm font-semibold transition ${theme === 'dark' 
                 ? 'bg-white/10 hover:bg-white/15 text-white' 
                 : 'silver-button hover:scale-105'
               }`}>Cancel</button>
               <button onClick={handleLogout} className="h-11 flex-1 rounded-2xl text-sm font-semibold bg-red-600/80 hover:bg-red-600 flex items-center justify-center gap-2 text-white transition hover:scale-105">Logout</button>
             </div>
-            <p className={`text-[11px] leading-relaxed ${darkMode ? 'text-blue-200/40' : 'text-slate-500/70'}`}>Later we'll integrate real sign-out & token revocation.</p>
+            <p className={`text-[11px] leading-relaxed ${theme === 'dark' ? 'text-blue-200/40' : 'text-slate-500/70'}`}>Later we'll integrate real sign-out & token revocation.</p>
           </div>
         </div>
       )}
@@ -665,7 +658,7 @@ const UserProfileScreen: React.FC = () => {
       {/* Dirty Badge */}
       {editing && isDirty && (
         <div className="fixed bottom-[108px] right-4 z-[65]">
-          <div className={`px-4 py-2 rounded-full backdrop-blur-xl text-[11px] font-semibold tracking-wide shadow-lg flex items-center gap-2 ${darkMode 
+          <div className={`px-4 py-2 rounded-full backdrop-blur-xl text-[11px] font-semibold tracking-wide shadow-lg flex items-center gap-2 ${theme === 'dark' 
             ? 'bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white' 
             : 'bg-gradient-to-r from-slate-600/90 to-slate-700/90 text-white'
           }`}>
