@@ -36,9 +36,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
+  
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users', badge: 3 },
-    { id: 'providers', label: 'Providers', icon: Building2, path: '/admin/providers' },
+   
     { id: 'search-logs', label: 'Search Logs', icon: Search, path: '/admin/search-logs' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/admin/settings' },
   ];
@@ -126,7 +126,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
           {/* Footer */}
           <div className="p-4 border-t border-white/10">
             <div className="text-xs text-gray-400 text-center">
-              ServiceGPT Admin v2.0
+              HireLocalGPT Admin v2.0
             </div>
           </div>
         </div>

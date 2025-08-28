@@ -156,38 +156,7 @@ const AdminDashboard: React.FC = () => {
           <ActivityFeed />
         </div>
 
-        {/* Quick Stats */}
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-white">Platform Health</h3>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-400 text-sm">All Systems Operational</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-              <div className="text-2xl font-bold text-blue-400">98.5%</div>
-              <div className="text-sm text-gray-400 mt-1">Uptime</div>
-              <div className="text-xs text-green-400 mt-1">+0.2%</div>
-            </div>
-            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-              <div className="text-2xl font-bold text-green-400">2.3s</div>
-              <div className="text-sm text-gray-400 mt-1">Avg Response</div>
-              <div className="text-xs text-green-400 mt-1">-0.1s</div>
-            </div>
-            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-              <div className="text-2xl font-bold text-purple-400">4.8/5</div>
-              <div className="text-sm text-gray-400 mt-1">User Rating</div>
-              <div className="text-xs text-green-400 mt-1">+0.1</div>
-            </div>
-            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-              <div className="text-2xl font-bold text-orange-400">156</div>
-              <div className="text-sm text-gray-400 mt-1">Active Providers</div>
-              <div className="text-xs text-green-400 mt-1">+12</div>
-            </div>
-          </div>
-        </div>
+ 
       </div>
     </AdminLayout>
   );
