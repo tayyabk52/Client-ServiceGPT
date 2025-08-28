@@ -1,6 +1,6 @@
 import React from 'react';
 import { Users, MessageCircle, Star, TrendingUp, DollarSign, Calendar } from 'lucide-react';
-import GlassCard from './shared/GlassCard';
+import GlassCard from '../shared/GlassCard';
 
 interface AdminDashboardProps {
   onBack: () => void;

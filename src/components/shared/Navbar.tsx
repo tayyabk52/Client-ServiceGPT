@@ -34,9 +34,9 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 p-4 bg-white/5 dark:bg-black/20 backdrop-blur-xl transition-all duration-500">
+    <nav className="fixed top-0 left-0 right-0 z-50 p-4 bg-gray-100/50 dark:bg-black/20 backdrop-blur-xl transition-all duration-500">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white/90 dark:bg-black/40 backdrop-blur-xl border border-gray-300/60 dark:border-white/10 rounded-2xl px-6 py-4 shadow-xl shadow-gray-900/20 dark:shadow-none transition-all duration-500">
+        <div className="bg-gray-50/80 dark:bg-black/40 backdrop-blur-xl border border-gray-200/80 dark:border-white/10 rounded-2xl px-6 py-4 shadow-lg shadow-gray-300/30 dark:shadow-none transition-all duration-500">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center space-x-3">
@@ -47,12 +47,12 @@ const Navbar: React.FC<NavbarProps> = ({
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-500 dark:to-purple-600 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
                   <Search className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold text-gray-900 dark:text-white transition-all duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">HireLocalGPT</span>
+                <span className="text-xl font-bold text-gray-700 dark:text-white transition-all duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">HireLocalGPT</span>
               </button>
             </div>
             
             {/* Navigation Links */}
-            <div className="hidden lg:flex items-center bg-gray-200/80 dark:bg-white/5 backdrop-blur-lg border border-gray-400/50 dark:border-white/10 rounded-full px-4 py-3 shadow-lg shadow-gray-900/10 dark:shadow-none transition-all duration-500 hover:shadow-xl hover:bg-gray-200/90 dark:hover:bg-white/8">
+            <div className="hidden lg:flex items-center bg-gray-100/70 dark:bg-white/5 backdrop-blur-lg border border-gray-300/50 dark:border-white/10 rounded-full px-4 py-3 shadow-lg shadow-gray-400/10 dark:shadow-none transition-all duration-500 hover:shadow-xl hover:bg-gray-50/80 dark:hover:bg-white/8">
               <button 
                 onClick={onHome}
                 className={`px-8 py-2.5 rounded-full transition-all duration-300 font-medium relative overflow-hidden ${
@@ -92,14 +92,14 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="hidden lg:flex items-center space-x-6">
               <button 
                 onClick={onSignIn}
-                className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-6 py-2.5 rounded-lg hover:bg-white/60 dark:hover:bg-white/10 hover:shadow-md transition-all duration-300 font-medium hover:scale-105"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white px-6 py-2.5 rounded-lg hover:bg-gray-100/80 dark:hover:bg-white/10 hover:shadow-md transition-all duration-300 font-medium hover:scale-105"
               >
                 Sign In
               </button>
               {showCreateAccount && (
                 <button 
                   onClick={onGetStarted}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/20 text-white backdrop-blur-sm border border-blue-500/30 dark:border-blue-400/20 px-8 py-2.5 rounded-full transition-all duration-300 font-semibold flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-110 hover:-translate-y-0.5"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/20 text-white backdrop-blur-sm border border-gray-200/80 dark:border-blue-400/20 px-8 py-2.5 rounded-full transition-all duration-300 font-semibold flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-110 hover:-translate-y-0.5"
                 >
                   <span>Get Started</span>
                   <div className="w-2 h-2 bg-white/70 rounded-full animate-ping" />

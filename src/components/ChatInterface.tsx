@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { UnifiedThemeToggle } from './shared';
 import { ArrowLeft, Send, Mic, User, Sparkles, Star, MapPin, Clock, Phone, MessageCircle, Heart, ExternalLink, X, Check, Loader2 } from 'lucide-react';
-import { useTheme } from '../theme/useTheme';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ServiceProvider } from '../types';
+import { useTheme } from '../theme/useTheme'; // Import the theme hook
 
 interface Message {
   id: string;
@@ -28,6 +27,7 @@ interface FloatingOrb {
 const ChatInterface: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme } = useTheme(); // Get current theme
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -46,52 +46,81 @@ const ChatInterface: React.FC = () => {
   const [waPrefill, setWaPrefill] = useState('');
   const [waSending, setWaSending] = useState(false);
   const [waSent, setWaSent] = useState(false);
-  const { theme } = useTheme();
-  
-  // Get initial message from navigation state
-  const initialMessage = location.state?.initialMessage;
-
-  // Initialize the chat interface
-  useEffect(() => {
-    // Set initial message if provided through navigation
-    if (initialMessage && !hasInitialMessage) {
-      setMessages([
-        {
-          id: Date.now().toString(),
-          type: 'user',
-          content: initialMessage,
-          timestamp: new Date()
-        }
-      ]);
-      setHasInitialMessage(true);
-    }
-
-    // Show welcome message
-    setTimeout(() => {
-      if (!hasInitialMessage) {
-        setMessages([
-          {
-            id: Date.now().toString(),
-            type: 'ai',
-            content: "Hello! 👋 I'm your AI service assistant. I'm here to help you find the perfect local service provider. What kind of service are you looking for today?",
-            timestamp: new Date(),
-            suggestions: [
-              "I need a plumber for a leaky faucet",
-              "Looking for electrical work",
-              "Need house cleaning services",
-              "Handyman for home repairs"
-            ]
-          }
-        ]);
-      }
-      setIsInitializing(false);
-      setIsReady(true);
-    }, 1000);
-  }, [initialMessage, hasInitialMessage]);
-
   // Container refs for precise scroll handling
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Get initial message from navigation state
+  const initialMessage = location.state?.initialMessage;
+
+  // =============================================================================
+  // THEME-SPECIFIC CLASSES - CLEARLY SEPARATED FOR EASY MODIFICATION
+  // =============================================================================
+  
+  // DARK THEME CLASSES (Original)
+  const darkThemeClasses = {
+    mainContainer: "min-h-[calc(var(--app-vh,1vh)*100)] bg-black relative overflow-hidden",
+    backgroundGradient: "absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-black",
+    header: "fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/5 border-b border-white/10 p-3 sm:p-4 pt-safe",
+    headerButton: "w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300",
+    headerTitle: "text-lg sm:text-xl font-bold text-white",
+    headerSubtitle: "text-xs sm:text-sm text-blue-300",
+    progressDot: (active: boolean) => `w-2 h-2 rounded-full transition-all duration-500 ${active ? 'bg-blue-400 shadow-lg shadow-blue-400/50' : 'bg-white/20'}`,
+    userMessageBubble: "bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/20",
+    aiMessageBubble: "bg-white/[0.08] backdrop-blur-2xl border border-white/20 text-white shadow-xl",
+    aiMessageGradient: "absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/8 to-pink-500/8 rounded-2xl",
+    userMessageGlow: "absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-2xl blur-sm",
+    avatarAI: "bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500",
+    avatarUser: "bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600",
+    inputArea: "fixed bottom-0 left-0 right-0 z-40 pb-safe",
+    inputBackground: "absolute inset-0 bg-gradient-to-t from-black/60 via-gray-900/40 to-transparent",
+    inputContainer: "relative backdrop-blur-2xl bg-gradient-to-r from-white/8 via-white/5 to-white/8 border-t border-white/20 p-2.5 sm:p-3 md:p-4",
+    inputGlow: "absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 rounded-t-3xl",
+    textareaBackground: "absolute inset-0 bg-gradient-to-r from-gray-800/50 via-gray-700/30 to-gray-800/50 rounded-2xl",
+    textareaFocusGlow: "absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
+    textareaBorder: "absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-blue-400/20 p-[1px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
+    textareaBorderInner: "w-full h-full bg-gray-900/80 rounded-2xl",
+    textarea: "relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 bg-transparent text-white placeholder-blue-300/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden",
+    sendButton: (disabled: boolean) => `relative w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ease-out shadow-xl group ${disabled ? 'bg-gray-700/50 opacity-40 cursor-not-allowed shadow-none' : 'bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 hover:shadow-blue-500/40 hover:scale-105 active:scale-95'}`,
+    providerCard: "flex-shrink-0 w-72 xl:w-80 bg-gradient-to-br from-white/8 to-white/4 backdrop-blur-xl border border-white/20 rounded-2xl p-5 hover:from-white/12 hover:to-white/8 transition-all duration-300 group shadow-xl hover:shadow-2xl",
+    typingBubble: "message-bubble bg-white/[0.08] backdrop-blur-2xl border border-white/20 rounded-2xl px-5 py-4 shadow-xl"
+  };
+
+  // LIGHT THEME CLASSES (Silver Metallic)
+ // LIGHT THEME CLASSES (Updated - Silver Metallic with Dark Theme Chat Positioning)
+const lightThemeClasses = {
+  mainContainer: "min-h-[calc(var(--app-vh,1vh)*100)] bg-gradient-to-br from-slate-100 via-gray-50 to-slate-200 relative overflow-hidden",
+  backgroundGradient: "absolute inset-0 bg-gradient-to-br from-slate-200/40 via-gray-100/30 to-slate-300/20",
+  header: "fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl bg-gradient-to-r from-gray-600/90 via-gray-700/85 to-gray-800/90 border-b border-gray-500/50 p-3 sm:p-4 pt-safe shadow-xl shadow-gray-600/30",
+  headerButton: "w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-gray-400/80 via-gray-500/90 to-gray-600/70 backdrop-blur-sm border border-gray-400/50 flex items-center justify-center text-gray-100 hover:bg-gradient-to-br hover:from-gray-300/80 hover:via-gray-400/90 hover:to-gray-500/70 hover:text-white transition-all duration-300 shadow-lg hover:shadow-gray-400/30",
+  headerTitle: "text-lg sm:text-xl font-bold bg-gradient-to-r from-gray-100 via-white to-gray-200 bg-clip-text text-transparent",
+  headerSubtitle: "text-xs sm:text-sm text-gray-300 font-medium",
+  progressDot: (active: boolean) => `w-2 h-2 rounded-full transition-all duration-500 ${active ? 'bg-gradient-to-r from-gray-300 to-gray-400 shadow-lg shadow-gray-400/60' : 'bg-gray-500/60 shadow-sm'}`,
+  userMessageBubble: "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 text-white shadow-lg shadow-slate-500/30",
+  aiMessageBubble: "bg-gradient-to-br from-white/80 via-slate-50/90 to-gray-100/80 backdrop-blur-xl border border-slate-300/40 text-slate-800 shadow-xl",
+  aiMessageGradient: "absolute inset-0 bg-gradient-to-br from-slate-200/20 via-gray-100/30 to-slate-300/20 rounded-2xl",
+  userMessageGlow: "absolute inset-0 bg-gradient-to-br from-slate-400/20 to-slate-600/20 rounded-2xl blur-sm",
+  avatarAI: "bg-gradient-to-br from-slate-500 via-slate-600 to-slate-700",
+  avatarUser: "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800",
+  inputArea: "fixed bottom-0 left-0 right-0 z-40 pb-safe",
+  inputBackground: "absolute inset-0 bg-gradient-to-t from-slate-300/95 via-gray-200/90 to-slate-400/70",
+  inputContainer: "relative backdrop-blur-2xl bg-gradient-to-r from-slate-300/95 via-gray-200/90 to-slate-400/95 border-t border-slate-500/60 p-2.5 sm:p-3 md:p-4 shadow-2xl shadow-gray-700/40",
+  inputGlow: "absolute inset-0 bg-gradient-to-r from-slate-400/50 via-gray-300/40 to-slate-500/50 rounded-t-3xl",
+  textareaBackground: "absolute inset-0 bg-gradient-to-r from-white/70 via-slate-100/60 to-white/70 rounded-2xl border border-slate-400/40",
+  textareaFocusGlow: "absolute inset-0 bg-gradient-to-r from-slate-300/50 via-gray-200/40 to-slate-300/50 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
+  textareaBorder: "absolute inset-0 rounded-2xl bg-gradient-to-r from-slate-500/40 via-slate-600/40 to-slate-500/40 p-[1px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
+  textareaBorderInner: "w-full h-full bg-white/90 rounded-2xl",
+  textarea: "relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 bg-transparent text-slate-800 placeholder-slate-500/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden",
+  sendButton: (disabled: boolean) => `relative w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ease-out shadow-xl group ${disabled ? 'bg-slate-400/60 opacity-50 cursor-not-allowed shadow-none' : 'bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 hover:from-slate-600 hover:via-slate-700 hover:to-slate-800 hover:shadow-slate-600/50 hover:scale-105 active:scale-95 ring-2 ring-slate-500/30 hover:ring-slate-400/50'}`,
+  providerCard: "flex-shrink-0 w-72 xl:w-80 bg-gradient-to-br from-white/90 via-slate-50/80 to-gray-100/70 backdrop-blur-xl border border-slate-300/40 rounded-2xl p-5 hover:from-white/95 hover:to-slate-100/80 transition-all duration-300 group shadow-lg hover:shadow-xl",
+  typingBubble: "message-bubble bg-gradient-to-br from-white/90 via-slate-50/80 to-gray-100/70 backdrop-blur-xl border border-slate-300/40 rounded-2xl px-5 py-4 shadow-xl"
+};
+  // Select theme classes based on current theme
+  const themeClasses = theme === 'dark' ? darkThemeClasses : lightThemeClasses;
+
+  // =============================================================================
+  // REST OF THE COMPONENT LOGIC (UNCHANGED)
+  // =============================================================================
 
   // Mock AI responses with sophisticated conversation flow
   const aiResponses = [
@@ -156,7 +185,7 @@ const ChatInterface: React.FC = () => {
     }
   ];
 
-  // Mock Service Providers Data
+  // Mock Service Providers Data (unchanged)
   const mockServiceProviders: ServiceProvider[] = [
     {
       id: '1',
@@ -269,7 +298,7 @@ const ChatInterface: React.FC = () => {
   // Build/update prefilled message whenever selected provider changes
   useEffect(() => {
     if (waProvider) {
-      const base = `Hello ${waProvider.businessName}! I discovered your ${waProvider.category.toLowerCase()} services via HireLocalGPT. I have a requirement and would like to know availability & pricing.`;
+      const base = `Hello ${waProvider.businessName}! I discovered your ${waProvider.category.toLowerCase()} services via ServiceGPT. I have a requirement and would like to know availability & pricing.`;
       setWaPrefill(base + '\n\nDetails: [Add specifics here]\nTimeline: [e.g. ASAP / This week]\nBudget: [optional]\nLocation: [area]\n\nThanks!');
     }
   }, [waProvider]);
@@ -298,15 +327,20 @@ const ChatInterface: React.FC = () => {
     return `https://wa.me/${number}?text=${text}`;
   };
 
-  // Optimized orb initialization with staggered loading
+  // Optimized orb initialization with theme-specific colors
   useEffect(() => {
     const initOrbs = () => {
-      // Minimal orbs for better performance
-      const orbCategories = [
+      // Theme-specific orb colors
+      const orbCategories = theme === 'dark' ? [
         { name: 'plumbing', color: 'rgba(59, 130, 246, 0.15)', count: 1 },
         { name: 'electrical', color: 'rgba(168, 85, 247, 0.15)', count: 1 },
         { name: 'cleaning', color: 'rgba(34, 197, 94, 0.15)', count: 1 },
         { name: 'handyman', color: 'rgba(249, 115, 22, 0.15)', count: 1 }
+      ] : [
+        { name: 'plumbing', color: 'rgba(71, 85, 105, 0.15)', count: 1 },
+        { name: 'electrical', color: 'rgba(100, 116, 139, 0.15)', count: 1 },
+        { name: 'cleaning', color: 'rgba(51, 65, 85, 0.15)', count: 1 },
+        { name: 'handyman', color: 'rgba(79, 70, 229, 0.15)', count: 1 }
       ];
 
       const newOrbs: FloatingOrb[] = [];
@@ -314,11 +348,11 @@ const ChatInterface: React.FC = () => {
         for (let i = 0; i < category.count; i++) {
           newOrbs.push({
             id: `${category.name}-${i}`,
-            x: 20 + (categoryIndex * 25) + Math.random() * 10, // More controlled positioning
+            x: 20 + (categoryIndex * 25) + Math.random() * 10,
             y: 20 + Math.random() * 60,
-            size: 20 + Math.random() * 15, // Consistent smaller size
+            size: 20 + Math.random() * 15,
             color: category.color,
-            opacity: 0.1, // Very subtle
+            opacity: 0.1,
             category: category.name
           });
         }
@@ -326,7 +360,7 @@ const ChatInterface: React.FC = () => {
       setFloatingOrbs(newOrbs);
     };
 
-    // Luxury Premium CSS Animations
+    // Luxury Premium CSS Animations (theme-adaptive)
     const style = document.createElement('style');
     style.textContent = `
       /* Luxury Entrance Animations */
@@ -348,33 +382,76 @@ const ChatInterface: React.FC = () => {
         }
       }
       
+      /* Silver Metallic Header Animation (Light Theme Only) */
+      @keyframes silverHeaderShimmer {
+        0% {
+          background-position: -200% 0;
+          box-shadow: 0 4px 20px rgba(71, 85, 105, 0.2);
+        }
+        50% {
+          box-shadow: 0 8px 30px rgba(71, 85, 105, 0.35), 0 2px 15px rgba(148, 163, 184, 0.4);
+        }
+        100% {
+          background-position: 200% 0;
+          box-shadow: 0 4px 20px rgba(71, 85, 105, 0.2);
+        }
+      }
+      
+      /* Silver Footer Glow Animation (Light Theme Only) */
+      @keyframes silverFooterGlow {
+        0% {
+          box-shadow: 0 -8px 32px rgba(71, 85, 105, 0.15), 0 -4px 16px rgba(148, 163, 184, 0.2);
+        }
+        50% {
+          box-shadow: 0 -12px 48px rgba(71, 85, 105, 0.25), 0 -6px 24px rgba(148, 163, 184, 0.35), 0 0 30px rgba(203, 213, 225, 0.3);
+        }
+        100% {
+          box-shadow: 0 -8px 32px rgba(71, 85, 105, 0.15), 0 -4px 16px rgba(148, 163, 184, 0.2);
+        }
+      }
+      
+      /* Metallic Progress Dots Animation (Light Theme) */
+      @keyframes silverPulse {
+        0%, 100% {
+          transform: scale(1);
+          box-shadow: 0 0 8px rgba(71, 85, 105, 0.3);
+        }
+        50% {
+          transform: scale(1.1);
+          box-shadow: 0 0 16px rgba(71, 85, 105, 0.5), 0 0 25px rgba(148, 163, 184, 0.3);
+        }
+      }
+      
       @keyframes premiumMessageSlide {
         0% {
           opacity: 0;
           transform: translateX(-25px) scale(0.95) rotateY(5deg);
           filter: blur(3px);
+          box-shadow: 0 0 0 ${theme === 'dark' ? 'rgba(59, 130, 246, 0)' : 'rgba(71, 85, 105, 0)'};
         }
         40% {
           opacity: 0.7;
           transform: translateX(5px) scale(1.03) rotateY(-1deg);
           filter: blur(1px);
+          box-shadow: 0 10px 40px ${theme === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(71, 85, 105, 0.2)'};
         }
         100% {
           opacity: 1;
           transform: translateX(0) scale(1) rotateY(0deg);
           filter: blur(0px);
+          box-shadow: 0 8px 32px ${theme === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(71, 85, 105, 0.15)'};
         }
       }
       
       @keyframes luxuryGlow {
         0% {
-          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0), 0 8px 32px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 0 0 0 ${theme === 'dark' ? 'rgba(59, 130, 246, 0)' : 'rgba(71, 85, 105, 0)'}, 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         50% {
-          box-shadow: 0 0 30px 8px rgba(59, 130, 246, 0.4), 0 20px 60px rgba(59, 130, 246, 0.2), 0 0 80px rgba(147, 51, 234, 0.1);
+          box-shadow: 0 0 30px 8px ${theme === 'dark' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(71, 85, 105, 0.4)'}, 0 20px 60px ${theme === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(71, 85, 105, 0.2)'}, 0 0 80px ${theme === 'dark' ? 'rgba(147, 51, 234, 0.1)' : 'rgba(100, 116, 139, 0.1)'};
         }
         100% {
-          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0), 0 8px 32px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 0 0 0 ${theme === 'dark' ? 'rgba(59, 130, 246, 0)' : 'rgba(71, 85, 105, 0)'}, 0 8px 32px rgba(0, 0, 0, 0.1);
         }
       }
       
@@ -453,27 +530,24 @@ const ChatInterface: React.FC = () => {
       @keyframes premiumPulse {
         0%, 100% {
           transform: scale(1);
+          box-shadow: 0 0 0 0 ${theme === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(71, 85, 105, 0.3)'}, 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         50% {
           transform: scale(1.02);
+          box-shadow: 0 0 20px 5px ${theme === 'dark' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(71, 85, 105, 0.4)'}, 0 20px 60px ${theme === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(71, 85, 105, 0.2)'};
         }
       }
       
       @keyframes luxuryShimmer {
         0% {
           background-position: -200% 0;
-          opacity: 0.5;
-        }
-        50% {
-          opacity: 0.8;
         }
         100% {
           background-position: 200% 0;
-          opacity: 0.5;
         }
       }
       
-      /* Luxury Animation Classes */
+      /* Animation Classes */
       .animate-luxury-slideUp {
         animation: luxurySlideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
       }
@@ -502,20 +576,73 @@ const ChatInterface: React.FC = () => {
         animation: premiumPulse 2s ease-in-out infinite;
       }
       
+      /* Light Theme Specific Animations */
+      .animate-silver-header {
+        position: relative;
+        overflow: hidden;
+        animation: silverHeaderShimmer 4s ease-in-out infinite;
+      }
+      
+      .animate-silver-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(203, 213, 225, 0.4),
+          rgba(148, 163, 184, 0.6),
+          rgba(203, 213, 225, 0.4),
+          transparent
+        );
+        animation: luxuryShimmer 3s ease-in-out infinite;
+        z-index: 1;
+      }
+      
+      .animate-silver-footer {
+        position: relative;
+        overflow: hidden;
+        animation: silverFooterGlow 3s ease-in-out infinite;
+      }
+      
+      .animate-silver-footer::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(203, 213, 225, 0.3),
+          rgba(148, 163, 184, 0.5),
+          rgba(203, 213, 225, 0.3),
+          transparent
+        );
+        animation: luxuryShimmer 4s ease-in-out infinite reverse;
+        z-index: 1;
+      }
+      
+      .animate-silver-pulse {
+        animation: silverPulse 2s ease-in-out infinite;
+      }
+      
       .shimmer-effect {
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        background: linear-gradient(90deg, transparent, ${theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(71, 85, 105, 0.1)'}, transparent);
         background-size: 200% 100%;
         animation: luxuryShimmer 2s infinite;
       }
       
-      /* Premium orb animations */
       .luxury-orb {
         animation: premiumFloat 18s ease-in-out infinite;
         will-change: transform, opacity, filter;
         transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
       }
       
-      /* Premium Micro-interactions */
       .luxury-bubble {
         transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         backdrop-filter: blur(20px);
@@ -523,66 +650,8 @@ const ChatInterface: React.FC = () => {
       
       .luxury-bubble:hover {
         transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 40px ${theme === 'dark' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(71, 85, 105, 0.1)'};
         backdrop-filter: blur(24px);
-      }
-      
-      .luxury-input-container {
-        backdrop-filter: blur(20px);
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-      }
-      
-      .luxury-input-container:hover {
-        border-color: rgba(255, 255, 255, 0.3);
-      }
-      
-      .luxury-input-container.focused {
-        border-color: rgba(59, 130, 246, 0.5);
-      }
-      
-      .luxury-header {
-        backdrop-filter: blur(24px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      }
-      
-      /* Professional textarea styling with no scrollbar */
-      .luxury-textarea {
-        background: transparent !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        caret-color: #60a5fa;
-        color: white;
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-        font-weight: 400;
-        line-height: 1.6;
-      }
-      
-      /* Completely hide all scrollbars */
-      .luxury-textarea::-webkit-scrollbar {
-        display: none !important;
-        width: 0 !important;
-        background: transparent !important;
-      }
-      
-      .luxury-textarea::selection {
-        background-color: rgba(96, 165, 250, 0.3);
-        color: white;
-      }
-      
-      .luxury-textarea::placeholder {
-        color: rgba(255, 255, 255, 0.4);
-        font-weight: 300;
-      }
-      
-      /* Luxury Shimmer Effect */
-      @keyframes shimmer {
-        0% {
-          transform: translateX(-100%) skewX(12deg);
-        }
-        100% {
-          transform: translateX(200%) skewX(12deg);
-        }
       }
       
       .animate-shimmer {
@@ -600,7 +669,7 @@ const ChatInterface: React.FC = () => {
         background: linear-gradient(
           90deg,
           transparent,
-          rgba(255, 255, 255, 0.3),
+          ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(71, 85, 105, 0.3)'},
           transparent
         );
         animation: shimmer 2s infinite;
@@ -609,7 +678,6 @@ const ChatInterface: React.FC = () => {
     `;
     document.head.appendChild(style);
 
-    // Staggered initialization for ultra-smooth loading
     const initTimer = setTimeout(() => {
       setIsReady(true);
     }, 100);
@@ -626,7 +694,7 @@ const ChatInterface: React.FC = () => {
         document.head.removeChild(style);
       }
     };
-  }, []); // Empty dependency array is intentional - only run once on mount
+  }, [theme]); // Re-run when theme changes
 
   // Track whether user is viewing bottom; only autoscroll if they are (improves mobile UX)
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -647,8 +715,7 @@ const ChatInterface: React.FC = () => {
     const c = messagesContainerRef.current;
     if (!c) return;
     const handleScroll = () => {
-      // Larger threshold for mobile devices due to different scrolling behavior
-      const threshold = window.innerWidth <= 768 ? 120 : 64; // px tolerance
+      const threshold = window.innerWidth <= 768 ? 120 : 64;
       const atBottom = c.scrollHeight - c.scrollTop - c.clientHeight < threshold;
       setIsAtBottom(atBottom);
     };
@@ -662,10 +729,8 @@ const ChatInterface: React.FC = () => {
     const c = messagesContainerRef.current;
     if (!c) return;
 
-    // Check if this is a mobile device
     const isMobile = window.innerWidth <= 768;
     
-    // More aggressive auto-scroll on mobile, or when user is at bottom
     if (isMobile || isAtBottom) {
       const id = requestAnimationFrame(() => {
         c.scrollTop = c.scrollHeight;
@@ -677,7 +742,6 @@ const ChatInterface: React.FC = () => {
   // Professional conversation initialization
   useEffect(() => {
     if (messages.length === 0 && isReady) {
-      // Staggered message loading for smooth UX
       const welcomeTimer = setTimeout(() => {
         const welcomeMessage: Message = {
           id: 'welcome',
@@ -690,11 +754,9 @@ const ChatInterface: React.FC = () => {
         setMessages([welcomeMessage]);
         setConversationStep(1);
         
-        // Handle initial message from dashboard
         if (initialMessage) {
           setHasInitialMessage(true);
           
-          // Add user message with perfect timing
           setTimeout(() => {
             const userMessage: Message = {
               id: 'initial-user',
@@ -706,7 +768,6 @@ const ChatInterface: React.FC = () => {
             setMessages(prev => [...prev, userMessage]);
             setConversationStep(2);
             
-            // AI response with optimized timing
             setTimeout(() => {
               setMessageAnimating(true);
               
@@ -743,16 +804,15 @@ const ChatInterface: React.FC = () => {
                 setMessages(prev => [...prev, aiMessage]);
                 setConversationStep(3);
                 setMessageAnimating(false);
-              }, 600); // Optimized AI thinking time
-            }, 400); // Brief pause after user message
-          }, 800); // Time for welcome message to settle
+              }, 600);
+            }, 400);
+          }, 800);
         }
-      }, 200); // Initial delay for smooth page load
+      }, 200);
       
       return () => clearTimeout(welcomeTimer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady]); // Only depend on isReady
+  }, [isReady]);
 
   // Update orb activity based on conversation
   useEffect(() => {
@@ -770,10 +830,8 @@ const ChatInterface: React.FC = () => {
   const handleSendMessage = async (content: string) => {
     if (!content.trim() || isTyping || messageAnimating) return;
 
-    // Instant feedback with smooth UX
     setInputValue('');
     
-    // Add user message immediately
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       type: 'user',
@@ -783,7 +841,6 @@ const ChatInterface: React.FC = () => {
 
     setMessages(prev => [...prev, userMessage]);
     
-    // Force scroll on mobile after sending message
     setTimeout(() => {
       const c = messagesContainerRef.current;
       if (c && window.innerWidth <= 768) {
@@ -791,43 +848,37 @@ const ChatInterface: React.FC = () => {
       }
     }, 100);
     
-    // Optimized timing for natural conversation flow
     setTimeout(() => {
       setIsTyping(true);
     }, 150);
 
-    // Perfect timing for natural conversation
     setTimeout(() => {
       setIsTyping(false);
       
-      // Detect service category from user input
       const detectedCategory = detectServiceCategory(content);
       let aiResponse;
       let includeServiceProviders = false;
       
       if (detectedCategory && conversationStep === 1) {
-        // First user message - respond based on detected category
         if (detectedCategory === 'plumbing') {
-          aiResponse = aiResponses[1]; // Plumbing response
+          aiResponse = aiResponses[1];
         } else if (detectedCategory === 'electrical') {
-          aiResponse = aiResponses[3]; // Electrical response
+          aiResponse = aiResponses[3];
         } else if (detectedCategory === 'cleaning') {
-          aiResponse = aiResponses[4]; // Cleaning response
+          aiResponse = aiResponses[4];
         } else if (detectedCategory === 'handyman') {
-          aiResponse = aiResponses[5]; // Handyman response
+          aiResponse = aiResponses[5];
         } else {
-          aiResponse = aiResponses[1]; // Default to plumbing
+          aiResponse = aiResponses[1];
         }
         setActiveCategory(detectedCategory);
       } else if (conversationStep >= 2) {
-        // Show service providers after budget/timeline discussion
         aiResponse = {
           content: "Perfect! Based on your requirements, I've found several qualified professionals in your area. Here are the top-rated providers who can help you with your plumbing needs:",
           suggestions: []
         };
         includeServiceProviders = true;
       } else {
-        // Use sequential responses for follow-up questions
         aiResponse = aiResponses[Math.min(conversationStep, aiResponses.length - 1)];
       }
 
@@ -847,7 +898,7 @@ const ChatInterface: React.FC = () => {
 
       setMessages(prev => [...prev, aiMessage]);
       setConversationStep(prev => prev + 1);
-    }, 700); // Optimized for natural feel
+    }, 700);
   };
 
   const detectServiceCategory = (content: string): string | null => {
@@ -878,14 +929,12 @@ const ChatInterface: React.FC = () => {
     }
   };
   
-  // Focus input after AI response for better UX
   useEffect(() => {
     if (!isTyping && !messageAnimating && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isTyping, messageAnimating]);
   
-  // Handle typing bubble with delay and cleanup
   useEffect(() => {
     if (inputValue.trim() && !isTyping && !messageAnimating) {
       const timer = setTimeout(() => {
@@ -900,7 +949,6 @@ const ChatInterface: React.FC = () => {
     }
   }, [inputValue, isTyping, messageAnimating]);
   
-  // Initialize luxury textarea
   useEffect(() => {
     const textarea = inputRef.current;
     if (textarea) {
@@ -911,14 +959,11 @@ const ChatInterface: React.FC = () => {
   }, []);
 
   return (
-    // Use dynamic viewport height for mobile (avoids 100vh issues with browser chrome)
-    <div className="min-h-[calc(var(--app-vh,1vh)*100)] bg-black relative overflow-hidden">
+    <div className={themeClasses.mainContainer}>
       {/* Cosmic Background Effects */}
       <div className="absolute inset-0">
-        {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-black"></div>
+        <div className={themeClasses.backgroundGradient}></div>
         
-        {/* Ultra-smooth floating orbs */}
         {!isInitializing && floatingOrbs.map((orb, index) => (
           <div
             key={orb.id}
@@ -937,12 +982,12 @@ const ChatInterface: React.FC = () => {
           />
         ))}
 
-        {/* Animated grid */}
+        {/* Animated grid with theme-specific colors */}
         <div className="absolute inset-0 opacity-5">
           <div className="w-full h-full" style={{
             backgroundImage: `
-              linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
+              linear-gradient(${theme === 'dark' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(71, 85, 105, 0.1)'} 1px, transparent 1px),
+              linear-gradient(90deg, ${theme === 'dark' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(71, 85, 105, 0.1)'} 1px, transparent 1px)
             `,
             backgroundSize: '50px 50px'
           }}></div>
@@ -950,62 +995,38 @@ const ChatInterface: React.FC = () => {
       </div>
 
       {/* Main Chat Container */}
-      <div className={`relative z-10 flex flex-col h-[calc(var(--app-vh,1vh)*100)] overflow-hidden ${
-        theme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
-      }`}>
+      <div className="relative z-10 flex flex-col h-[calc(var(--app-vh,1vh)*100)] overflow-hidden">
         {/* Fixed Header with glassmorphic design */}
-        <div className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl p-3 sm:p-4 pt-safe ${
-          theme === 'light'
-            ? 'bg-white/30 border-b border-gray-400/30 shadow-lg'
-            : 'bg-white/5 border-b border-white/10'
-        }`}>
-          <div className="flex items-center justify-between">
+        <div className={`${themeClasses.header} ${theme === 'light' ? 'animate-silver-header' : ''}`}>
+          <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl backdrop-blur-sm border flex items-center justify-center hover:bg-white/20 transition-all duration-300 ${
-                  theme === 'light'
-                    ? 'bg-white/40 border-gray-400/40 text-gray-800 hover:bg-white/60'
-                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                }`}
+                className={themeClasses.headerButton}
               >
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <div>
-                <h1 className={`text-lg sm:text-xl font-bold ${
-                  theme === 'light' ? 'text-slate-900' : 'text-white'
-                }`}>Conversational Cosmos</h1>
-                <p className={`text-xs sm:text-sm ${
-                  theme === 'light' ? 'text-blue-600' : 'text-blue-300'
-                }`}>AI Service Discovery</p>
+                <h1 className={themeClasses.headerTitle}>Conversational Cosmos</h1>
+                <p className={themeClasses.headerSubtitle}>AI Service Discovery</p>
               </div>
             </div>
             
-            {/* Progress Visualization and Theme Switcher */}
-            <div className="flex items-center space-x-4">
-              {/* Progress dots */}
-              <div className="flex items-center space-x-2">
-                {[...Array(5)].map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                      index < conversationStep 
-                        ? 'bg-blue-400 shadow-lg shadow-blue-400/50' 
-                        : 'bg-white/20'
-                    }`}
-                  />
-                ))}
-              </div>
+            {/* Progress Visualization */}
+            <div className="flex items-center space-x-2">
+              {[...Array(5)].map((_, index) => (
+                <div
+                  key={index}
+                  className={`${themeClasses.progressDot(index < conversationStep)} ${theme === 'light' && index < conversationStep ? 'animate-silver-pulse' : ''}`}
+                />
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Messages Container with Dynamic Bottom Padding - Account for fixed header and input */}
-        <div ref={messagesContainerRef} className={`flex-1 overflow-y-auto pt-24 sm:pt-28 pb-56 sm:pb-60 px-3 sm:px-4 space-y-5 sm:space-y-6 scroll-smooth ${
-          theme === 'light' ? 'bg-gradient-to-br from-slate-300 to-slate-400' : ''
-        }`}>
+        {/* Messages Container with Dynamic Bottom Padding */}
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto pt-24 sm:pt-28 pb-56 sm:pb-60 px-3 sm:px-4 space-y-5 sm:space-y-6 scroll-smooth">
           {messages.map((message, index) => {
-            // Check if this is the first user message (from dashboard)
             const isInitialUserMessage = message.type === 'user' && 
               hasInitialMessage && 
               messages.filter(m => m.type === 'user').indexOf(message) === 0;
@@ -1029,38 +1050,44 @@ const ChatInterface: React.FC = () => {
                   <div className={`flex items-end space-x-3 ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white/10 ${
                       message.type === 'user' 
-                        ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600' 
-                        : 'bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500'
+                        ? themeClasses.avatarUser
+                        : themeClasses.avatarAI
                     }`}>
                       {message.type === 'user' ? 
-                        <User className="w-4 h-4 text-white drop-shadow-sm" /> : 
+                        <User className={`w-4 h-4 ${theme === 'dark' ? 'text-white' : 'text-white'} drop-shadow-sm`} /> : 
                         <div className="relative">
-                          {/* Custom AI Brain Icon */}
-                          <svg className="w-5 h-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor">
+                          <svg className={`w-5 h-5 ${theme === 'dark' ? 'text-white' : 'text-white'} drop-shadow-sm`} viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.19 0 2.34-.21 3.41-.6.3-.11.49-.4.49-.72v-.68c0-.41-.33-.75-.75-.75-.19 0-.37.07-.5.19-.74.27-1.54.41-2.37.41-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6c0 .83-.14 1.63-.41 2.37-.12.13-.19.31-.19.5 0 .42.34.75.75.75h.68c.32 0 .61-.19.72-.49.39-1.07.6-2.22.6-3.41C22 6.48 17.52 2 12 2z"/>
                             <circle cx="9" cy="10" r="1.5"/>
                             <circle cx="15" cy="10" r="1.5"/>
                             <path d="M12 14.5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 2.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5z"/>
                             <path d="M8.5 12.5h7c.28 0 .5.22.5.5s-.22.5-.5.5h-7c-.28 0-.5-.22-.5-.5s.22-.5.5-.5z"/>
                           </svg>
-                          {/* Subtle pulse animation for AI */}
                           <div className="absolute inset-0 rounded-full bg-white/20 animate-ping opacity-20"></div>
                         </div>
                       }
                     </div>
                     
-                    {/* Enhanced Professional Message Bubble - Single Border Only */}
+                    {/* Enhanced Professional Message Bubble */}
                     <div className={`relative message-bubble transition-all duration-300 ease-out hover:scale-[1.01] ${
                       message.type === 'user'
-                        ? theme === 'light' 
-                          ? 'bg-blue-500/80 text-white shadow-lg'
-                          : 'bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/20'
-                        : theme === 'light'
-                          ? 'bg-slate-200/90 text-slate-900 shadow-xl border border-slate-400/30'
-                          : 'bg-white/[0.08] backdrop-blur-2xl border border-white/20 text-white shadow-xl'
+                        ? themeClasses.userMessageBubble
+                        : themeClasses.aiMessageBubble
                     } rounded-2xl px-4 py-3 sm:px-5 sm:py-4 ${
                       isInitialUserMessage ? 'animate-messageGlow' : ''
                     }`}>
+                      {/* Enhanced glassmorphic effect for AI messages */}
+                      {message.type === 'ai' && (
+                        <>
+                          <div className={themeClasses.aiMessageGradient}></div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent rounded-2xl"></div>
+                        </>
+                      )}
+                      
+                      {/* User message glow effect */}
+                      {message.type === 'user' && (
+                        <div className={themeClasses.userMessageGlow}></div>
+                      )}
                       
                       <div className="relative z-10">
                         <p className="whitespace-pre-wrap text-[14px] sm:text-[15px] leading-relaxed font-medium tracking-wide md:leading-[1.55]">{message.content}</p>
@@ -1069,34 +1096,22 @@ const ChatInterface: React.FC = () => {
                         {message.serviceProviders && message.serviceProviders.length > 0 && (
                           <div className="mt-6">
                             <div className="flex items-center justify-between mb-4">
-                              <h3 className={`text-base sm:text-lg font-semibold flex items-center ${
-                                theme === 'light' ? 'text-slate-900' : 'text-white'
-                              }`}>
+                              <h3 className={`text-base sm:text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'} flex items-center`}>
                                 <Sparkles className="w-5 h-5 mr-2 text-yellow-400" />
                                 Top Providers for You
                               </h3>
-                              <span className={`text-xs sm:text-sm px-2.5 py-0.5 rounded-full ${
-                                theme === 'light' 
-                                  ? 'text-blue-700 bg-blue-200/60' 
-                                  : 'text-blue-200 bg-blue-500/20'
-                              }`}>
+                              <span className={`text-xs sm:text-sm ${theme === 'dark' ? 'text-blue-200 bg-blue-500/20' : 'text-slate-600 bg-slate-200/60'} px-2.5 py-0.5 rounded-full`}>
                                 {message.serviceProviders.length} found
                               </span>
                             </div>
                             
-                            {/* Responsive Container - Horizontal on Desktop, Vertical on Mobile */}
+                            {/* Desktop Horizontal Layout */}
                             <div className="hidden md:block overflow-x-auto pb-4">
-                              {/* Desktop Horizontal Layout */}
                               <div className="flex space-x-4 w-max pr-2">
                                 {message.serviceProviders.slice(0, 4).map((provider) => (
-                                  <div key={provider.id} className={`flex-shrink-0 w-72 xl:w-80 backdrop-blur-xl rounded-2xl p-5 transition-all duration-300 group shadow-xl hover:shadow-2xl ${
-                                    theme === 'light'
-                                      ? 'bg-slate-400/70 border border-slate-500/40 hover:bg-slate-400/80'
-                                      : 'bg-gradient-to-br from-white/8 to-white/4 border border-white/20 hover:from-white/12 hover:to-white/8'
-                                  }`}>
-                                    {/* Header Section */}
+                                  <div key={provider.id} className={themeClasses.providerCard}>
+                                    {/* Provider Card Content - theme-adaptive text colors */}
                                     <div className="flex items-center space-x-4 mb-4">
-                                      {/* Provider Image */}
                                       <div className="relative flex-shrink-0">
                                         <div className="w-14 h-14 rounded-xl overflow-hidden ring-2 ring-white/20 group-hover:ring-blue-400/50 transition-all duration-300">
                                           <img
@@ -1117,21 +1132,16 @@ const ChatInterface: React.FC = () => {
                                         )}
                                       </div>
                                       
-                                      {/* Provider Basic Info */}
                                       <div className="flex-1 min-w-0">
-                                        <h4 className={`font-bold text-sm sm:text-base truncate mb-1 ${
-                                          theme === 'light' ? 'text-slate-900' : 'text-white'
-                                        }`}>{provider.businessName}</h4>
-                                        <p className={`text-xs sm:text-sm mb-2 ${
-                                          theme === 'light' ? 'text-blue-600' : 'text-blue-200'
-                                        }`}>{provider.category}</p>
+                                        <h4 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'} text-sm sm:text-base truncate mb-1`}>{provider.businessName}</h4>
+                                        <p className={`${theme === 'dark' ? 'text-blue-200' : 'text-slate-600'} text-xs sm:text-sm mb-2`}>{provider.category}</p>
                                         <div className="flex items-center space-x-3 text-xs">
                                           <div className="flex items-center space-x-1">
                                             <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                                            <span className={`font-semibold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
-                                            <span className={theme === 'light' ? 'text-slate-700' : 'text-blue-200'}>({provider.reviewCount})</span>
+                                            <span className={`${theme === 'dark' ? 'text-white' : 'text-slate-800'} font-semibold`}>{provider.rating}</span>
+                                            <span className={theme === 'dark' ? 'text-blue-200' : 'text-slate-600'}>({provider.reviewCount})</span>
                                           </div>
-                                          <div className={`flex items-center ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
+                                          <div className={`flex items-center ${theme === 'dark' ? 'text-blue-200' : 'text-slate-600'}`}>
                                             <MapPin className="w-3 h-3 mr-1" />
                                             {provider.distance}
                                           </div>
@@ -1141,24 +1151,24 @@ const ChatInterface: React.FC = () => {
                                     
                                     {/* Stats Row */}
                                     <div className="grid grid-cols-3 gap-3 mb-4 text-center">
-                                      <div className={`rounded-lg p-2 ${theme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
+                                      <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-slate-200/40'} rounded-lg p-2`}>
                                         <div className="text-green-400 font-bold text-xs sm:text-sm">{provider.priceRange}</div>
-                                        <div className={`text-[10px] sm:text-xs ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Price</div>
+                                        <div className={`${theme === 'dark' ? 'text-blue-200' : 'text-slate-600'} text-[10px] sm:text-xs`}>Price</div>
                                       </div>
-                                      <div className={`rounded-lg p-2 ${theme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
-                                        <div className="text-blue-300 font-bold text-xs sm:text-sm flex items-center justify-center">
+                                      <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-slate-200/40'} rounded-lg p-2`}>
+                                        <div className={`${theme === 'dark' ? 'text-blue-300' : 'text-slate-700'} font-bold text-xs sm:text-sm flex items-center justify-center`}>
                                           <Clock className="w-3 h-3 mr-1" />
                                           {provider.responseTime}
                                         </div>
-                                        <div className={`text-xs ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Response</div>
+                                        <div className={`${theme === 'dark' ? 'text-blue-200' : 'text-slate-600'} text-xs`}>Response</div>
                                       </div>
-                                      <div className={`rounded-lg p-2 ${theme === 'light' ? 'bg-white/40' : 'bg-white/5'}`}>
-                                        <div className="text-purple-300 font-bold text-xs sm:text-sm">{provider.completedJobs}</div>
-                                        <div className={`text-[10px] sm:text-xs ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>Jobs</div>
+                                      <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-slate-200/40'} rounded-lg p-2`}>
+                                        <div className={`${theme === 'dark' ? 'text-purple-300' : 'text-slate-700'} font-bold text-xs sm:text-sm`}>{provider.completedJobs}</div>
+                                        <div className={`${theme === 'dark' ? 'text-blue-200' : 'text-slate-600'} text-[10px] sm:text-xs`}>Jobs</div>
                                       </div>
                                     </div>
                                     
-                                    <div className="mt-1 mb-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                    <div className={`mt-1 mb-4 h-px bg-gradient-to-r from-transparent via-${theme === 'dark' ? 'white' : 'slate-400'}/10 to-transparent`} />
                                     
                                     {/* Action Buttons */}
                                     <div className="space-y-2">
@@ -1173,7 +1183,7 @@ const ChatInterface: React.FC = () => {
                                         <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-1.5 sm:px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
                                           <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         </button>
-                                        <button className="bg-white/10 hover:bg-white/20 text-white py-2 px-1.5 sm:px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
+                                        <button className={`${theme === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-slate-200/60 hover:bg-slate-300/60'} text-white py-2 px-1.5 sm:px-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center`}>
                                           <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         </button>
                                       </div>
@@ -1186,14 +1196,9 @@ const ChatInterface: React.FC = () => {
                             {/* Mobile Vertical Layout */}
                             <div className="md:hidden space-y-4">
                               {message.serviceProviders.slice(0, 3).map((provider) => (
-                                <div key={provider.id} className={`backdrop-blur-xl rounded-2xl p-3 transition-all duration-300 group shadow-xl ${
-                                  theme === 'light'
-                                    ? 'bg-slate-400/70 border border-slate-500/40 hover:bg-slate-400/80'
-                                    : 'bg-gradient-to-br from-white/8 to-white/4 border border-white/20 hover:from-white/12 hover:to-white/8'
-                                }`}>
-                                  {/* Mobile Header */}
+                                <div key={provider.id} className={themeClasses.providerCard}>
+                                  {/* Mobile provider card content with theme-adaptive colors */}
                                   <div className="flex items-start space-x-3 mb-3">
-                                    {/* Provider Image */}
                                     <div className="relative flex-shrink-0">
                                       <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-white/20 group-hover:ring-blue-400/50 transition-all duration-300">
                                         <img
@@ -1214,23 +1219,21 @@ const ChatInterface: React.FC = () => {
                                       )}
                                     </div>
                                     
-                                    {/* Provider Info */}
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-start justify-between mb-1">
                                         <div className="flex-1 min-w-0">
-                                          <h4 className={`font-bold text-xs truncate ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.businessName}</h4>
-                                          <p className={`text-[11px] ${theme === 'light' ? 'text-blue-600' : 'text-blue-200'}`}>{provider.category}</p>
+                                          <h4 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'} text-xs truncate`}>{provider.businessName}</h4>
+                                          <p className={`${theme === 'dark' ? 'text-blue-200' : 'text-slate-600'} text-[11px]`}>{provider.category}</p>
                                         </div>
                                         <div className="text-right flex-shrink-0 ml-2">
                                           <div className="flex items-center space-x-1">
                                             <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                                            <span className={`font-semibold text-xs ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{provider.rating}</span>
+                                            <span className={`${theme === 'dark' ? 'text-white' : 'text-slate-800'} font-semibold text-xs`}>{provider.rating}</span>
                                           </div>
                                         </div>
                                       </div>
                                       
-                                      {/* Mobile Stats */}
-                                      <div className={`flex items-center space-x-2 text-[11px] mb-2 ${theme === 'light' ? 'text-slate-700' : 'text-blue-200'}`}>
+                                      <div className={`flex items-center space-x-2 text-[11px] ${theme === 'dark' ? 'text-blue-200' : 'text-slate-600'} mb-2`}>
                                         <span className="text-green-400 font-medium">{provider.priceRange}</span>
                                         <div className="flex items-center">
                                           <Clock className="w-3 h-3 mr-1" />
@@ -1244,9 +1247,8 @@ const ChatInterface: React.FC = () => {
                                     </div>
                                   </div>
                                   
-                                  <div className="mb-2 h-px bg-white/10" />
+                                  <div className={`mb-2 h-px ${theme === 'dark' ? 'bg-white/10' : 'bg-slate-300/40'}`} />
                                   
-                                  {/* Mobile Actions */}
                                   <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
                                     <button className="col-span-2 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg font-medium transition-all duration-300 text-[10px] sm:text-xs flex items-center justify-center space-x-1">
                                       <ExternalLink className="w-3 h-3" />
@@ -1291,11 +1293,7 @@ const ChatInterface: React.FC = () => {
                               <button
                                 key={idx}
                                 onClick={() => handleSuggestionClick(suggestion)}
-                                className={`px-3 py-2 sm:px-4 sm:py-2.5 backdrop-blur-sm border rounded-lg transition-all duration-300 text-[12px] sm:text-[13px] font-medium shadow-md flex items-center gap-2 group cursor-pointer ${
-                                  theme === 'light'
-                                    ? 'bg-white/50 border-gray-400/50 text-gray-800 hover:bg-white/70 hover:border-blue-300/50 hover:text-blue-600 hover:shadow-lg hover:scale-105'
-                                    : 'bg-white/8 border-white/15 text-blue-200 hover:bg-white/15 hover:border-blue-400/40 hover:text-white hover:shadow-blue-500/10'
-                                }`}
+                                className={`px-3 py-2 sm:px-4 sm:py-2.5 ${theme === 'dark' ? 'bg-white/8 border-white/15 text-blue-200 hover:bg-white/15 hover:border-blue-400/40 hover:text-white' : 'bg-slate-200/60 border-slate-300/40 text-slate-700 hover:bg-slate-300/70 hover:border-slate-500/40 hover:text-slate-800'} backdrop-blur-sm border rounded-lg transition-all duration-300 text-[12px] sm:text-[13px] font-medium shadow-md hover:shadow-blue-500/10 flex items-center gap-2 group`}
                               >
                                 <span className="whitespace-nowrap group-hover:translate-x-0.5 transition-transform duration-300">{suggestion}</span>
                                 <svg className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1310,8 +1308,8 @@ const ChatInterface: React.FC = () => {
                       {/* Enhanced timestamp */}
                       <div className={`text-xs mt-3 flex items-center space-x-2 ${
                         message.type === 'user' 
-                          ? theme === 'light' ? 'text-blue-600/70' : 'text-blue-200/70'
-                          : theme === 'light' ? 'text-slate-700/60' : 'text-white/40'
+                          ? (theme === 'dark' ? 'text-blue-200/70' : 'text-white/80')
+                          : (theme === 'dark' ? 'text-white/40' : 'text-slate-500/70')
                       }`}>
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -1321,7 +1319,7 @@ const ChatInterface: React.FC = () => {
                           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                         {message.type === 'ai' && (
-                          <span className={theme === 'light' ? 'text-slate-600/50' : 'text-white/30'}>• AI Response</span>
+                          <span className={theme === 'dark' ? 'text-white/30' : 'text-slate-500/50'}>• AI Response</span>
                         )}
                       </div>
                     </div>
@@ -1336,25 +1334,20 @@ const ChatInterface: React.FC = () => {
             <div className="flex justify-start animate-fadeInSmooth">
               <div className="max-w-xs lg:max-w-md mr-12">
                 <div className="flex items-end space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg ring-2 ring-white/10">
+                  <div className={`w-8 h-8 rounded-full ${themeClasses.avatarAI} flex items-center justify-center shadow-lg ring-2 ring-white/10`}>
                     <div className="relative">
-                      {/* Custom AI Brain Icon */}
-                      <svg className="w-5 h-5 text-white drop-shadow-sm animate-pulse" viewBox="0 0 24 24" fill="currentColor">
+                      <svg className={`w-5 h-5 ${theme === 'dark' ? 'text-white' : 'text-white'} drop-shadow-sm animate-pulse`} viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.19 0 2.34-.21 3.41-.6.3-.11.49-.4.49-.72v-.68c0-.41-.33-.75-.75-.75-.19 0-.37.07-.5.19-.74.27-1.54.41-2.37.41-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6c0 .83-.14 1.63-.41 2.37-.12.13-.19.31-.19.5 0 .42.34.75.75.75h.68c.32 0 .61-.19.72-.49.39-1.07.6-2.22.6-3.41C22 6.48 17.52 2 12 2z"/>
                         <circle cx="9" cy="10" r="1.5"/>
                         <circle cx="15" cy="10" r="1.5"/>
                         <path d="M12 14.5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 2.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5z"/>
                         <path d="M8.5 12.5h7c.28 0 .5.22.5.5s-.22.5-.5.5h-7c-.28 0-.5-.22-.5-.5s.22-.5.5-.5z"/>
                       </svg>
-                      {/* Enhanced thinking animation */}
                       <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-spin"></div>
                     </div>
                   </div>
-                  <div className={`message-bubble backdrop-blur-2xl rounded-2xl px-5 py-4 shadow-xl ${
-                    theme === 'light' 
-                      ? 'bg-slate-200/90 text-slate-900 border border-slate-400/30'
-                      : 'bg-white/[0.08] border border-white/20 text-white'
-                  }`}>
+                  <div className={themeClasses.typingBubble}>
+                    <div className={themeClasses.aiMessageGradient}></div>
                     <div className="relative z-10">
                       <div className="flex items-center space-x-3">
                         <div className="flex items-center space-x-1">
@@ -1362,9 +1355,7 @@ const ChatInterface: React.FC = () => {
                           <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
                           <div className="w-2 h-2 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                         </div>
-                        <span className={`text-sm font-medium ${
-                          theme === 'light' ? 'text-blue-600/80' : 'text-blue-300/80'
-                        }`}>
+                        <span className={`text-sm ${theme === 'dark' ? 'text-blue-300/80' : 'text-slate-600/80'} font-medium`}>
                           {messageAnimating ? 'Analyzing your request...' : 'AI is thinking...'}
                         </span>
                       </div>
@@ -1380,14 +1371,10 @@ const ChatInterface: React.FC = () => {
             <div className="flex justify-end animate-fadeInSmooth">
               <div className="max-w-xs lg:max-w-md ml-12">
                 <div className="flex items-end space-x-3 flex-row-reverse space-x-reverse">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className={`w-8 h-8 rounded-full ${themeClasses.avatarUser} flex items-center justify-center`}>
                     <User className="w-4 h-4 text-white" />
                   </div>
-                  <div className={`rounded-2xl px-4 py-3 backdrop-blur-xl ${
-                    theme === 'light' 
-                      ? 'bg-slate-200/80 text-slate-900 border border-slate-300/40'
-                      : 'bg-gradient-to-r from-blue-600/70 to-purple-600/70 text-white border border-blue-400/30'
-                  }`}>
+                  <div className={`${themeClasses.userMessageBubble} backdrop-blur-xl border border-blue-400/30 rounded-2xl px-4 py-3 text-white`}>
                     <div className="flex items-center space-x-2">
                       <span className="text-sm opacity-80">{typingText.substring(0, 30)}{typingText.length > 30 ? '...' : ''}</span>
                       <div className="flex space-x-1">
@@ -1404,26 +1391,23 @@ const ChatInterface: React.FC = () => {
           
         </div>
 
-        {/* Fixed Input Area */}
-        <div className="fixed bottom-0 left-0 right-0 z-40 pb-safe">
-          {/* Gradient background */}
-          <div className={`absolute inset-0 ${
-            theme === 'light'
-              ? 'bg-gradient-to-t from-slate-300/60 via-slate-200/40 to-transparent'
-              : 'bg-gradient-to-t from-black/60 via-gray-900/40 to-transparent'
-          }`}></div>
+        {/* Fixed Luxury Premium Input Area */}
+        <div className={themeClasses.inputArea}>
+          <div className={themeClasses.inputBackground}></div>
           
-          {/* Glassmorphic container */}
-          <div className={`relative backdrop-blur-2xl p-2.5 sm:p-3 md:p-4 ${
-            theme === 'light'
-              ? 'bg-slate-200/70 border-t border-slate-400/40 shadow-lg'
-              : 'bg-gradient-to-r from-white/8 via-white/5 to-white/8 border-t border-white/20'
-          }`}>
+          <div className={themeClasses.inputContainer}>
+            <div className={themeClasses.inputGlow}></div>
+            
             <div className="relative z-10">
-              {/* Main input container */}
               <div className="flex items-end space-x-2 sm:space-x-3 md:space-x-4 mb-2 sm:mb-3">
-                {/* Luxury text input with sophisticated styling */}
                 <div className="flex-1 relative group">
+                  <div className={themeClasses.textareaBackground}></div>
+                  <div className={themeClasses.textareaFocusGlow}></div>
+                  
+                  <div className={themeClasses.textareaBorder}>
+                    <div className={themeClasses.textareaBorderInner}></div>
+                  </div>
+                  
                   <textarea
                     ref={inputRef}
                     value={inputValue}
@@ -1434,16 +1418,12 @@ const ChatInterface: React.FC = () => {
                     rows={1}
                     spellCheck={false}
                     autoComplete="off"
-                    className={`relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden ${
-                      theme === 'light'
-                        ? 'bg-slate-200/70 backdrop-blur-lg text-slate-900 placeholder-slate-700 border border-slate-400/40 rounded-xl hover:bg-slate-200/80 focus:bg-slate-200/90 focus:border-blue-300/50 focus:shadow-lg'
-                        : 'bg-transparent text-white placeholder-white/50 bg-gradient-to-r from-gray-800/50 via-gray-700/30 to-gray-800/50 rounded-2xl border border-white/20'
-                    }`}
+                    className={themeClasses.textarea}
                     style={{ 
                       height: '48px',
                       minHeight: '48px',
                       fontFamily: 'Inter, system-ui, sans-serif',
-                      fontSize: '16px', // Prevent iOS zoom
+                      fontSize: '16px',
                       WebkitAppearance: 'none',
                       scrollbarWidth: 'none',
                       msOverflowStyle: 'none'
@@ -1461,35 +1441,26 @@ const ChatInterface: React.FC = () => {
                     }}
                   />
                   
-                  {/* Action button */}
-                  <button className={`absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 backdrop-blur-xl rounded-lg flex items-center justify-center transition-all duration-300 ${
-                    theme === 'light'
-                      ? 'bg-gradient-to-r from-white/60 to-gray-200/60 border border-gray-300/50 text-gray-700 hover:text-blue-600 hover:from-white/70 hover:to-blue-50/70 hover:border-blue-300/50 hover:scale-105 hover:shadow-lg group'
-                      : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
-                  }`}>
-                    <Mic className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:scale-110`} />
+                  <button className={`absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700/80 to-gray-600/80 border-white/15 text-white/90 hover:text-white hover:from-blue-600/70 hover:to-purple-600/70 hover:border-blue-400/40' : 'bg-gradient-to-r from-slate-300/80 to-slate-400/80 border-slate-400/40 text-slate-700 hover:text-slate-800 hover:from-slate-400/80 hover:to-slate-500/80 hover:border-slate-600/40'} backdrop-blur-sm border rounded-lg flex items-center justify-center hover:scale-105 transition-all duration-300 shadow-md hover:shadow-blue-500/20`}>
+                    <Mic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                   
-                  {/* Typing indicator */}
                   {inputValue && (
-                    <div className={`absolute bottom-1.5 sm:bottom-2 left-4 sm:left-6 text-[10px] sm:text-xs ${
-                      theme === 'light' ? 'text-blue-600/60' : 'text-blue-300/60'
-                    }`}>
+                    <div className={`absolute bottom-1.5 sm:bottom-2 left-4 sm:left-6 text-[10px] sm:text-xs ${theme === 'dark' ? 'text-blue-300/60' : 'text-slate-500/60'}`}>
                       {inputValue.length} chars
                     </div>
                   )}
                 </div>
                 
-                {/* Ultra-premium send button */}
                 <button
                   onClick={() => handleSendMessage(inputValue)}
                   disabled={!inputValue.trim() || isTyping || messageAnimating}
-                  className={`relative w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ease-out shadow-xl group ${
-                    (!inputValue.trim() || isTyping || messageAnimating) 
-                      ? 'bg-gray-700/50 opacity-40 cursor-not-allowed shadow-none' 
-                      : 'bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 hover:shadow-blue-500/40 hover:scale-105 active:scale-95'
-                  }`}
+                  className={themeClasses.sendButton(!inputValue.trim() || isTyping || messageAnimating)}
                 >
+                  {inputValue.trim() && !isTyping && !messageAnimating && (
+                    <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-r from-blue-400 to-purple-400' : 'bg-gradient-to-r from-slate-400 to-slate-600'} rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>
+                  )}
+                  
                   <div className="relative z-10">
                     {(isTyping || messageAnimating) ? (
                       <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></div>
@@ -1497,49 +1468,52 @@ const ChatInterface: React.FC = () => {
                       <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </div>
+                  
+                  {inputValue.trim() && !isTyping && !messageAnimating && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 animate-shimmer opacity-0 group-hover:opacity-100 rounded-2xl"></div>
+                  )}
                 </button>
               </div>
               
-              {/* Luxury quick suggestions */}
+              {/* Quick suggestions with theme-adaptive styling */}
               <div className="space-y-1.5 sm:space-y-2 relative">
-                <div className={`text-[10px] sm:text-xs font-medium tracking-wide uppercase pl-1 ${
-                  theme === 'light' ? 'text-slate-700' : 'text-gray-400/70'
-                }`}>Quick Actions</div>
+                <div className={`text-[10px] sm:text-xs ${theme === 'dark' ? 'text-gray-400/70' : 'text-slate-500/70'} font-medium tracking-wide uppercase pl-1`}>Quick Actions</div>
                 <div className="relative">
-                  {/* Mobile: Grid layout, Desktop: Horizontal scroll */}
                   <div className="block sm:hidden">
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { text: '🚨 Emergency', fullText: '🚨 Emergency repair', color: 'from-red-800 to-orange-700', border: 'red-700/60' },
-                        { text: '💰 Quote', fullText: '💰 Budget quote', color: 'from-emerald-800 to-green-700', border: 'emerald-700/60' },
-                        { text: '📅 Schedule', fullText: '📅 Schedule appointment', color: 'from-blue-800 to-cyan-700', border: 'blue-700/60' },
-                        { text: '⭐ Reviews', fullText: '⭐ View reviews', color: 'from-purple-800 to-pink-700', border: 'purple-700/60' }
+                        { text: '🚨 Emergency', fullText: '🚨 Emergency repair', color: theme === 'dark' ? 'from-red-500/20 to-orange-500/20' : 'from-red-500/30 to-orange-500/30', border: theme === 'dark' ? 'red-400/30' : 'red-400/40' },
+                        { text: '💰 Quote', fullText: '💰 Budget quote', color: theme === 'dark' ? 'from-green-500/20 to-emerald-500/20' : 'from-green-500/30 to-emerald-500/30', border: theme === 'dark' ? 'green-400/30' : 'green-400/40' },
+                        { text: '📅 Schedule', fullText: '📅 Schedule appointment', color: theme === 'dark' ? 'from-blue-500/20 to-cyan-500/20' : 'from-blue-500/30 to-cyan-500/30', border: theme === 'dark' ? 'blue-400/30' : 'blue-400/40' },
+                        { text: '⭐ Reviews', fullText: '⭐ View reviews', color: theme === 'dark' ? 'from-purple-500/20 to-pink-500/20' : 'from-purple-500/30 to-pink-500/30', border: theme === 'dark' ? 'purple-400/30' : 'purple-400/40' }
                       ].map((suggestion, index) => (
                         <button
                           key={suggestion.text}
                           onClick={() => handleSendMessage(suggestion.fullText)}
                           disabled={isTyping || messageAnimating}
-                          className={`relative px-2 py-1.5 bg-gradient-to-r ${suggestion.color} bg-opacity-90 backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[10px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group ${
+                          className={`relative px-2 py-1.5 bg-gradient-to-r ${suggestion.color} backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[10px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group ${
                             (isTyping || messageAnimating)
-                              ? 'text-gray-500/60 cursor-not-allowed opacity-40'
-                              : 'text-white font-semibold hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
+                              ? (theme === 'dark' ? 'text-gray-500/60' : 'text-slate-500/60') + ' cursor-not-allowed opacity-40'
+                              : (theme === 'dark' ? 'text-white/90 hover:text-white' : 'text-slate-700 hover:text-slate-800') + ' hover:scale-105 hover:shadow-lg active:scale-95'
                           }`}
                           style={{ animationDelay: `${index * 100 + 400}ms` }}
                         >
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
                           <span className="relative z-10">{suggestion.text}</span>
                         </button>
                       ))}
                     </div>
                   </div>
                   
-                  {/* Desktop: Horizontal scroll layout */}
                   <div className="hidden sm:block">
+                    <div className={`pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r ${theme === 'dark' ? 'from-[#0b0f17] via-[#0b0f17]/60' : 'from-slate-100 via-slate-100/60'} to-transparent rounded-l-xl z-10`} />
+                    <div className={`pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l ${theme === 'dark' ? 'from-[#0b0f17] via-[#0b0f17]/60' : 'from-slate-100 via-slate-100/60'} to-transparent rounded-r-xl z-10`} />
                     <div className="flex gap-2.5 overflow-x-auto no-scrollbar pr-4 -ml-1 pl-1 snap-x snap-mandatory">
                       {[
-                        { text: '🚨 Emergency repair', color: 'from-red-800 to-orange-700', border: 'red-700/60' },
-                        { text: '💰 Budget quote', color: 'from-emerald-800 to-green-700', border: 'emerald-700/60' },
-                        { text: '📅 Schedule appointment', color: 'from-blue-800 to-cyan-700', border: 'blue-700/60' },
-                        { text: '⭐ View reviews', color: 'from-purple-800 to-pink-700', border: 'purple-700/60' }
+                        { text: '🚨 Emergency repair', color: theme === 'dark' ? 'from-red-500/20 to-orange-500/20' : 'from-red-500/30 to-orange-500/30', border: theme === 'dark' ? 'red-400/30' : 'red-400/40' },
+                        { text: '💰 Budget quote', color: theme === 'dark' ? 'from-green-500/20 to-emerald-500/20' : 'from-green-500/30 to-emerald-500/30', border: theme === 'dark' ? 'green-400/30' : 'green-400/40' },
+                        { text: '📅 Schedule appointment', color: theme === 'dark' ? 'from-blue-500/20 to-cyan-500/20' : 'from-blue-500/30 to-cyan-500/30', border: theme === 'dark' ? 'blue-400/30' : 'blue-400/40' },
+                        { text: '⭐ View reviews', color: theme === 'dark' ? 'from-purple-500/20 to-pink-500/20' : 'from-purple-500/30 to-pink-500/30', border: theme === 'dark' ? 'purple-400/30' : 'purple-400/40' }
                       ].map((suggestion, index) => (
                         <button
                           key={suggestion.text}
@@ -1547,11 +1521,12 @@ const ChatInterface: React.FC = () => {
                           disabled={isTyping || messageAnimating}
                           className={`snap-start relative px-3.5 py-2 bg-gradient-to-r ${suggestion.color} backdrop-blur-sm border border-${suggestion.border} rounded-lg text-[12px] font-medium transition-all duration-300 ease-out animate-fadeInSmooth overflow-hidden group whitespace-nowrap min-w-0 flex-shrink-0 ${
                             (isTyping || messageAnimating)
-                              ? 'text-gray-500/60 cursor-not-allowed opacity-40'
-                              : 'text-white/90 hover:text-white hover:scale-105 hover:shadow-lg active:scale-95'
+                              ? (theme === 'dark' ? 'text-gray-500/60' : 'text-slate-500/60') + ' cursor-not-allowed opacity-40'
+                              : (theme === 'dark' ? 'text-white/90 hover:text-white' : 'text-slate-700 hover:text-slate-800') + ' hover:scale-105 hover:shadow-lg active:scale-95'
                           }`}
                           style={{ animationDelay: `${index * 100 + 400}ms` }}
                         >
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
                           <span className="relative z-10">{suggestion.text}</span>
                         </button>
                       ))}
@@ -1561,66 +1536,70 @@ const ChatInterface: React.FC = () => {
               </div>
               
               {/* Status indicator */}
-              <div className="flex items-center justify-between mt-2.5 sm:mt-3 text-[10px] sm:text-[11px] text-gray-400/60">
+              <div className={`flex items-center justify-between mt-2.5 sm:mt-3 text-[10px] sm:text-[11px] ${theme === 'dark' ? 'text-gray-400/60' : 'text-slate-500/60'}`}>
                 <div className="flex items-center space-x-2">
                   <div className={`w-2 h-2 rounded-full ${
                     isTyping || messageAnimating ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'
                   }`}></div>
                   <span>{isTyping || messageAnimating ? 'AI is processing...' : 'Ready to help'}</span>
                 </div>
-                <div className="text-gray-500/40">
-                  Powered by HireLocalGPT AI
+                <div className={theme === 'dark' ? 'text-gray-500/40' : 'text-slate-500/40'}>
+                  Powered by ServiceGPT AI
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* WhatsApp Modal with theme support */}
       {waOpen && waProvider && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setWaOpen(false)} />
-          <div className="relative w-full max-w-lg rounded-3xl overflow-hidden bg-gradient-to-br from-[#101826]/90 via-[#0d1320]/85 to-[#161b2b]/90 border border-white/10 shadow-2xl">
+          <div className={`relative w-full max-w-lg rounded-3xl overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-br from-[#101826]/90 via-[#0d1320]/85 to-[#161b2b]/90' : 'bg-gradient-to-br from-white/95 via-slate-50/90 to-gray-100/85'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300/30'} shadow-2xl`}>
+            <div className={`absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none`} style={{backgroundImage: theme === 'dark' ? 'radial-gradient(circle at 15% 20%, rgba(59,130,246,.25) 0, transparent 55%), radial-gradient(circle at 85% 30%, rgba(147,51,234,.25) 0, transparent 60%), radial-gradient(circle at 60% 85%, rgba(236,72,153,.25) 0, transparent 60%)' : 'radial-gradient(circle at 15% 20%, rgba(71,85,105,.15) 0, transparent 55%), radial-gradient(circle at 85% 30%, rgba(100,116,139,.15) 0, transparent 60%), radial-gradient(circle at 60% 85%, rgba(51,65,85,.15) 0, transparent 60%)'}} />
+            <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-[linear-gradient(140deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_60%,rgba(255,255,255,0.07)_100%)]' : 'bg-[linear-gradient(140deg,rgba(255,255,255,0.8)_0%,rgba(255,255,255,0.4)_60%,rgba(255,255,255,0.9)_100%)]'}`} />
             <div className="relative p-6 sm:p-8 space-y-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-white via-blue-50 to-purple-200 bg-clip-text text-transparent">Message {waProvider.businessName}</h2>
-                  <p className="text-[11px] text-blue-200/70 mt-1 uppercase tracking-wider">WhatsApp Outreach Preview</p>
+                  <h2 className={`text-lg sm:text-xl font-semibold ${theme === 'dark' ? 'bg-gradient-to-r from-white via-blue-50 to-purple-200 bg-clip-text text-transparent' : 'text-slate-800'}`}>Message {waProvider.businessName}</h2>
+                  <p className={`text-[11px] ${theme === 'dark' ? 'text-blue-200/70' : 'text-slate-600/70'} mt-1 uppercase tracking-wider`}>WhatsApp Outreach Preview</p>
                 </div>
-                <button onClick={() => setWaOpen(false)} className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all">
+                <button onClick={() => setWaOpen(false)} className={`w-9 h-9 rounded-xl ${theme === 'dark' ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white/70 hover:text-white' : 'bg-slate-200/60 hover:bg-slate-300/60 border-slate-300/40 text-slate-600 hover:text-slate-800'} border flex items-center justify-center transition-all`}>
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl overflow-hidden ring-2 ring-white/10">
+                <div className={`w-14 h-14 rounded-2xl overflow-hidden ring-2 ${theme === 'dark' ? 'ring-white/10' : 'ring-slate-300/30'}`}>
                   <img src={waProvider.profileImage} alt={waProvider.businessName} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{waProvider.businessName}</p>
-                  <p className="text-[11px] text-blue-300/70 uppercase tracking-wider">{waProvider.category}</p>
-                  <div className="flex items-center gap-3 mt-2 text-[11px] text-blue-200/60">
+                  <p className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'} truncate`}>{waProvider.businessName}</p>
+                  <p className={`text-[11px] ${theme === 'dark' ? 'text-blue-300/70' : 'text-slate-600/70'} uppercase tracking-wider`}>{waProvider.category}</p>
+                  <div className={`flex items-center gap-3 mt-2 text-[11px] ${theme === 'dark' ? 'text-blue-200/60' : 'text-slate-600/60'}`}>
                     <span className="inline-flex items-center gap-1"><Star className="w-3.5 h-3.5 text-amber-400" />{waProvider.rating.toFixed(1)}</span>
                     <span>{waProvider.distance}</span>
-                    <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-300/90 font-medium">{waProvider.priceRange}</span>
+                    <span className={`px-2 py-0.5 rounded-lg ${theme === 'dark' ? 'bg-emerald-500/10 text-emerald-300/90' : 'bg-emerald-500/20 text-emerald-700/90'} font-medium`}>{waProvider.priceRange}</span>
                   </div>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-blue-200/70 block mb-2">Prefilled Message</label>
+                <label className={`text-xs font-semibold uppercase tracking-wider ${theme === 'dark' ? 'text-blue-200/70' : 'text-slate-600/70'} block mb-2`}>Prefilled Message</label>
                 <div className="relative group">
                   <textarea 
                     value={waPrefill} 
                     onChange={e=>setWaPrefill(e.target.value)} 
                     rows={5} 
-                    className="w-full rounded-2xl bg-white/5 border border-white/10 focus:border-blue-400/50 focus:ring-2 focus:ring-blue-500/20 outline-none resize-none p-4 text-base text-blue-50/90 leading-relaxed backdrop-blur-md transition-all" 
+                    className={`w-full rounded-2xl ${theme === 'dark' ? 'bg-white/5 border-white/10 focus:border-blue-400/50 focus:ring-blue-500/20 text-blue-50/90' : 'bg-slate-100/60 border-slate-300/40 focus:border-slate-500/50 focus:ring-slate-500/20 text-slate-800'} border focus:ring-2 outline-none resize-none p-4 text-base leading-relaxed backdrop-blur-md transition-all`} 
                     style={{
                       fontSize: '16px',
                       WebkitAppearance: 'none',
                       borderRadius: '16px'
                     }}
                   />
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10 group-focus-within:ring-blue-400/40 transition" />
+                  <div className={`pointer-events-none absolute inset-0 rounded-2xl ring-1 ${theme === 'dark' ? 'ring-white/10 group-focus-within:ring-blue-400/40' : 'ring-slate-300/40 group-focus-within:ring-slate-500/40'} transition`} />
                 </div>
-                <div className="flex justify-between mt-2 text-[11px] text-blue-300/50">
+                <div className={`flex justify-between mt-2 text-[11px] ${theme === 'dark' ? 'text-blue-300/50' : 'text-slate-500/50'}`}>
                   <span>{waPrefill.length} chars</span>
                   <span>Editable</span>
                 </div>
@@ -1633,18 +1612,18 @@ const ChatInterface: React.FC = () => {
                     {!waSending && !waSent && <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                     <span>{waSent ? 'Prepared' : waSending ? 'Preparing...' : 'Prepare & Track'}</span>
                   </button>
-                  <a onClick={e=>{if(!waSent){e.preventDefault(); simulateWaPrepare();}}} href={buildWaLink()} target="_blank" rel="noopener noreferrer" className={`flex-1 h-10 sm:h-11 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all ${waSent ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg' : 'bg-white/5 text-blue-200/70 border border-white/10 hover:bg-white/10'} `}>
+                  <a onClick={e=>{if(!waSent){e.preventDefault(); simulateWaPrepare();}}} href={buildWaLink()} target="_blank" rel="noopener noreferrer" className={`flex-1 h-10 sm:h-11 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all ${waSent ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg' : `${theme === 'dark' ? 'bg-white/5 text-blue-200/70 border-white/10 hover:bg-white/10' : 'bg-slate-200/60 text-slate-600/70 border-slate-300/30 hover:bg-slate-300/60'} border`} `}>
                     <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>{waSent ? 'Open WhatsApp' : 'Open (after prep)'}</span>
                   </a>
                 </div>
               </div>
-              <div className="relative mt-1 h-2 w-full rounded-full bg-white/5 overflow-hidden">
+              <div className={`relative mt-1 h-2 w-full rounded-full ${theme === 'dark' ? 'bg-white/5' : 'bg-slate-300/40'} overflow-hidden`}>
                 <div className={`h-full bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 transition-all duration-700 ${waSending ? 'w-2/3 animate-pulse' : waSent ? 'w-full' : 'w-0'}`} />
                 {waSent && <div className="absolute inset-0 rounded-full ring-1 ring-green-400/40 animate-pulse" />}
               </div>
               {waSent && (
-                <p className="text-[11px] text-green-300/80 mt-1 flex items-center gap-1"><Check className="w-3 h-3" /> Message prepared locally (mock).</p>
+                <p className={`text-[11px] ${theme === 'dark' ? 'text-green-300/80' : 'text-green-700/80'} mt-1 flex items-center gap-1`}><Check className="w-3 h-3" /> Message prepared locally (mock).</p>
               )}
             </div>
           </div>
