@@ -1,81 +1,195 @@
 import React from 'react';
-import { Users, MessageCircle, Star, TrendingUp, DollarSign, Calendar } from 'lucide-react';
-import GlassCard from '../shared/GlassCard';
+import AdminLayout from './AdminLayout';
+import KPICard from './KPICard';
+import ChartCard from './ChartCard';
+import ActivityFeed from './ActivityFeed';
+import LineChart from './charts/LineChart';
+import DonutChart from './charts/DonutChart';
+import HeatMap from './charts/HeatMap';
+import { 
+  Users, 
+  Activity, 
+  Zap, 
+  TrendingUp,
+  RefreshCw
+} from 'lucide-react';
 
-interface AdminDashboardProps {
-  onBack: () => void;
-}
-
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
-  const stats = [
-    { label: 'Total Users', value: '2,847', icon: Users, change: '+12%' },
-    { label: 'Active Chats', value: '543', icon: MessageCircle, change: '+8%' },
-    { label: 'Avg Rating', value: '4.7', icon: Star, change: '+0.3' },
-    { label: 'Revenue', value: '$12,450', icon: DollarSign, change: '+18%' },
+const AdminDashboard: React.FC = () => {
+  // Mock data
+  const kpiData = [
+    {
+      title: 'Total Users',
+      value: '12,459',
+      change: { value: 12.5, type: 'increase' as const },
+      icon: Users,
+      color: 'blue' as const
+    },
+    {
+      title: 'Active Sessions',
+      value: '847',
+      change: { value: 8.2, type: 'increase' as const },
+      icon: Activity,
+      color: 'green' as const
+    },
+    {
+      title: 'API Calls Today',
+      value: '23,891',
+      change: { value: 3.1, type: 'decrease' as const },
+      icon: Zap,
+      color: 'purple' as const
+    },
+    {
+      title: 'Top Category',
+      value: 'Electricians',
+      icon: TrendingUp,
+      color: 'orange' as const
+    }
   ];
 
-  const recentActivity = [
-    { action: 'New user registration', user: 'John Doe', time: '2 min ago' },
-    { action: 'Service completed', user: 'PlumberPro', time: '5 min ago' },
-    { action: 'Payment received', user: 'Alice Smith', time: '8 min ago' },
-    { action: 'New service provider', user: 'ElectricianExpert', time: '12 min ago' },
+  const usageData = [
+    { label: 'Mon', value: 120 },
+    { label: 'Tue', value: 150 },
+    { label: 'Wed', value: 180 },
+    { label: 'Thu', value: 140 },
+    { label: 'Fri', value: 200 },
+    { label: 'Sat', value: 160 },
+    { label: 'Sun', value: 190 }
   ];
+
+  const categoryData = [
+    { label: 'Electricians', value: 35, color: '#3B82F6' },
+    { label: 'Plumbers', value: 25, color: '#10B981' },
+    { label: 'Contractors', value: 20, color: '#F59E0B' },
+    { label: 'Cleaners', value: 12, color: '#EF4444' },
+    { label: 'Others', value: 8, color: '#8B5CF6' }
+  ];
+
+  const geoData = [
+    { x: 25, y: 40, value: 1250, location: 'New York' },
+    { x: 60, y: 35, value: 980, location: 'Chicago' },
+    { x: 80, y: 70, value: 1450, location: 'Los Angeles' },
+    { x: 45, y: 55, value: 750, location: 'Houston' },
+    { x: 35, y: 25, value: 650, location: 'Boston' },
+    { x: 70, y: 45, value: 850, location: 'Denver' },
+  ];
+
+  const handleRefresh = () => {
+    // Implement refresh logic
+    console.log('Refreshing dashboard data...');
+  };
 
   return (
-    <div className="min-h-screen p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-        <div className="flex items-center space-x-2 text-blue-200">
-          <Calendar className="w-4 h-4" />
-          <span>{new Date().toLocaleDateString()}</span>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        {stats.map((stat, index) => (
-          <GlassCard key={index} variant="premium" className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <stat.icon className="w-8 h-8 text-blue-400" />
-              <span className="text-green-400 text-sm font-medium">{stat.change}</span>
+    <AdminLayout currentPage="dashboard">
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Dashboard Overview</h1>
+            <p className="text-gray-400 mt-1">Monitor your platform's performance and user activity</p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleRefresh}
+              className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg hover:bg-white/20 transition-all duration-200 text-sm"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Refresh</span>
+            </button>
+            <div className="text-xs text-gray-400">
+              Last updated: {new Date().toLocaleTimeString()}
             </div>
-            <h3 className="text-2xl font-bold text-white mb-1">{stat.value}</h3>
-            <p className="text-blue-200 text-sm">{stat.label}</p>
-          </GlassCard>
-        ))}
-      </div>
-
-      {/* Charts Section */}
-      <GlassCard className="p-6 mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-white">Revenue Trend</h2>
-          <TrendingUp className="w-5 h-5 text-green-400" />
-        </div>
-        <div className="h-40 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl flex items-end justify-center">
-          <div className="text-blue-200 text-center">
-            <TrendingUp className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>Chart visualization would go here</p>
           </div>
         </div>
-      </GlassCard>
 
-      {/* Recent Activity */}
-      <GlassCard className="p-6">
-        <h2 className="text-lg font-semibold text-white mb-6">Recent Activity</h2>
-        <div className="space-y-4">
-          {recentActivity.map((activity, index) => (
-            <div key={index} className="flex items-center justify-between py-3 border-b border-white/10 last:border-b-0">
-              <div>
-                <p className="text-white font-medium">{activity.action}</p>
-                <p className="text-blue-200 text-sm">{activity.user}</p>
-              </div>
-              <span className="text-blue-400 text-sm">{activity.time}</span>
-            </div>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {kpiData.map((kpi, index) => (
+            <KPICard
+              key={index}
+              title={kpi.title}
+              value={kpi.value}
+              change={kpi.change}
+              icon={kpi.icon}
+              color={kpi.color}
+            />
           ))}
         </div>
-      </GlassCard>
-    </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Usage Over Time */}
+          <ChartCard 
+            title="Usage Over Time"
+            actions={
+              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="7d" className="bg-slate-800">Last 7 days</option>
+                <option value="30d" className="bg-slate-800">Last 30 days</option>
+                <option value="90d" className="bg-slate-800">Last 90 days</option>
+              </select>
+            }
+          >
+            <LineChart data={usageData} color="#3B82F6" />
+          </ChartCard>
+
+          {/* Popular Categories */}
+          <ChartCard title="Popular Categories">
+            <DonutChart data={categoryData} />
+          </ChartCard>
+        </div>
+
+        {/* Geographic Distribution and Activity Feed */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Geographic Distribution */}
+          <ChartCard 
+            title="Geographic Distribution" 
+            className="xl:col-span-2"
+            actions={
+              <button className="text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                View Details
+              </button>
+            }
+          >
+            <HeatMap data={geoData} />
+          </ChartCard>
+
+          {/* Recent Activity Feed */}
+          <ActivityFeed />
+        </div>
+
+        {/* Quick Stats */}
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-white">Platform Health</h3>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-green-400 text-sm">All Systems Operational</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+              <div className="text-2xl font-bold text-blue-400">98.5%</div>
+              <div className="text-sm text-gray-400 mt-1">Uptime</div>
+              <div className="text-xs text-green-400 mt-1">+0.2%</div>
+            </div>
+            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+              <div className="text-2xl font-bold text-green-400">2.3s</div>
+              <div className="text-sm text-gray-400 mt-1">Avg Response</div>
+              <div className="text-xs text-green-400 mt-1">-0.1s</div>
+            </div>
+            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+              <div className="text-2xl font-bold text-purple-400">4.8/5</div>
+              <div className="text-sm text-gray-400 mt-1">User Rating</div>
+              <div className="text-xs text-green-400 mt-1">+0.1</div>
+            </div>
+            <div className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+              <div className="text-2xl font-bold text-orange-400">156</div>
+              <div className="text-sm text-gray-400 mt-1">Active Providers</div>
+              <div className="text-xs text-green-400 mt-1">+12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
   );
 };
 

@@ -3,30 +3,52 @@ import { LucideIcon } from 'lucide-react';
 
 interface KPICardProps {
   title: string;
-  value: string;
-  change: string;
+  value: string | number;
+  change?: {
+    value: number;
+    type: 'increase' | 'decrease';
+  };
   icon: LucideIcon;
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red';
 }
 
-export const KPICard: React.FC<KPICardProps> = ({ title, value, change, icon: Icon }) => {
-  const isPositive = change.startsWith('+');
+const KPICard: React.FC<KPICardProps> = ({ 
+  title, 
+  value, 
+  change, 
+  icon: Icon, 
+  color = 'blue' 
+}) => {
+  const colorClasses = {
+    blue: 'from-blue-500 to-blue-600',
+    green: 'from-green-500 to-green-600',
+    purple: 'from-purple-500 to-purple-600',
+    orange: 'from-orange-500 to-orange-600',
+    red: 'from-red-500 to-red-600',
+  };
+
+  const changeColorClass = change?.type === 'increase' ? 'text-green-400' : 'text-red-400';
+  const changeIcon = change?.type === 'increase' ? '↗' : '↘';
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-      <div className="flex items-center justify-between">
-        <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">{title}</h3>
-        <Icon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 group relative z-1">
+      <div className="flex items-center justify-between mb-4">
+        <div className={`w-12 h-12 bg-gradient-to-br ${colorClasses[color]} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+        {change && (
+          <div className={`flex items-center space-x-1 text-sm font-medium ${changeColorClass} bg-white/5 px-2 py-1 rounded-lg`}>
+            <span>{changeIcon}</span>
+            <span>{Math.abs(change.value)}%</span>
+          </div>
+        )}
       </div>
-      <div className="mt-2 flex items-baseline">
-        <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-          {value}
-        </p>
-        <p className={`ml-2 text-sm font-medium ${
-          isPositive ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'
-        }`}>
-          {change}
-        </p>
+      <div className="space-y-1">
+        <h3 className="text-2xl lg:text-3xl font-bold text-white">{value}</h3>
+        <p className="text-gray-400 text-sm">{title}</p>
       </div>
     </div>
   );
 };
+
+export default KPICard;

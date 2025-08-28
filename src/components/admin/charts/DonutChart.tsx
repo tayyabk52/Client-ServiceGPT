@@ -1,71 +1,78 @@
 import React from 'react';
 
-export const DonutChart: React.FC = () => {
-  // Sample data
-  const data = [
-    { label: 'Mobile', value: 45, color: 'text-blue-500' },
-    { label: 'Desktop', value: 35, color: 'text-green-500' },
-    { label: 'Tablet', value: 20, color: 'text-purple-500' },
-  ];
+interface DonutChartProps {
+  data: { label: string; value: number; color: string }[];
+}
 
+const DonutChart: React.FC<DonutChartProps> = ({ data }) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
   let currentAngle = 0;
 
   return (
-    <div className="w-full h-64 flex items-center justify-center">
-      <div className="relative w-48 h-48">
-        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-          {data.map((item, i) => {
-            const angle = (item.value / total) * 360;
-            const startAngle = currentAngle;
-            currentAngle += angle;
-
-            const x1 = 50 + 40 * Math.cos((startAngle * Math.PI) / 180);
-            const y1 = 50 + 40 * Math.sin((startAngle * Math.PI) / 180);
-            const x2 = 50 + 40 * Math.cos(((startAngle + angle) * Math.PI) / 180);
-            const y2 = 50 + 40 * Math.sin(((startAngle + angle) * Math.PI) / 180);
-
-            const largeArcFlag = angle > 180 ? 1 : 0;
-
-            const pathData = [
-              `M 50 50`,
-              `L ${x1} ${y1}`,
-              `A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-              'Z'
-            ].join(' ');
-
+    <div className="w-full h-full flex flex-col items-center justify-center p-4 max-w-full max-h-full overflow-hidden">
+      <div className="relative w-48 h-48 max-w-full max-h-[70%] flex-shrink-0">
+        {/* SVG Chart */}
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 200 200">
+          <circle
+            cx="100"
+            cy="100"
+            r="70"
+            fill="none"
+            stroke="rgba(255,255,255,0.1)"
+            strokeWidth="16"
+          />
+          
+          {data.map((item, index) => {
+            const percentage = (item.value / total) * 100;
+            const strokeDasharray = `${percentage * 4.4} 440`;
+            const strokeDashoffset = -currentAngle * 4.4;
+            currentAngle += percentage;
+            
             return (
-              <path
-                key={i}
-                d={pathData}
-                className={item.color}
-                fill="currentColor"
+              <circle
+                key={index}
+                cx="100"
+                cy="100"
+                r="70"
+                fill="none"
+                stroke={item.color}
+                strokeWidth="16"
+                strokeDasharray={strokeDasharray}
+                strokeDashoffset={strokeDashoffset}
+                className="transition-all duration-300"
+                strokeLinecap="round"
               />
             );
           })}
-          {/* Inner circle for donut effect */}
-          <circle
-            cx="50"
-            cy="50"
-            r="25"
-            className="fill-white dark:fill-gray-900"
-          />
         </svg>
-
-        {/* Legend */}
-        <div className="absolute top-full mt-4 w-full">
-          <div className="flex flex-wrap justify-center gap-4">
-            {data.map((item, i) => (
-              <div key={i} className="flex items-center">
-                <div className={`w-3 h-3 rounded-full ${item.color} mr-2`} />
-                <span className="text-sm text-gray-600 dark:text-gray-300">
-                  {item.label} ({item.value}%)
-                </span>
-              </div>
-            ))}
+        
+        {/* Center Content */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-xl font-bold text-white">{total}</div>
+            <div className="text-xs text-gray-400">Total</div>
           </div>
+        </div>
+      </div>
+      
+      {/* Legend */}
+      <div className="mt-4 w-full max-w-full">
+        <div className="grid grid-cols-2 gap-2 text-center">
+          {data.map((item, index) => (
+            <div key={index} className="flex items-center justify-center space-x-2 min-w-0">
+              <div 
+                className="w-2 h-2 rounded-full flex-shrink-0"
+                style={{ backgroundColor: item.color }}
+              />
+              <span className="text-xs text-gray-400 truncate">
+                {item.label} ({Math.round((item.value / total) * 100)}%)
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
+
+export default DonutChart;

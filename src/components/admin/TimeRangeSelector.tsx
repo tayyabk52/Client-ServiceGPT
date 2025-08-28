@@ -1,26 +1,40 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { ChevronDown } from 'lucide-react';
 
 interface TimeRangeSelectorProps {
-  ranges: string[];
+  value: string;
+  onChange: (value: string) => void;
+  options?: { value: string; label: string }[];
 }
 
-export const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({ ranges }) => {
-  const [selectedRange, setSelectedRange] = useState(ranges[0]);
-
+const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
+  value,
+  onChange,
+  options = [
+    { value: 'today', label: 'Today' },
+    { value: 'week', label: 'This Week' },
+    { value: 'month', label: 'This Month' },
+    { value: 'quarter', label: 'This Quarter' },
+    { value: 'year', label: 'This Year' },
+    { value: 'custom', label: 'Custom Range' }
+  ]
+}) => {
   return (
-    <div className="flex items-center space-x-2">
-      <label className="text-sm text-gray-500 dark:text-gray-400">Time Range:</label>
+    <div className="relative">
       <select
-        value={selectedRange}
-        onChange={(e) => setSelectedRange(e.target.value)}
-        className="text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="appearance-none bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 pr-10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       >
-        {ranges.map((range) => (
-          <option key={range} value={range}>
-            {range}
+        {options.map((option) => (
+          <option key={option.value} value={option.value} className="bg-slate-800 text-white">
+            {option.label}
           </option>
         ))}
       </select>
+      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
     </div>
   );
 };
+
+export default TimeRangeSelector;

@@ -1,23 +1,33 @@
 import React from 'react';
-import { LucideIcon } from 'lucide-react';
 
 interface ChartCardProps {
   title: string;
   children: React.ReactNode;
-  icon: LucideIcon;
   className?: string;
+  actions?: React.ReactNode;
 }
 
-export const ChartCard: React.FC<ChartCardProps> = ({ title, children, icon: Icon, className = '' }) => {
+const ChartCard: React.FC<ChartCardProps> = ({ 
+  title, 
+  children, 
+  className = '',
+  actions 
+}) => {
   return (
-    <div className={`p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-          <Icon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-          {title}
-        </h3>
+    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300 relative z-1 ${className}`}>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        {actions && (
+          <div className="flex items-center space-x-2">
+            {actions}
+          </div>
+        )}
       </div>
-      {children}
+      <div className="h-80 relative overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 };
+
+export default ChartCard;

@@ -1,82 +1,76 @@
 import React from 'react';
 
-export const LineChart: React.FC = () => {
-  // Sample data
-  const data = [
-    { month: 'Jan', users: 400 },
-    { month: 'Feb', users: 600 },
-    { month: 'Mar', users: 800 },
-    { month: 'Apr', users: 1000 },
-    { month: 'May', users: 1200 },
-    { month: 'Jun', users: 1400 },
-  ];
+interface LineChartProps {
+  data: { label: string; value: number }[];
+  color?: string;
+  height?: number;
+}
 
-  const maxValue = Math.max(...data.map(d => d.users));
-  const points = data.map((d, i) => ({
-    x: (i / (data.length - 1)) * 100,
-    y: 100 - (d.users / maxValue) * 100
-  }));
-
-  const pathData = points
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
-    .join(' ');
-
+const LineChart: React.FC<LineChartProps> = ({ 
+  data, 
+  color = '#3B82F6'
+}) => {
+  // Mock implementation - in real app, use Chart.js, Recharts, or similar
+  console.log('Chart data:', data); // Temporary to avoid unused warning
+  
   return (
-    <div className="w-full h-64 relative">
-      {/* Y-axis labels */}
-      <div className="absolute left-0 top-0 bottom-0 w-12 flex flex-col justify-between text-xs text-gray-500 dark:text-gray-400">
-        {[maxValue, maxValue / 2, 0].map((value, i) => (
-          <div key={i} className="relative -mt-2">
-            {Math.round(value)}
-          </div>
-        ))}
-      </div>
-
-      {/* Chart area */}
-      <div className="ml-12 h-full">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          {/* Grid lines */}
-          {[0, 25, 50, 75, 100].map(y => (
-            <line
-              key={y}
-              x1="0"
-              y1={y}
-              x2="100"
-              y2={y}
-              stroke="currentColor"
-              strokeWidth="0.1"
-              className="text-gray-200 dark:text-gray-700"
-            />
-          ))}
-
-          {/* Line chart */}
-          <path
-            d={pathData}
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full relative">
+        {/* Mock Chart Background */}
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent rounded-lg"></div>
+        
+        {/* Mock Chart Line */}
+        <svg className="w-full h-full" viewBox="0 0 400 200">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={color} stopOpacity="0.8" />
+              <stop offset="100%" stopColor={color} stopOpacity="0.3" />
+            </linearGradient>
+          </defs>
+          
+          {/* Grid Lines */}
+          <g stroke="rgba(255,255,255,0.1)" strokeWidth="1">
+            {[0, 1, 2, 3, 4].map(i => (
+              <line key={i} x1="0" y1={i * 40} x2="400" y2={i * 40} />
+            ))}
+            {[0, 1, 2, 3, 4, 5, 6].map(i => (
+              <line key={i} x1={i * 60} y1="0" x2={i * 60} y2="200" />
+            ))}
+          </g>
+          
+          {/* Mock Data Line */}
+          <polyline
             fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="text-blue-500"
+            stroke={color}
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            points="0,150 60,120 120,80 180,100 240,60 300,90 360,40"
           />
-
-          {/* Data points */}
-          {points.map((point, i) => (
-            <circle
-              key={i}
-              cx={point.x}
-              cy={point.y}
-              r="1.5"
-              className="fill-blue-500"
-            />
-          ))}
+          
+          {/* Data Points */}
+          {[0, 60, 120, 180, 240, 300, 360].map((x, i) => {
+            const y = [150, 120, 80, 100, 60, 90, 40][i];
+            return (
+              <circle
+                key={i}
+                cx={x}
+                cy={y}
+                r="4"
+                fill={color}
+                className="hover:r-6 transition-all cursor-pointer"
+              />
+            );
+          })}
         </svg>
-
-        {/* X-axis labels */}
-        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
-          {data.map((d, i) => (
-            <div key={i}>{d.month}</div>
-          ))}
+        
+        {/* Mock Legend */}
+        <div className="absolute bottom-2 left-2 text-xs text-gray-400">
+          Usage Trend (↑ 12.5%)
         </div>
       </div>
     </div>
   );
 };
+
+export default LineChart;
