@@ -6,6 +6,8 @@ import ActivityFeed from './ActivityFeed';
 import LineChart from './charts/LineChart';
 import DonutChart from './charts/DonutChart';
 import HeatMap from './charts/HeatMap';
+import { useAdminTheme, themeClass } from './theme-config';
+import { useTheme } from '../../theme/useTheme';
 import { 
   Users, 
   Activity, 
@@ -15,6 +17,10 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
+  const { theme: globalTheme } = useTheme();
+  const theme = useAdminTheme();
+  const isDark = globalTheme === 'dark';
+
   // Mock data
   const kpiData = [
     {
@@ -74,28 +80,48 @@ const AdminDashboard: React.FC = () => {
   ];
 
   const handleRefresh = () => {
-    // Implement refresh logic
     console.log('Refreshing dashboard data...');
   };
 
   return (
-    <AdminLayout currentPage="dashboard">
+    <AdminLayout 
+      currentPage="dashboard"
+    >
       <div className="space-y-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-white">Dashboard Overview</h1>
-            <p className="text-gray-400 mt-1">Monitor your platform's performance and user activity</p>
+            <h1 className={`text-3xl font-bold ${theme.primaryText}`}>
+              Dashboard Overview
+            </h1>
+            <p className={`${theme.secondaryText} mt-1`}>
+              Monitor your platform's performance and user activity
+            </p>
           </div>
           <div className="flex items-center space-x-3">
-            <button
-              onClick={handleRefresh}
-              className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg hover:bg-white/20 transition-all duration-200 text-sm"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Refresh</span>
-            </button>
-            <div className="text-xs text-gray-400">
+            {/* === DARK THEME REFRESH BUTTON === */}
+            {isDark && (
+              <button
+                onClick={handleRefresh}
+                className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg hover:bg-white/20 transition-all duration-200 text-sm"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </button>
+            )}
+            
+            {/* === LIGHT THEME REFRESH BUTTON === */}
+            {!isDark && (
+              <button
+                onClick={handleRefresh}
+                className="flex items-center space-x-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-300 text-slate-700 rounded-lg hover:bg-white hover:shadow-md transition-all duration-200 text-sm shadow-sm"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </button>
+            )}
+            
+            <div className={`text-xs ${theme.secondaryText}`}>
               Last updated: {new Date().toLocaleTimeString()}
             </div>
           </div>
@@ -111,6 +137,7 @@ const AdminDashboard: React.FC = () => {
               change={kpi.change}
               icon={kpi.icon}
               color={kpi.color}
+              isDark={isDark}
             />
           ))}
         </div>
@@ -120,20 +147,31 @@ const AdminDashboard: React.FC = () => {
           {/* Usage Over Time */}
           <ChartCard 
             title="Usage Over Time"
+            isDark={isDark}
             actions={
-              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="7d" className="bg-slate-800">Last 7 days</option>
-                <option value="30d" className="bg-slate-800">Last 30 days</option>
-                <option value="90d" className="bg-slate-800">Last 90 days</option>
-              </select>
+              /* === DARK THEME SELECT === */
+              isDark ? (
+                <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="7d" className="bg-slate-800">Last 7 days</option>
+                  <option value="30d" className="bg-slate-800">Last 30 days</option>
+                  <option value="90d" className="bg-slate-800">Last 90 days</option>
+                </select>
+              ) : (
+                /* === LIGHT THEME SELECT === */
+                <select className="bg-white border border-slate-300 rounded-lg px-3 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                  <option value="7d" className="bg-white">Last 7 days</option>
+                  <option value="30d" className="bg-white">Last 30 days</option>
+                  <option value="90d" className="bg-white">Last 90 days</option>
+                </select>
+              )
             }
           >
-            <LineChart data={usageData} color="#3B82F6" />
+            <LineChart data={usageData} color="#3B82F6" isDark={isDark} />
           </ChartCard>
 
           {/* Popular Categories */}
-          <ChartCard title="Popular Categories">
-            <DonutChart data={categoryData} />
+          <ChartCard title="Popular Categories" isDark={isDark}>
+            <DonutChart data={categoryData} isDark={isDark} />
           </ChartCard>
         </div>
 
@@ -143,20 +181,19 @@ const AdminDashboard: React.FC = () => {
           <ChartCard 
             title="Geographic Distribution" 
             className="xl:col-span-2"
+            isDark={isDark}
             actions={
-              <button className="text-blue-400 hover:text-blue-300 text-sm transition-colors">
+              <button className={`${theme.accentText} hover:opacity-80 text-sm transition-colors`}>
                 View Details
               </button>
             }
           >
-            <HeatMap data={geoData} />
+            <HeatMap data={geoData} isDark={isDark} />
           </ChartCard>
 
           {/* Recent Activity Feed */}
-          <ActivityFeed />
+          <ActivityFeed isDark={isDark} />
         </div>
-
- 
       </div>
     </AdminLayout>
   );

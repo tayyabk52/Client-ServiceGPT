@@ -123,9 +123,21 @@ const ChatHistory: React.FC = () => {
     cardBorder: theme === 'dark' ? 'border-white/10' : 'border-slate-300/60',
     headerBg: theme === 'dark'
       ? 'backdrop-blur-2xl bg-black/50/60 border-b border-white/10' 
-      : 'backdrop-blur-2xl bg-gradient-to-r from-slate-200/60 via-slate-100/50 to-slate-200/60 border-b border-slate-300/70',
+      : 'bg-gradient-to-r from-gray-700 via-slate-800 to-gray-900 border-b border-gray-600 shadow-xl shadow-gray-900/20',
     
-    // Buttons - Metallic silver appearance
+    // Header-specific text colors for light mode
+    headerPrimaryText: theme === 'dark' ? 'text-white' : 'text-white',
+    headerSecondaryText: theme === 'dark' ? 'text-blue-300/70' : 'text-gray-300',
+    
+    // Header buttons for light mode
+    headerButtonBg: theme === 'dark'
+      ? 'bg-white/10 hover:bg-white/20' 
+      : 'bg-gray-600/30 hover:bg-gray-500/40 backdrop-blur-sm',
+    headerButtonBorder: theme === 'dark' ? 'border-white/15' : 'border-gray-400/30',
+    headerButtonText: theme === 'dark' ? 'text-white' : 'text-gray-200',
+    headerButtonActiveText: theme === 'dark' ? 'text-blue-200' : 'text-white',
+    
+    // Regular buttons - Metallic silver appearance
     buttonBg: theme === 'dark'
       ? 'bg-white/10 hover:bg-white/20' 
       : 'bg-gradient-to-br from-slate-200/70 via-slate-100/60 to-slate-200/70 hover:from-slate-300/80 hover:to-slate-300/80 backdrop-blur-lg',
@@ -143,6 +155,16 @@ const ChatHistory: React.FC = () => {
     liveRing: theme === 'dark' ? 'animate-pulseBorder' : 'animate-pulseBorderLight',
     gradientBorder: theme === 'dark' ? 'gradient-border' : 'gradient-border-light',
     chipGradient: theme === 'dark' ? 'chip-gradient' : 'chip-gradient-light',
+    
+    // Footer-specific styling for light mode
+    footerBg: theme === 'dark'
+      ? 'bg-gradient-to-t from-[#05080d]/90 via-[#05080d]/70 to-transparent backdrop-blur-2xl border-t border-white/10'
+      : 'bg-gradient-to-t from-gray-800/95 via-gray-800/90 to-gray-800/80 backdrop-blur-xl border-t border-gray-600/50 shadow-2xl shadow-gray-900/30',
+    footerText: theme === 'dark' ? 'text-white' : 'text-gray-200',
+    footerSecondaryText: theme === 'dark' ? 'text-blue-200/60' : 'text-gray-400',
+    footerButtonBg: theme === 'dark'
+      ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-500 group-hover:to-pink-500'
+      : 'bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 group-hover:from-gray-500 group-hover:to-gray-600',
     
     // Ambient backgrounds - Rich metallic silver atmosphere
     ambientBg1: theme === 'dark'
@@ -177,19 +199,19 @@ const ChatHistory: React.FC = () => {
         {/* Header */}
         <div className={`sticky top-0 z-30 ${themeClasses.headerBg} px-4 py-4 flex items-center justify-between theme-transition`}>
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className={`w-10 h-10 rounded-xl ${themeClasses.buttonBg} ${themeClasses.buttonBorder} border transition flex items-center justify-center theme-transition`}>
+            <button onClick={() => navigate(-1)} className={`w-10 h-10 rounded-xl ${themeClasses.headerButtonBg} ${themeClasses.headerButtonBorder} border transition flex items-center justify-center ${themeClasses.headerButtonText} theme-transition`}>
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className={`text-lg sm:text-xl font-bold tracking-wide ${theme === 'dark' ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent' : 'bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent'} theme-transition`}>My Conversations</h1>
-              <p className={`text-[10px] sm:text-[11px] uppercase tracking-[0.25em] ${theme === 'dark' ? 'text-blue-300/70' : 'text-slate-500/80'} font-medium theme-transition`}>History & Insights</p>
+              <h1 className={`text-lg sm:text-xl font-bold tracking-wide ${theme === 'dark' ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent' : 'text-white font-extrabold'} theme-transition`}>My Conversations</h1>
+              <p className={`text-[10px] sm:text-[11px] uppercase tracking-[0.25em] ${themeClasses.headerSecondaryText} font-medium theme-transition`}>History & Insights</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={()=>setShowFilters(f=>!f)} className={`w-10 h-10 rounded-xl border ${themeClasses.buttonBorder} flex items-center justify-center transition ${showFilters ? (theme === 'dark' ? 'bg-blue-600/30 text-blue-200 border-blue-400/40' : 'bg-slate-400/30 text-slate-800 border-slate-500/50') : `${themeClasses.buttonBg} ${themeClasses.primaryText}`} theme-transition`}> 
+            <button onClick={()=>setShowFilters(f=>!f)} className={`w-10 h-10 rounded-xl border ${themeClasses.headerButtonBorder} flex items-center justify-center transition ${showFilters ? (theme === 'dark' ? 'bg-blue-600/30 text-blue-200 border-blue-400/40' : 'bg-gray-500/40 text-white border-gray-300/50') : `${themeClasses.headerButtonBg} ${themeClasses.headerButtonText}`} theme-transition`}> 
               <Filter className="w-5 h-5"/> 
             </button>
-            <button onClick={()=>setSearch('')} className={`w-10 h-10 rounded-xl ${themeClasses.buttonBg} ${themeClasses.buttonBorder} border flex items-center justify-center ${themeClasses.mutedText} hover:${themeClasses.primaryText} transition theme-transition`}>
+            <button onClick={()=>setSearch('')} className={`w-10 h-10 rounded-xl ${themeClasses.headerButtonBg} ${themeClasses.headerButtonBorder} border flex items-center justify-center ${theme === 'dark' ? themeClasses.mutedText : 'text-gray-300'} hover:${themeClasses.headerButtonActiveText} transition theme-transition`}>
               <RefreshCw className="w-5 h-5"/>
             </button>
           </div>
@@ -327,14 +349,14 @@ const ChatHistory: React.FC = () => {
         </div>
 
         {/* Bottom CTA / Summary Bar */}
-        <div className={`fixed bottom-0 left-0 right-0 z-20 px-4 pb-5 pt-4 ${theme === 'dark' ? 'bg-gradient-to-t from-[#05080d]/90 via-[#05080d]/70 to-transparent backdrop-blur-2xl border-t border-white/10' : 'bg-gradient-to-t from-slate-100/90 via-slate-100/70 to-transparent backdrop-blur-2xl border-t border-white/40'} theme-transition`}>
+        <div className={`fixed bottom-0 left-0 right-0 z-20 px-4 pb-5 pt-4 ${themeClasses.footerBg} theme-transition`}>
           <div className="flex items-center justify-between gap-4 max-w-3xl mx-auto">
             <div className="flex-1">
-              <p className={`text-[11px] ${themeClasses.accentText} uppercase tracking-wider theme-transition`}>Sessions</p>
-              <p className={`text-sm font-semibold flex items-center gap-2 ${themeClasses.primaryText} theme-transition`}><span>{filtered.length}</span><span className={`${theme === 'dark' ? 'text-white/30' : 'text-slate-500/60'} text-[11px] theme-transition`}>of {mockSessions.length}</span></p>
+              <p className={`text-[11px] ${themeClasses.footerSecondaryText} uppercase tracking-wider theme-transition`}>Sessions</p>
+              <p className={`text-sm font-semibold flex items-center gap-2 ${themeClasses.footerText} theme-transition`}><span>{filtered.length}</span><span className={`${themeClasses.footerSecondaryText} text-[11px] theme-transition`}>of {mockSessions.length}</span></p>
             </div>
             <button onClick={()=>navigate('/chat')} className="flex-1 h-11 rounded-2xl relative group overflow-hidden font-semibold text-sm text-white">
-              <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-500 group-hover:to-pink-500' : 'bg-gradient-to-r from-slate-600 via-slate-700 to-slate-800 group-hover:from-slate-500 group-hover:to-slate-700'} transition-all`} />
+              <div className={`absolute inset-0 ${themeClasses.footerButtonBg} transition-all`} />
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.25),transparent_60%)]" />
               <span className="relative">Start New</span>
             </button>

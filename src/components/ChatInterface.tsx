@@ -88,30 +88,32 @@ const ChatInterface: React.FC = () => {
 
   // LIGHT THEME CLASSES (Silver Metallic)
  // LIGHT THEME CLASSES (Updated - Silver Metallic with Dark Theme Chat Positioning)
+// LIGHT THEME CLASSES (Updated - Silver Metallic with Dark Theme Chat Positioning)
 const lightThemeClasses = {
   mainContainer: "min-h-[calc(var(--app-vh,1vh)*100)] bg-gradient-to-br from-slate-100 via-gray-50 to-slate-200 relative overflow-hidden",
   backgroundGradient: "absolute inset-0 bg-gradient-to-br from-slate-200/40 via-gray-100/30 to-slate-300/20",
-  header: "fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl bg-gradient-to-r from-gray-600/90 via-gray-700/85 to-gray-800/90 border-b border-gray-500/50 p-3 sm:p-4 pt-safe shadow-xl shadow-gray-600/30",
-  headerButton: "w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-gray-400/80 via-gray-500/90 to-gray-600/70 backdrop-blur-sm border border-gray-400/50 flex items-center justify-center text-gray-100 hover:bg-gradient-to-br hover:from-gray-300/80 hover:via-gray-400/90 hover:to-gray-500/70 hover:text-white transition-all duration-300 shadow-lg hover:shadow-gray-400/30",
-  headerTitle: "text-lg sm:text-xl font-bold bg-gradient-to-r from-gray-100 via-white to-gray-200 bg-clip-text text-transparent",
-  headerSubtitle: "text-xs sm:text-sm text-gray-300 font-medium",
-  progressDot: (active: boolean) => `w-2 h-2 rounded-full transition-all duration-500 ${active ? 'bg-gradient-to-r from-gray-300 to-gray-400 shadow-lg shadow-gray-400/60' : 'bg-gray-500/60 shadow-sm'}`,
-  userMessageBubble: "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 text-white shadow-lg shadow-slate-500/30",
-  aiMessageBubble: "bg-gradient-to-br from-white/80 via-slate-50/90 to-gray-100/80 backdrop-blur-xl border border-slate-300/40 text-slate-800 shadow-xl",
-  aiMessageGradient: "absolute inset-0 bg-gradient-to-br from-slate-200/20 via-gray-100/30 to-slate-300/20 rounded-2xl",
+  header: "fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl bg-gradient-to-r from-gray-500/95 via-gray-600/95 to-gray-700/95 border-b border-gray-400/60 p-3 sm:p-4 pt-safe shadow-xl shadow-gray-600/40 ring-1 ring-gray-400/30",
+  headerButton: "w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-gray-300/80 via-gray-400/90 to-gray-500/70 backdrop-blur-sm border border-gray-300/50 flex items-center justify-center text-gray-100 hover:bg-gradient-to-br hover:from-gray-200/80 hover:via-gray-300/90 hover:to-gray-400/70 hover:text-white transition-all duration-300 shadow-lg hover:shadow-gray-300/30",
+  headerTitle: "text-lg sm:text-xl font-bold bg-gradient-to-r from-gray-50 via-white to-gray-100 bg-clip-text text-transparent",
+  headerSubtitle: "text-xs sm:text-sm text-gray-200 font-medium",
+  progressDot: (active: boolean) => `w-2 h-2 rounded-full transition-all duration-500 ${active ? 'bg-gradient-to-r from-gray-200 to-gray-300 shadow-lg shadow-gray-300/60' : 'bg-gray-400/60 shadow-sm'}`,
+  userMessageBubble: "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 text-white shadow-lg shadow-blue-500/20",  
+  aiMessageBubble: "bg-white/[0.15] backdrop-blur-2xl border border-slate-400/50 text-slate-800 shadow-xl",
+  aiMessageGradient: "absolute inset-0 bg-gradient-to-br from-slate-300/30 via-gray-200/40 to-slate-400/30 rounded-2xl",  
   userMessageGlow: "absolute inset-0 bg-gradient-to-br from-slate-400/20 to-slate-600/20 rounded-2xl blur-sm",
+
   avatarAI: "bg-gradient-to-br from-slate-500 via-slate-600 to-slate-700",
   avatarUser: "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800",
   inputArea: "fixed bottom-0 left-0 right-0 z-40 pb-safe",
-  inputBackground: "absolute inset-0 bg-gradient-to-t from-slate-300/95 via-gray-200/90 to-slate-400/70",
+  inputBackground: "absolute inset-0 bg-gradient-to-t from-slate-300/95 via-slate-200/95 to-slate-400/90",
   inputContainer: "relative backdrop-blur-2xl bg-gradient-to-r from-slate-300/95 via-gray-200/90 to-slate-400/95 border-t border-slate-500/60 p-2.5 sm:p-3 md:p-4 shadow-2xl shadow-gray-700/40",
-  inputGlow: "absolute inset-0 bg-gradient-to-r from-slate-400/50 via-gray-300/40 to-slate-500/50 rounded-t-3xl",
-  textareaBackground: "absolute inset-0 bg-gradient-to-r from-white/70 via-slate-100/60 to-white/70 rounded-2xl border border-slate-400/40",
-  textareaFocusGlow: "absolute inset-0 bg-gradient-to-r from-slate-300/50 via-gray-200/40 to-slate-300/50 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
+  inputGlow: "absolute inset-0 bg-gradient-to-r from-slate-400/80 via-gray-300/70 to-slate-500/80 rounded-t-3xl",
+  textareaBackground: "absolute inset-0 bg-gradient-to-r from-slate-200/90 via-slate-100/85 to-slate-200/90 rounded-2xl border border-slate-400/40",
+  textareaFocusGlow: "absolute inset-0 bg-gradient-to-r from-slate-300/60 via-gray-200/50 to-slate-300/60 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
   textareaBorder: "absolute inset-0 rounded-2xl bg-gradient-to-r from-slate-500/40 via-slate-600/40 to-slate-500/40 p-[1px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
-  textareaBorderInner: "w-full h-full bg-white/90 rounded-2xl",
+  textareaBorderInner: "w-full h-full bg-slate-100/95 rounded-2xl",
   textarea: "relative w-full px-4 py-2.5 pr-10 sm:px-5 sm:py-3 sm:pr-12 bg-transparent text-slate-800 placeholder-slate-500/70 resize-none min-h-[48px] sm:min-h-[52px] max-h-32 border-0 outline-none transition-all duration-300 ease-out text-base leading-relaxed z-10 overflow-hidden",
-  sendButton: (disabled: boolean) => `relative w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ease-out shadow-xl group ${disabled ? 'bg-slate-400/60 opacity-50 cursor-not-allowed shadow-none' : 'bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 hover:from-slate-600 hover:via-slate-700 hover:to-slate-800 hover:shadow-slate-600/50 hover:scale-105 active:scale-95 ring-2 ring-slate-500/30 hover:ring-slate-400/50'}`,
+  sendButton: (disabled: boolean) => `relative w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ease-out group ${disabled ? 'bg-slate-400/60 opacity-50 cursor-not-allowed shadow-none' : 'bg-gradient-to-r from-slate-600 via-slate-700 to-slate-800 hover:from-slate-500 hover:via-slate-600 hover:to-slate-700 ring-2 ring-slate-300/80 ring-offset-2 ring-offset-slate-100/60 shadow-2xl hover:shadow-slate-500/80 hover:scale-110 active:scale-95'}`,
   providerCard: "flex-shrink-0 w-72 xl:w-80 bg-gradient-to-br from-white/90 via-slate-50/80 to-gray-100/70 backdrop-blur-xl border border-slate-300/40 rounded-2xl p-5 hover:from-white/95 hover:to-slate-100/80 transition-all duration-300 group shadow-lg hover:shadow-xl",
   typingBubble: "message-bubble bg-gradient-to-br from-white/90 via-slate-50/80 to-gray-100/70 backdrop-blur-xl border border-slate-300/40 rounded-2xl px-5 py-4 shadow-xl"
 };
@@ -1080,7 +1082,7 @@ const lightThemeClasses = {
                       {message.type === 'ai' && (
                         <>
                           <div className={themeClasses.aiMessageGradient}></div>
-                          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent rounded-2xl"></div>
+                          <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-t from-white/5 to-transparent' : 'bg-gradient-to-t from-slate-400/10 to-transparent'} rounded-2xl`}></div>
                         </>
                       )}
                       
@@ -1334,7 +1336,7 @@ const lightThemeClasses = {
             <div className="flex justify-start animate-fadeInSmooth">
               <div className="max-w-xs lg:max-w-md mr-12">
                 <div className="flex items-end space-x-3">
-                  <div className={`w-8 h-8 rounded-full ${themeClasses.avatarAI} flex items-center justify-center shadow-lg ring-2 ring-white/10`}>
+                  <div className={`w-8 h-8 rounded-full ${themeClasses.avatarAI} flex items-center justify-center shadow-lg ring-2 ${theme === 'dark' ? 'ring-white/10' : 'ring-slate-400/20'}`}>
                     <div className="relative">
                       <svg className={`w-5 h-5 ${theme === 'dark' ? 'text-white' : 'text-white'} drop-shadow-sm animate-pulse`} viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.19 0 2.34-.21 3.41-.6.3-.11.49-.4.49-.72v-.68c0-.41-.33-.75-.75-.75-.19 0-.37.07-.5.19-.74.27-1.54.41-2.37.41-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6c0 .83-.14 1.63-.41 2.37-.12.13-.19.31-.19.5 0 .42.34.75.75.75h.68c.32 0 .61-.19.72-.49.39-1.07.6-2.22.6-3.41C22 6.48 17.52 2 12 2z"/>
@@ -1482,10 +1484,10 @@ const lightThemeClasses = {
                   <div className="block sm:hidden">
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { text: '🚨 Emergency', fullText: '🚨 Emergency repair', color: theme === 'dark' ? 'from-red-500/20 to-orange-500/20' : 'from-red-500/30 to-orange-500/30', border: theme === 'dark' ? 'red-400/30' : 'red-400/40' },
-                        { text: '💰 Quote', fullText: '💰 Budget quote', color: theme === 'dark' ? 'from-green-500/20 to-emerald-500/20' : 'from-green-500/30 to-emerald-500/30', border: theme === 'dark' ? 'green-400/30' : 'green-400/40' },
-                        { text: '📅 Schedule', fullText: '📅 Schedule appointment', color: theme === 'dark' ? 'from-blue-500/20 to-cyan-500/20' : 'from-blue-500/30 to-cyan-500/30', border: theme === 'dark' ? 'blue-400/30' : 'blue-400/40' },
-                        { text: '⭐ Reviews', fullText: '⭐ View reviews', color: theme === 'dark' ? 'from-purple-500/20 to-pink-500/20' : 'from-purple-500/30 to-pink-500/30', border: theme === 'dark' ? 'purple-400/30' : 'purple-400/40' }
+                        { text: '🚨 Emergency', fullText: '🚨 Emergency repair', color: theme === 'dark' ? 'from-red-500/20 to-orange-500/20' : 'from-red-500/50 to-orange-500/50', border: theme === 'dark' ? 'red-400/30' : 'red-400/60' },
+                        { text: '💰 Quote', fullText: '💰 Budget quote', color: theme === 'dark' ? 'from-green-500/20 to-emerald-500/20' : 'from-green-500/50 to-emerald-500/50', border: theme === 'dark' ? 'green-400/30' : 'green-400/60' },
+                        { text: '📅 Schedule', fullText: '📅 Schedule appointment', color: theme === 'dark' ? 'from-blue-500/20 to-cyan-500/20' : 'from-blue-500/50 to-cyan-500/50', border: theme === 'dark' ? 'blue-400/30' : 'blue-400/60' },
+                        { text: '⭐ Reviews', fullText: '⭐ View reviews', color: theme === 'dark' ? 'from-purple-500/20 to-pink-500/20' : 'from-purple-500/50 to-pink-500/50', border: theme === 'dark' ? 'purple-400/30' : 'purple-400/60' }
                       ].map((suggestion, index) => (
                         <button
                           key={suggestion.text}
@@ -1510,10 +1512,10 @@ const lightThemeClasses = {
                     <div className={`pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l ${theme === 'dark' ? 'from-[#0b0f17] via-[#0b0f17]/60' : 'from-slate-100 via-slate-100/60'} to-transparent rounded-r-xl z-10`} />
                     <div className="flex gap-2.5 overflow-x-auto no-scrollbar pr-4 -ml-1 pl-1 snap-x snap-mandatory">
                       {[
-                        { text: '🚨 Emergency repair', color: theme === 'dark' ? 'from-red-500/20 to-orange-500/20' : 'from-red-500/30 to-orange-500/30', border: theme === 'dark' ? 'red-400/30' : 'red-400/40' },
-                        { text: '💰 Budget quote', color: theme === 'dark' ? 'from-green-500/20 to-emerald-500/20' : 'from-green-500/30 to-emerald-500/30', border: theme === 'dark' ? 'green-400/30' : 'green-400/40' },
-                        { text: '📅 Schedule appointment', color: theme === 'dark' ? 'from-blue-500/20 to-cyan-500/20' : 'from-blue-500/30 to-cyan-500/30', border: theme === 'dark' ? 'blue-400/30' : 'blue-400/40' },
-                        { text: '⭐ View reviews', color: theme === 'dark' ? 'from-purple-500/20 to-pink-500/20' : 'from-purple-500/30 to-pink-500/30', border: theme === 'dark' ? 'purple-400/30' : 'purple-400/40' }
+                        { text: '🚨 Emergency repair', color: theme === 'dark' ? 'from-red-500/20 to-orange-500/20' : 'from-red-500/50 to-orange-500/50', border: theme === 'dark' ? 'red-400/30' : 'red-400/60' },
+                        { text: '💰 Budget quote', color: theme === 'dark' ? 'from-green-500/20 to-emerald-500/20' : 'from-green-500/50 to-emerald-500/50', border: theme === 'dark' ? 'green-400/30' : 'green-400/60' },
+                        { text: '📅 Schedule appointment', color: theme === 'dark' ? 'from-blue-500/20 to-cyan-500/20' : 'from-blue-500/50 to-cyan-500/50', border: theme === 'dark' ? 'blue-400/30' : 'blue-400/60' },
+                        { text: '⭐ View reviews', color: theme === 'dark' ? 'from-purple-500/20 to-pink-500/20' : 'from-purple-500/50 to-pink-500/50', border: theme === 'dark' ? 'purple-400/30' : 'purple-400/60' }
                       ].map((suggestion, index) => (
                         <button
                           key={suggestion.text}

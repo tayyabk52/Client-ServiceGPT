@@ -10,9 +10,9 @@ import UserProfileScreen from './components/UserProfileScreen'
 import SavedProvidersScreen from './components/SavedProvidersScreen'
 import HowItWorksScreen from './components/HowItWorksScreen'
 import ComingSoonScreen from './components/ComingSoonScreen'
-import AdminLogin from './components/admin/AdminLogin'
+import { AdminLogin } from './components/admin/AdminLogin'
 import AdminDashboard from './components/admin/AdminDashboard'
-import AnalyticsDashboard from './components/admin/AnalyticsDashboard'
+import  AnalyticsDashboard  from './components/admin/AnalyticsDashboard'
 
 import { UnifiedThemeToggle } from './components/shared'
 import { ThemeProvider } from './theme/ThemeContext'
@@ -50,7 +50,7 @@ function App() {
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminDashboard onBack={() => window.history.back()} />} />
           <Route path="/admin/analytics" element={<AnalyticsDashboard />} />
         </Routes>
       </div>

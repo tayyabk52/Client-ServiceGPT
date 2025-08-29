@@ -29,6 +29,14 @@ const Dashboard: React.FC = () => {
   const timerRef = React.useRef<NodeJS.Timeout>();
   const menuRef = React.useRef<HTMLDivElement>(null);
 
+  const handleMenuToggle = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    setUserMenuOpen(!userMenuOpen);
+  };
+
   const handleMouseEnter = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -37,15 +45,40 @@ const Dashboard: React.FC = () => {
   };
 
   const handleMouseLeave = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
     timerRef.current = setTimeout(() => {
       setUserMenuOpen(false);
-    }, 3000);
+    }, 2000);
   };
 
-  React.useEffect(()=>{
-    const t = setInterval(()=> setNow(new Date()), 60000);
-    return ()=> clearInterval(t);
-  },[]);
+  // Handle click outside to close menu
+  React.useEffect(() => {
+    if (!userMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        const menu = menuRef.current.querySelector('[role="menu"]');
+        if (menu) {
+          menu.classList.add('menu-fade-out');
+          timerRef.current = setTimeout(() => {
+            setUserMenuOpen(false);
+          }, 200);
+        } else {
+          setUserMenuOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [userMenuOpen]);
+
+  React.useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(t);
+  }, []);
 
   const greeting = React.useMemo(()=>{
     const h = now.getHours();
@@ -78,6 +111,25 @@ const Dashboard: React.FC = () => {
       handleStartChat();
     }
   };
+
+  // Add custom animations
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes menuFadeOut {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0.95); }
+      }
+
+      .menu-fade-out {
+        animation: menuFadeOut 0.2s ease-out forwards;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   // Mobile input handling
   React.useEffect(() => {
@@ -121,6 +173,15 @@ const Dashboard: React.FC = () => {
   React.useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
+      @keyframes menuFadeOut {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0.95); }
+      }
+
+      .menu-fade-out {
+        animation: menuFadeOut 0.2s ease-out forwards;
+      }
+
       @keyframes spark-1 {
         0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
         30% { opacity: 1; transform: translate(15px, -8px) scale(1.2); }
@@ -377,14 +438,19 @@ const lightThemeStyles = {
                       onMouseLeave={handleMouseLeave}
                       ref={menuRef}
                     >
-                      <button className={themeStyles.header.userButton}>
+                      <button 
+                        className={themeStyles.header.userButton}
+                        onClick={handleMenuToggle}
+                      >
                         <User className={`w-5 h-5 ${isDark ? 'text-white' : 'text-slate-700'}`} />
                       </button>
                       {userMenuOpen && (
                         <div 
-                          className={themeStyles.header.menu}
+                          role="menu"
+                          className={themeStyles.header.menu + " transition-all duration-200"}
                           onMouseEnter={handleMouseEnter}
-                          onMouseLeave={handleMouseLeave}>
+                          onMouseLeave={handleMouseLeave}
+                          onClick={(e) => e.stopPropagation()}>
                           {[
                             {label:'Profile', action:()=>navigate('/profile')},
                             {label:'History', action:()=>navigate('/history')},

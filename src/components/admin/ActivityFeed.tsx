@@ -1,5 +1,6 @@
 import React from 'react';
 import { Clock, User, Search, Settings } from 'lucide-react';
+import { getThemeStyles, themeClass } from './theme-config';
 
 interface ActivityItem {
   id: string;
@@ -11,9 +12,15 @@ interface ActivityItem {
 
 interface ActivityFeedProps {
   className?: string;
+  isDark?: boolean;
 }
 
-const ActivityFeed: React.FC<ActivityFeedProps> = ({ className = '' }) => {
+const ActivityFeed: React.FC<ActivityFeedProps> = ({ 
+  className = '', 
+  isDark = true 
+}) => {
+  const theme = getThemeStyles(isDark);
+  
   const activities: ActivityItem[] = [
     {
       id: '1',
@@ -94,26 +101,26 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ className = '' }) => {
   };
 
   return (
-    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 ${className}`}>
+    <div className={`${theme.cardBackground} ${theme.cardBorder} border rounded-2xl p-6 ${className}`}>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
-        <button className="text-blue-400 hover:text-blue-300 text-sm">
+        <h3 className={`text-lg font-semibold ${theme.primaryText}`}>Recent Activity</h3>
+        <button className={`${theme.accentText} hover:opacity-80 text-sm`}>
           View All
         </button>
       </div>
       
       <div className="space-y-4">
         {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors">
+          <div key={activity.id} className={`flex items-start space-x-3 p-3 rounded-lg ${themeClass(isDark, 'hover:bg-white/5', 'hover:bg-slate-50')} transition-colors`}>
             <div className={`w-8 h-8 bg-gradient-to-br ${getActivityColor(activity.type)} rounded-lg flex items-center justify-center flex-shrink-0`}>
               {getActivityIcon(activity.type)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm">{activity.message}</p>
+              <p className={`${theme.primaryText} text-sm`}>{activity.message}</p>
               {activity.user && (
-                <p className="text-blue-400 text-xs mt-1">{activity.user}</p>
+                <p className={`${theme.accentText} text-xs mt-1`}>{activity.user}</p>
               )}
-              <p className="text-gray-400 text-xs mt-1">{activity.timestamp}</p>
+              <p className={`${theme.secondaryText} text-xs mt-1`}>{activity.timestamp}</p>
             </div>
           </div>
         ))}

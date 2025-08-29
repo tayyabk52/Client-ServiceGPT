@@ -1,22 +1,27 @@
 import React from 'react';
+import { getThemeStyles } from './theme-config';
 
 interface ChartCardProps {
   title: string;
   children: React.ReactNode;
   className?: string;
   actions?: React.ReactNode;
+  isDark?: boolean;
 }
 
 const ChartCard: React.FC<ChartCardProps> = ({ 
   title, 
   children, 
   className = '',
-  actions 
+  actions,
+  isDark = true
 }) => {
+  const theme = getThemeStyles(isDark);
+
   return (
-    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300 relative z-1 ${className}`}>
+    <div className={`${theme.cardBackground} ${theme.cardBorder} border rounded-2xl p-6 ${theme.cardHover} transition-all duration-300 relative z-1 ${className}`}>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className={`text-lg font-semibold ${theme.primaryText}`}>{title}</h3>
         {actions && (
           <div className="flex items-center space-x-2">
             {actions}
