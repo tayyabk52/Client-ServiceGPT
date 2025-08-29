@@ -13,16 +13,16 @@ import {
   ChevronRight,
   Calendar,
   Award,
-  DollarSign
+  DollarSign,
+  Moon,
+  Sun
 } from 'lucide-react';
 import PageTransition from './shared/PageTransition';
 import { useTheme } from '../theme/useTheme';
-import UnifiedThemeToggle from './shared/UnifiedThemeToggle';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { theme, setTheme } = useTheme();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [now, setNow] = useState(new Date());
@@ -88,6 +88,10 @@ const Dashboard: React.FC = () => {
     return 'Good evening';
   },[now]);
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   const handleStartChat = () => {
     const button = document.querySelector('.start-ai-search-button');
     if (button) {
@@ -99,18 +103,9 @@ const Dashboard: React.FC = () => {
   };
 
   const onTransitionComplete = () => {
-    if (searchQuery.trim()) {
-      navigate('/chat', { state: { initialMessage: searchQuery.trim() } });
-    } else {
-      navigate('/chat');
-    }
+    navigate('/chat');
   };
 
-  const handleInputKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleStartChat();
-    }
-  };
 
   // Add custom animations
   React.useEffect(() => {
@@ -388,8 +383,6 @@ const lightThemeStyles = {
       onTransitionComplete={onTransitionComplete}
     >
       <div className={themeStyles.background}>
-        <UnifiedThemeToggle />
-        
         {/* Background Effects */}
         <div className={themeStyles.backgroundEffects.grid}></div>
         <div className={themeStyles.backgroundEffects.gradient}></div>
@@ -398,7 +391,7 @@ const lightThemeStyles = {
 
         <div className="relative z-10">
           {/* Header */}
-          <header className="fixed top-0 left-0 right-0 z-50">
+          <header className="relative w-full">
             <div className="relative">
               <div className={themeStyles.header.container} />
               <div className={themeStyles.header.background} />
@@ -428,6 +421,17 @@ const lightThemeStyles = {
                   
                   {/* Right cluster */}
                   <div className="flex items-center gap-3">
+                    <button 
+                      onClick={toggleTheme}
+                      className={themeStyles.header.button}
+                      aria-label="Toggle theme"
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="w-4 h-4" />
+                      ) : (
+                        <Moon className="w-4 h-4" />
+                      )}
+                    </button>
                     <button className={themeStyles.header.button}>
                       <Bell className="w-4 h-4" />
                       <span className={`absolute -top-1 -right-1 w-5 h-5 rounded-full ${isDark ? 'bg-gradient-to-br from-rose-500 to-pink-500' : 'bg-gradient-to-br from-red-500 to-rose-500'} text-[10px] font-bold flex items-center justify-center shadow text-white`}>3</span>
@@ -472,7 +476,7 @@ const lightThemeStyles = {
           </header>
 
           {/* Main Content */}
-          <main className="pt-20 sm:pt-24 md:pt-28 pb-20">
+          <main className="pb-20">
             {/* Welcome Card */}
             <div id="ai-search-card" className="px-4 py-6">
               <div className={themeStyles.welcomeCard}>
@@ -520,32 +524,6 @@ const lightThemeStyles = {
                     </p>
                   </div>
 
-                  {/* Search input */}
-                  <div className="mb-6">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyPress={handleInputKeyPress}
-                        placeholder="Try: 'I need a plumber for emergency leak repair'"
-                        className={themeStyles.aiCard.input}
-                        style={{
-                          fontSize: '16px',
-                          WebkitAppearance: 'none',
-                          borderRadius: '16px'
-                        }}
-                      />
-                      <button 
-                        onClick={handleStartChat}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 hover:scale-110 transition-transform duration-200"
-                      >
-                        <div className={`w-8 h-8 ${isDark ? 'bg-gradient-to-r from-blue-500 to-purple-600' : 'bg-gradient-to-r from-slate-600 to-gray-700'} rounded-xl flex items-center justify-center`}>
-                          <Search className="w-4 h-4 text-white" />
-                        </div>
-                      </button>
-                    </div>
-                  </div>
 
                   {/* Main CTA Button */}
                   <div className="flex justify-center">
