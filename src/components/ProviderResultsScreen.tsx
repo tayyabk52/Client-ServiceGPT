@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Map as MapIcon, List, Star, Heart, MessageCircle, ArrowLeft, ChevronDown, ExternalLink, X, Check, Loader2 } from 'lucide-react';
-import { ServiceProvider } from '../types';
+import { Map as MapIcon, List, ArrowLeft, ChevronDown } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 
+interface BackendProvider {
+  name: string;
+  phone: string;
+  details: string;
+  address: string;
+  location_note?: string;
+  confidence?: string;
+}
+
 interface LocationState {
-  providers?: ServiceProvider[];
+  providers?: BackendProvider[];
   searchQuery?: string;
   category?: string;
 }
@@ -13,7 +21,7 @@ interface LocationState {
 type ViewMode = 'list' | 'map';
 
 // Themed mock map placeholder
-const MapPlaceholder: React.FC<{ providers: ServiceProvider[]; isDark: boolean }> = ({ providers, isDark }) => (
+const MapPlaceholder: React.FC<{ providers: BackendProvider[]; isDark: boolean }> = ({ providers, isDark }) => (
   <div className={`w-full h-[520px] rounded-3xl relative overflow-hidden backdrop-blur-xl ${
     isDark 
       ? 'bg-gradient-to-br from-[#101826]/80 via-[#0d1320]/70 to-[#161b2b]/80 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.05)]'
@@ -51,13 +59,13 @@ const MapPlaceholder: React.FC<{ providers: ServiceProvider[]; isDark: boolean }
         Showing {providers.length} dynamic provider marker placeholders
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3 max-w-xl">
-        {providers.slice(0,8).map(p => (
-          <div key={p.id} className={`px-3 py-1.5 rounded-xl backdrop-blur-md text-[11px] ${
+        {providers.slice(0,8).map((p, index) => (
+          <div key={index} className={`px-3 py-1.5 rounded-xl backdrop-blur-md text-[11px] ${
             isDark 
               ? 'bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 text-blue-200/80'
               : 'bg-white/70 border border-gray-300/50 text-gray-700'
           }`}>
-            {p.businessName.split(' ')[0]}
+            {p.name.split(' ')[0]}
           </div>
         ))}
       </div>
@@ -84,48 +92,11 @@ const ProviderResultsScreen: React.FC = () => {
   const state = (location.state || {}) as LocationState;
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [showAll, setShowAll] = useState(false);
-  const [showWhatsApp, setShowWhatsApp] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null);
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [prefill, setPrefill] = useState('');
-  const providers: ServiceProvider[] = state.providers || [];
+  const providers: BackendProvider[] = state.providers || [];
   const visibleProviders = showAll ? providers : providers.slice(0, 6);
 
-  const category = state.category || providers[0]?.category || 'Service Providers';
+  const category = state.category || 'Service Providers';
   const searchQuery = state.searchQuery || category;
-
-  // Compose message when provider changes
-  useEffect(() => {
-    if (selectedProvider) {
-      const base = `Hello ${selectedProvider.businessName}! I'm interested in your ${selectedProvider.category.toLowerCase()} services I found via HireLocalGPT. Could you assist with my needs?`;
-      setPrefill(base + '\n\nBrief: [Add any extra details here]\nPreferred timing: [e.g. This week]\nBudget: [optional]\n\nThanks!');
-    }
-  }, [selectedProvider]);
-
-  const openWhatsApp = (provider: ServiceProvider) => {
-    setSelectedProvider(provider);
-    setShowWhatsApp(true);
-    setSending(false);
-    setSent(false);
-  };
-
-  const buildWhatsAppLink = () => {
-    if (!selectedProvider) return '#';
-    const raw = (selectedProvider.whatsapp || selectedProvider.phone || '').replace(/[^\d+]/g, '');
-    const number = raw.startsWith('+') ? raw.replace(/\+/,'') : raw;
-    const text = encodeURIComponent(prefill.replace(/\n/g,'\n'));
-    return `https://wa.me/${number}?text=${text}`;
-  };
-
-  const simulateSend = () => {
-    setSending(true);
-    setSent(false);
-    setTimeout(() => {
-      setSending(false);
-      setSent(true);
-    }, 1300);
-  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -236,103 +207,45 @@ const ProviderResultsScreen: React.FC = () => {
           ) : (
             <>
               <div className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-12">
-                {visibleProviders.map(provider => (
-                  <div key={provider.id} className={`group relative rounded-3xl p-5 sm:p-6 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 flex flex-col ${
+                {visibleProviders.map((provider, index) => (
+                  <div key={index} className={`group relative rounded-xl p-4 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] flex flex-col ${
                     isDark 
-                      ? 'bg-gradient-to-br from-white/[0.07] via-white/[0.05] to-white/[0.04] border border-white/10 shadow-[0_4px_30px_-6px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_40px_-8px_rgba(0,0,0,0.55)]'
-                      : 'bg-gradient-to-br from-white/95 via-gray-100/90 to-slate-200/85 border border-gray-300/60 shadow-lg hover:shadow-xl shadow-gray-500/20'
+                      ? 'bg-gradient-to-br from-[#161B22] to-[#21262D] border border-[#30363D] shadow-xl hover:shadow-2xl'
+                      : 'bg-white border border-gray-200 backdrop-blur-sm shadow-lg hover:shadow-xl'
                   }`}>
-                    {/* Accent gradient bar */}
-                    {isDark && (
-                      <div className="absolute -left-px top-4 h-10 w-[3px] rounded-r-full bg-gradient-to-b from-blue-400 via-purple-400 to-pink-400 opacity-70 group-hover:opacity-100 group-hover:h-14 transition-all" />
-                    )}
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="relative">
-                        <div className={`w-16 h-16 rounded-2xl overflow-hidden shadow-lg transition-all duration-500 ${
-                          isDark ? 'ring-2 ring-white/20 group-hover:ring-blue-400/40' : 'ring-2 ring-slate-200/50 group-hover:ring-blue-400/40'
-                        }`}>
-                          <img src={provider.profileImage} alt={provider.businessName} className="w-full h-full object-cover" />
+                    <div className="flex items-center justify-between">
+                        <h3 className={`font-bold text-base ${isDark ? 'text-[#E6EDF3]' : 'text-gray-900'}`}>{provider.name}</h3>
+                        <div className="flex items-center gap-2">
+                            {provider.location_note === 'EXACT' && <div className="w-2 h-2 rounded-full bg-emerald-400"></div>}
+                            {provider.confidence === 'HIGH' && <div className="w-2 h-2 rounded-full bg-amber-400"></div>}
                         </div>
-                        {provider.verified && (
-                          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 text-white flex items-center justify-center text-[10px] font-bold shadow-md ring-2 ${
-                            isDark ? 'ring-[#0d1220]' : 'ring-white'
-                          }`}>✓</div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0 pr-2">
-                            <h3 className={`text-[15px] font-semibold truncate tracking-wide transition-colors ${
-                              isDark ? 'text-white group-hover:text-blue-200' : 'text-slate-800 group-hover:text-blue-600'
-                            }`}>{provider.businessName}</h3>
-                            <p className={`text-[11px] font-medium uppercase tracking-[0.12em] mt-1 ${
-                              isDark ? 'text-blue-300/80' : 'text-slate-600'
-                            }`}>{provider.category}</p>
-                          </div>
-                          <div className="flex flex-col items-end">
-                            <div className="flex items-center space-x-1.5">
-                              <Star className="w-4 h-4 text-amber-400 fill-amber-300 drop-shadow" />
-                              <span className={`text-sm font-semibold ${
-                                isDark ? 'text-white' : 'text-slate-800'
-                              }`}>{provider.rating.toFixed(1)}</span>
-                            </div>
-                            <span className={`text-[10px] mt-1 ${
-                              isDark ? 'text-blue-200/60' : 'text-slate-500'
-                            }`}>{provider.distance}</span>
-                          </div>
-                        </div>
-                        <div className={`mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-medium ${
-                          isDark ? 'text-blue-100/60' : 'text-slate-500'
-                        }`}>
-                          <span className={`inline-flex items-center font-semibold px-2 py-1 rounded-lg ring-1 tracking-wide ${
-                            isDark 
-                              ? 'text-emerald-300/90 bg-emerald-500/10 ring-emerald-400/20' 
-                              : 'text-emerald-700 bg-emerald-100/80 ring-emerald-300/40'
-                          }`}>{provider.priceRange}</span>
-                          <span className="inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 animate-pulse" /> 
-                            {provider.responseTime} resp.
-                          </span>
-                          <span>{provider.completedJobs} jobs</span>
-                        </div>
-                      </div>
                     </div>
-                    {/* Divider */}
-                    <div className={`mt-4 mb-5 h-px ${
-                      isDark ? 'bg-gradient-to-r from-transparent via-white/10 to-transparent' : 'bg-gradient-to-r from-transparent via-slate-200/60 to-transparent'
-                    }`} />
-                    <div className="flex items-center justify-between mt-auto pt-1">
-                      <div className="flex items-center gap-2.5">
-                        <button onClick={() => openWhatsApp(provider)} className={`relative h-10 px-4 rounded-xl text-white text-[13px] font-semibold shadow-lg transition-all flex items-center gap-2 overflow-hidden group ${
-                          isDark
-                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 shadow-green-600/30 hover:shadow-emerald-500/40'
-                            : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 shadow-green-600/30'
-                        }`}>
-                          {isDark && <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white/40 to-transparent" />}
-                          <MessageCircle className="w-4 h-4" />
-                          <span>WhatsApp</span>
-                        </button>
-                        <button className={`h-10 w-10 rounded-xl border flex items-center justify-center transition-all ${
-                          isDark
-                            ? 'bg-white/5 border-white/10 text-blue-200/60 hover:text-rose-400 hover:border-rose-400/40 hover:bg-rose-500/10'
-                            : 'bg-white/60 border-slate-200/50 text-slate-500 hover:text-rose-500 hover:border-rose-400/40 hover:bg-rose-50'
-                        }`}>
-                          <Heart className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <button className={`group text-[13px] font-semibold flex items-center gap-1 transition-colors ${
-                        isDark ? 'text-blue-300 hover:text-blue-200' : 'text-slate-600 hover:text-blue-600'
-                      }`}>
-                        <span>View Details</span>
-                        <ExternalLink className="w-3 h-3 opacity-70 group-hover:opacity-100" />
-                      </button>
+                    <div className={`flex items-center gap-2 mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>{provider.address}</span>
                     </div>
-                    {/* Glow rings for dark mode */}
-                    {isDark && (
-                      <>
-                        <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-white/10 group-hover:ring-blue-400/30 transition-all" />
-                        <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 blur-xl transition-opacity" />
-                      </>
+                    <div className="mt-4 flex items-center justify-between">
+                        <div className="flex gap-2">
+                            <a href={`tel:${provider.phone}`} className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold ${isDark ? 'bg-blue-600/50 text-blue-300 hover:bg-blue-600/80' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'} transition-all`}>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                Call
+                            </a>
+                            <button onClick={() => navigator.clipboard.writeText(`${provider.name}\n${provider.phone}\n${provider.address}`)} className={`p-2 rounded-md ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-800'} transition-all`}>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    {provider.details && (
+                        <div className="mt-3 pt-3 border-t border-gray-200/20">
+                            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`}>{provider.details}</p>
+                        </div>
                     )}
                   </div>
                 ))}
@@ -355,129 +268,6 @@ const ProviderResultsScreen: React.FC = () => {
             </>
           )}
         </div>
-
-        {/* WhatsApp Modal */}
-        {showWhatsApp && selectedProvider && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={() => setShowWhatsApp(false)} />
-            <div className={`relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-scaleIn border ${
-              isDark
-                ? 'bg-gradient-to-br from-[#101826]/90 via-[#0d1320]/85 to-[#161b2b]/90 border-white/10'
-                : 'bg-gradient-to-br from-white/95 via-gray-100/90 to-slate-200/85 border-gray-300/60 backdrop-blur-xl'
-            }`}>
-              {/* Decorative gradients for dark mode */}
-              {isDark && (
-                <>
-                  <div className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none" style={{backgroundImage:'radial-gradient(circle at 15% 20%, rgba(59,130,246,.25) 0, transparent 55%), radial-gradient(circle at 85% 30%, rgba(147,51,234,.25) 0, transparent 60%), radial-gradient(circle at 60% 85%, rgba(236,72,153,.25) 0, transparent 60%)'}} />
-                  <div className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_60%,rgba(255,255,255,0.07)_100%)] pointer-events-none" />
-                </>
-              )}
-              <div className="relative p-6 sm:p-8 space-y-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className={`text-xl font-semibold flex items-center gap-2 ${
-                      isDark ? 'bg-gradient-to-r from-white via-blue-50 to-purple-200 bg-clip-text text-transparent' : 'text-slate-800'
-                    }`}>
-                      Outreach to {selectedProvider.businessName}
-                    </h2>
-                    <p className={`text-xs tracking-wide uppercase mt-1 ${
-                      isDark ? 'text-blue-200/70' : 'text-slate-500'
-                    }`}>WhatsApp Mock Automation</p>
-                  </div>
-                  <button onClick={() => setShowWhatsApp(false)} className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all ${
-                    isDark
-                      ? 'bg-white/5 border-white/10 text-white/70 hover:text-white hover:bg-white/10'
-                      : 'bg-white/70 border-slate-200/50 text-slate-500 hover:text-slate-700 hover:bg-white/90'
-                  }`}>
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl overflow-hidden ring-2 ${
-                    isDark ? 'ring-white/10' : 'ring-slate-200/50'
-                  }`}>
-                    <img src={selectedProvider.profileImage} alt={selectedProvider.businessName} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold truncate ${
-                      isDark ? 'text-white' : 'text-slate-800'
-                    }`}>{selectedProvider.businessName}</p>
-                    <p className={`text-[11px] uppercase tracking-wider ${
-                      isDark ? 'text-blue-300/70' : 'text-slate-500'
-                    }`}>{selectedProvider.category}</p>
-                    <div className={`flex items-center gap-3 mt-2 text-[11px] ${
-                      isDark ? 'text-blue-200/60' : 'text-slate-500'
-                    }`}>
-                      <span className="inline-flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 text-amber-400" />{selectedProvider.rating.toFixed(1)}
-                      </span>
-                      <span>{selectedProvider.distance}</span>
-                      <span className={`px-2 py-0.5 rounded-lg font-medium ${
-                        isDark 
-                          ? 'bg-emerald-500/10 text-emerald-300/90' 
-                          : 'bg-emerald-100/80 text-emerald-700'
-                      }`}>{selectedProvider.priceRange}</span>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label className={`text-xs font-semibold uppercase tracking-wider block mb-2 ${
-                    isDark ? 'text-blue-200/70' : 'text-slate-500'
-                  }`}>Prefilled Message</label>
-                  <div className="relative group">
-                    <textarea value={prefill} onChange={e=>setPrefill(e.target.value)} rows={5} className={`w-full rounded-2xl resize-none p-4 text-sm leading-relaxed backdrop-blur-md transition-all outline-none ${
-                      isDark
-                        ? 'bg-white/5 border border-white/10 focus:border-blue-400/50 focus:ring-2 focus:ring-blue-500/20 text-blue-50/90'
-                        : 'bg-white/70 border border-slate-200/50 focus:border-blue-400/50 focus:ring-2 focus:ring-blue-500/20 text-slate-700'
-                    }`} />
-                    <div className={`pointer-events-none absolute inset-0 rounded-2xl ring-1 transition ${
-                      isDark ? 'ring-white/10 group-focus-within:ring-blue-400/40' : 'ring-slate-200/50 group-focus-within:ring-blue-400/40'
-                    }`} />
-                  </div>
-                  <div className={`flex justify-between mt-2 text-[11px] ${
-                    isDark ? 'text-blue-300/50' : 'text-slate-500'
-                  }`}>
-                    <span>{prefill.length} chars</span>
-                    <span>Editable before sending</span>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="flex-1 flex gap-3">
-                    <button disabled={sending || sent} onClick={simulateSend} className={`flex-1 h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all relative overflow-hidden border ${sent ? 
-                      isDark ? 'bg-green-600/20 border-green-400/40 text-green-300' : 'bg-green-100/80 border-green-300/60 text-green-700' : 
-                      isDark ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-green-400/30 shadow-lg hover:shadow-green-500/30' : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-green-400/30 shadow-lg'
-                    } ${sending ? 'opacity-70 cursor-wait' : ''}`}>
-                      {sending && <Loader2 className="w-4 h-4 animate-spin" />}
-                      {sent && <Check className="w-4 h-4" />}
-                      {!sending && !sent && <MessageCircle className="w-4 h-4" />}
-                      <span>{sent ? 'Prepared' : sending ? 'Preparing...' : 'Prepare & Track'}</span>
-                    </button>
-                    <a onClick={e=>{if(!sent){e.preventDefault(); simulateSend();}}} href={buildWhatsAppLink()} target="_blank" rel="noopener noreferrer" className={`flex-1 h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all border ${sent ? 
-                      isDark ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg border-blue-400/30' : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg border-blue-400/30' : 
-                      isDark ? 'bg-white/5 text-blue-200/70 border-white/10 hover:bg-white/10' : 'bg-white/70 text-slate-600 border-slate-200/50 hover:bg-white/90 hover:text-slate-800'
-                    }`}>
-                      <ExternalLink className="w-4 h-4" />
-                      <span>{sent ? 'Open WhatsApp' : 'Open (after prep)'}</span>
-                    </a>
-                  </div>
-                </div>
-                <div className={`relative mt-2 h-2 w-full rounded-full overflow-hidden ${
-                  isDark ? 'bg-white/5' : 'bg-slate-200/50'
-                }`}>
-                  <div className={`h-full bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 transition-all duration-700 ${sending ? 'w-2/3 animate-pulse' : sent ? 'w-full' : 'w-0'}`} />
-                  {sent && <div className={`absolute inset-0 rounded-full ring-1 animate-pulse ${
-                    isDark ? 'ring-green-400/40' : 'ring-green-400/60'
-                  }`} />}
-                </div>
-                {sent && (
-                  <p className={`text-[11px] mt-1 flex items-center gap-1 ${
-                    isDark ? 'text-green-300/80' : 'text-green-700'
-                  }`}><Check className="w-3 h-3" /> Message prepared locally. This is a mock preview.</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
