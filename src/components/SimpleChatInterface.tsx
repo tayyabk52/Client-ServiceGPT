@@ -788,6 +788,7 @@ const SimpleChatInterface: React.FC = () => {
     // Post-process location to handle context-specific terms
     if (location === 'my area' || location === 'near me') {
       // Replace with actual user location if available
+      console.log('🔍 Processing "near me" - userLocation:', userLocation);
       if (userLocation) {
         const locationParts = [];
         if (userLocation.area) locationParts.push(userLocation.area);
@@ -795,8 +796,21 @@ const SimpleChatInterface: React.FC = () => {
         if (userLocation.state) locationParts.push(userLocation.state);
         if (userLocation.country && userLocation.country !== 'unknown') locationParts.push(userLocation.country);
         location = locationParts.join(', ');
-        console.log('🔄 Replaced location context with actual location:', location);
+        console.log('✅ Replaced "near me" with actual location:', location);
+      } else {
+        console.log('⚠️ "near me" detected but no userLocation available');
       }
+    }
+    
+    // Additional fallback: If no location found but userLocation exists, use it
+    if (!location && userLocation && (query.includes('near me') || query.includes('close to me') || query.includes('my area'))) {
+      const locationParts = [];
+      if (userLocation.area) locationParts.push(userLocation.area);
+      if (userLocation.city && userLocation.city !== userLocation.area) locationParts.push(userLocation.city);
+      if (userLocation.state) locationParts.push(userLocation.state);
+      if (userLocation.country && userLocation.country !== 'unknown') locationParts.push(userLocation.country);
+      location = locationParts.join(', ');
+      console.log('🔄 Fallback: Used userLocation as location context:', location);
     }
     
     console.log('🎯 Final extraction:', { service, location });
@@ -1015,7 +1029,8 @@ const SimpleChatInterface: React.FC = () => {
   // hide quick replies once user starts a search; they'll re-appear only after first search completes or on guidance
   setShowQuickReplies(false);
     setSelectedService('');
-    setSelectedLocation('');
+    // Don't clear selectedLocation or userLocation - preserve location context
+    // setSelectedLocation('');
     addMessage('user', query);
     setIsLoading(true);
     setIsTyping(true);
