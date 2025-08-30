@@ -3,6 +3,7 @@ import { ArrowLeft, Send, Loader2, User, Bot, Phone, Wrench, Zap, Droplets, Home
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../theme/useTheme';
 import { motion, AnimatePresence } from 'framer-motion';
+import '../styles/mobile.css';
 
 interface Message {
   id: string;
@@ -46,11 +47,13 @@ const SimpleChatInterface: React.FC = () => {
   const [isInitializing, setIsInitializing] = useState(true);
   const processingTimeoutsRef = useRef<number[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const lastScrollTop = useRef<number>(0);
   
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const initialMessageAdded = useRef(false);
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((smooth: boolean = true) => {
     const el = messagesEndRef.current;
     if (!el) return;
     
@@ -58,13 +61,57 @@ const SimpleChatInterface: React.FC = () => {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
         try {
-          el.scrollIntoView({ behavior: 'smooth', block: 'end' as ScrollLogicalPosition });
+          el.scrollIntoView({ 
+            behavior: smooth ? 'smooth' : 'instant', 
+            block: 'end' as ScrollLogicalPosition,
+            inline: 'nearest'
+          });
         } catch (e) {
-          // fallback
+          // fallback for older browsers
           el.scrollIntoView(false);
         }
       });
     });
+  }, []);
+
+  // Enhanced scroll behavior for different scenarios
+  const smartScrollToBottom = useCallback((delay: number = 0, smooth: boolean = true) => {
+    // Don't auto-scroll if user is manually scrolling
+    if (isUserScrolling) return;
+    
+    if (delay > 0) {
+      const timeoutId = setTimeout(() => scrollToBottom(smooth), delay);
+      processingTimeoutsRef.current.push(timeoutId);
+    } else {
+      scrollToBottom(smooth);
+    }
+  }, [scrollToBottom, isUserScrolling]);
+
+  // Detect user scrolling to prevent unwanted auto-scrolling
+  const handleScroll = useCallback((e: Event) => {
+    const target = e.target as HTMLElement;
+    if (!target) return;
+
+    const currentScrollTop = target.scrollTop;
+    const scrollHeight = target.scrollHeight;
+    const clientHeight = target.clientHeight;
+    
+    // Check if user is near bottom (within 100px)
+    const isNearBottom = (scrollHeight - clientHeight - currentScrollTop) < 100;
+    
+    // If user scrolls up significantly, mark as user scrolling
+    if (currentScrollTop < lastScrollTop.current - 10) {
+      setIsUserScrolling(true);
+      
+      // Reset user scrolling after 3 seconds of no scroll activity
+      const timeoutId = setTimeout(() => setIsUserScrolling(false), 3000);
+      processingTimeoutsRef.current.push(timeoutId);
+    } else if (isNearBottom) {
+      // If user scrolls to bottom, allow auto-scrolling again
+      setIsUserScrolling(false);
+    }
+    
+    lastScrollTop.current = currentScrollTop;
   }, []);
 
   const toggleExpandedCard = useCallback((index: number) => {
@@ -87,18 +134,43 @@ const SimpleChatInterface: React.FC = () => {
     });
   }, [scrollToBottom]);
 
+  // Auto-scroll when new messages are added
   useEffect(() => {
-    // Optimized scroll timing for smoother animations
-    const id = window.setTimeout(() => scrollToBottom(), 120);
-    return () => clearTimeout(id);
-  }, [messages, isTyping, scrollToBottom]);
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      // Immediate scroll for user messages, delayed for AI messages to allow animations
+      if (lastMessage.type === 'user') {
+        smartScrollToBottom(50, true);
+      } else {
+        // AI message - wait for typing animation to start
+        smartScrollToBottom(200, true);
+      }
+    }
+  }, [messages.length, smartScrollToBottom]);
+
+  // Scroll when typing indicator appears/disappears
+  useEffect(() => {
+    if (isTyping) {
+      // When AI starts typing, scroll smoothly
+      smartScrollToBottom(100, true);
+    }
+  }, [isTyping, smartScrollToBottom]);
 
   // Keep view scrolled when processing stage or skeleton/loading changes
   useEffect(() => {
-    // Debounced scroll for better performance
-    const id = window.setTimeout(() => scrollToBottom(), 300);
-    return () => clearTimeout(id);
-  }, [processingStage, showCardSkeletons, loadingMore, scrollToBottom]);
+    if (showCardSkeletons || processingStage !== 'complete') {
+      smartScrollToBottom(150, true);
+    }
+  }, [showCardSkeletons, processingStage, smartScrollToBottom]);
+
+  // Scroll when provider cards are loaded
+  useEffect(() => {
+    const hasProviders = messages.some(m => m.providers && m.providers.length > 0);
+    if (hasProviders) {
+      // Delay to allow provider card animations to render
+      smartScrollToBottom(400, true);
+    }
+  }, [messages, smartScrollToBottom]);
 
   const addMessage = useCallback((type: 'user' | 'ai', content: string, options: { providers?: ServiceProvider[] } = {}) => {
     const newMessage: Message = {
@@ -721,12 +793,26 @@ const SimpleChatInterface: React.FC = () => {
         locationGroup: 2,
         desc: 'full query with location'
       },
-      // Pattern 2: Service with location pattern but no location words
+      // Pattern 2: Casual language with hesitation words
+      {
+        regex: /(?:umm|uh|well|actually|so)?\s*(?:i\s+)?(?:need|want|looking for|require)\s+(?:a|an)?\s*([a-zA-Z\s]+?)(?:\s*$|\s+in|\s+near|\s+close|\s+around)/i,
+        serviceGroup: 1,
+        locationGroup: null,
+        desc: 'casual language with hesitation'
+      },
+      // Pattern 3: Direct service mention
       {
         regex: /(?:i\s+)?(?:need|want|looking for|find|get me|hire|book)\s+(?:a|an)?\s*(?:local\s+)?([^.]+?)(?:\s+(?:in|near|close to|at|around)|$)/i,
         serviceGroup: 1,
         locationGroup: null,
         desc: 'service with potential location'
+      },
+      // Pattern 4: Simple service request
+      {
+        regex: /^(?:umm|uh|well)?\s*(?:i\s+)?(?:need|want|require)\s+(?:a|an)?\s*([a-zA-Z]+)(?:\s*$)/i,
+        serviceGroup: 1,
+        locationGroup: null,
+        desc: 'simple service request'
       }
     ];
     
@@ -1409,8 +1495,8 @@ const SimpleChatInterface: React.FC = () => {
   
   const themeStyles = {
     background: isDark 
-      ? "min-h-screen bg-[#0D1117] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"
-      : "min-h-screen bg-gradient-to-br from-gray-50 to-blue-50",
+      ? "mobile-viewport mobile-full-height bg-[#0D1117] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"
+      : "mobile-viewport mobile-full-height bg-gradient-to-br from-gray-50 to-blue-50",
     header: isDark
       ? "bg-[#161B22]/80 backdrop-blur-2xl border-b border-gray-800/50 shadow-lg"
       : "bg-white/80 backdrop-blur-2xl border-b border-gray-200 shadow-sm",
@@ -1418,8 +1504,8 @@ const SimpleChatInterface: React.FC = () => {
       ? "px-3 py-2 rounded-lg bg-[#21262D] hover:bg-[#30363D] text-[#E6EDF3] hover:text-white transition-all duration-200 text-sm font-medium hover:shadow-lg hover:scale-105"
       : "px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 transition-all duration-200 text-sm font-medium hover:shadow-md",
     messageArea: isDark
-      ? "flex-1 overflow-y-auto scroll-smooth"
-      : "flex-1 overflow-y-auto scroll-smooth",
+      ? "flex-1 overflow-y-auto scroll-smooth mobile-scroll ios-scroll-fix android-scroll-fix"
+      : "flex-1 overflow-y-auto scroll-smooth mobile-scroll ios-scroll-fix android-scroll-fix",
     messageUser: isDark ? "bg-blue-600 text-white shadow-lg" : "bg-blue-500 text-white shadow-lg",
     messageAI: isDark
       ? "bg-[#161B22] text-[#E6EDF3] shadow-xl border border-[#30363D] backdrop-blur-sm"
@@ -1437,11 +1523,11 @@ const SimpleChatInterface: React.FC = () => {
   ? "rounded-2xl bg-[#161B22]/90 backdrop-blur-xl border border-[#30363D] p-4 min-h-[92px] flex flex-col overflow-hidden"
   : "rounded-2xl bg-white/90 backdrop-blur-xl border border-gray-200 p-4 min-h-[92px] flex flex-col overflow-hidden",
     inputArea: isDark
-      ? "bg-[#161B22]/80 backdrop-blur-2xl border-t border-[#30363D] shadow-2xl"
-      : "bg-white/80 backdrop-blur-2xl border-t border-gray-200 shadow-lg",
+      ? "bg-[#161B22]/95 backdrop-blur-2xl border-t border-[#30363D] shadow-2xl mobile-dark-backdrop"
+      : "bg-white/95 backdrop-blur-2xl border-t border-gray-200 shadow-lg mobile-light-backdrop",
     inputField: isDark
-      ? "bg-[#0D1117] border border-[#30363D] text-[#E6EDF3] placeholder-[#8B949E] focus:border-[#4A80F0] focus:shadow-[0_0_0_4px_rgba(74,128,240,0.1),0_0_0_1px_#4A80F0]"
-      : "bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1),0_0_0_1px_#3B82F6]",
+      ? "mobile-input bg-[#0D1117] border border-[#30363D] text-[#E6EDF3] placeholder-[#8B949E] focus:border-[#4A80F0] focus:shadow-[0_0_0_4px_rgba(74,128,240,0.1),0_0_0_1px_#4A80F0] mobile-touch-target"
+      : "mobile-input bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1),0_0_0_1px_#3B82F6] mobile-touch-target",
     sendButton: isDark
       ? "bg-gradient-to-r from-[#4A80F0] to-[#6366F1] hover:from-[#5A90FF] hover:to-[#7376F1] text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 focus:shadow-[0_0_0_4px_rgba(74,128,240,0.2)]"
       : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.2)]",
@@ -1558,26 +1644,27 @@ const SimpleChatInterface: React.FC = () => {
   };
 
   return (
-    <div className={`${themeStyles.background} flex flex-col h-screen`}>
-        <header className={`sticky top-0 z-20 ${themeStyles.header}`}>
-          <div className="px-4 py-3">
+    <div className={`${themeStyles.background} relative flex flex-col`}>
+        {/* Fixed Header */}
+        <header className={`fixed top-0 left-0 right-0 z-30 ${themeStyles.header} safe-area-top`}>
+          <div className="px-4 py-3 sm:py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <button onClick={() => navigate(-1)} className={`${themeStyles.headerButton} flex items-center gap-2`}>
+                <button onClick={() => navigate(-1)} className={`${themeStyles.headerButton} flex items-center gap-2 mobile-touch-target`}>
                   <ArrowLeft className="w-4 h-4" />
                   <span className="hidden sm:block">Back</span>
                 </button>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center`}>
                     <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                    <h1 className={`text-lg sm:text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>ServiceGPT</h1>
+                    <h1 className={`text-base sm:text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>ServiceGPT</h1>
                     <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} hidden sm:block`}>AI Service Finder</p>
                   </div>
                 </div>
               </div>
-              <button onClick={handleNewSearch} className={`${themeStyles.headerButton} flex items-center gap-2`}>
+              <button onClick={handleNewSearch} className={`${themeStyles.headerButton} flex items-center gap-2 mobile-touch-target`}>
                 <Search className="w-4 h-4" />
                 <span className="hidden sm:block">New</span>
               </button>
@@ -1585,8 +1672,14 @@ const SimpleChatInterface: React.FC = () => {
           </div>
         </header>
 
-        <div className={`${themeStyles.messageArea} px-4 pb-4`}>
-          <div className="max-w-2xl mx-auto space-y-6 pt-4">
+        {/* Scrollable Content Area - Mobile First */}
+        <main className="flex-1 flex flex-col pt-16 sm:pt-20" style={{ minHeight: '100vh', minHeight: '-webkit-fill-available' }}>
+          <div 
+            className={`${themeStyles.messageArea} px-4 pb-4`} 
+            style={{WebkitOverflowScrolling: 'touch', paddingBottom: 'calc(100px + env(safe-area-inset-bottom))'}}
+            onScroll={handleScroll}
+          >
+          <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6 pt-4">
             <AnimatePresence initial={false}>
               {messages.map((message) => (
                 <motion.div
@@ -1956,7 +2049,7 @@ const SimpleChatInterface: React.FC = () => {
                             variants={serviceCardVariants} 
                             key={service.id} 
                             onClick={() => handleServiceSelect(service)} 
-                            className={`flex flex-col items-center justify-center text-center p-3 rounded-xl backdrop-blur-sm border ${themeStyles.serviceCard} group relative overflow-hidden`}
+                            className={`flex flex-col items-center justify-center text-center p-3 rounded-xl backdrop-blur-sm border ${themeStyles.serviceCard} group relative overflow-hidden mobile-touch-target touch-manipulation`}
                             whileHover={{ 
                               scale: 1.03, 
                               y: -4,
@@ -2037,7 +2130,7 @@ const SimpleChatInterface: React.FC = () => {
                               variants={locationChipVariants}
                               key={location.id}
                               onClick={() => handleLocationSelect(location)}
-                              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 backdrop-blur-sm border relative overflow-hidden ${
+                              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 backdrop-blur-sm border relative overflow-hidden mobile-touch-target touch-manipulation ${
                                 location.id === 'near-me' && locationLoading
                                   ? `${themeStyles.locationChip} opacity-50 cursor-not-allowed`
                                   : themeStyles.locationChip
@@ -2116,10 +2209,12 @@ const SimpleChatInterface: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
         </div>
+        </main>
         
-        <div className={`${themeStyles.inputArea} p-4`}>
+        {/* Fixed Input Area - Mobile Optimized */}
+        <div className={`fixed bottom-0 left-0 right-0 z-20 ${themeStyles.inputArea} p-3 sm:p-4 safe-area-bottom`} style={{backdropFilter: 'blur(20px)'}}>
           <div className="max-w-2xl mx-auto">
-            <form onSubmit={(e) => { e.preventDefault(); handleNlpSubmit(); }} className="flex gap-3 items-start">
+            <form onSubmit={(e) => { e.preventDefault(); handleNlpSubmit(); }} className="flex gap-2 sm:gap-3 items-end">
               <motion.div 
                 className="flex-1 relative"
                 initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -2128,7 +2223,7 @@ const SimpleChatInterface: React.FC = () => {
               >
                 <motion.div
                   className="relative"
-                  whileFocus={{ scale: 1.01 }}
+                  whileFocus={{ scale: 1.005 }}
                   transition={springConfig}
                 >
                   <textarea 
@@ -2137,95 +2232,82 @@ const SimpleChatInterface: React.FC = () => {
                     value={nlpInput} 
                     onChange={(e) => setNlpInput(e.target.value)} 
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleNlpSubmit())} 
-                    className={`w-full px-5 py-4 rounded-2xl transition-all duration-300 text-sm sm:text-base outline-none resize-none pr-14 backdrop-blur-sm border-2 ${themeStyles.inputField}`} 
+                    className={`w-full px-4 py-3 sm:px-5 sm:py-4 rounded-2xl transition-all duration-300 text-sm sm:text-base outline-none resize-none backdrop-blur-sm border-2 ${themeStyles.inputField}`} 
                     disabled={isLoading} 
                     rows={1} 
                     style={{ 
-                      minHeight: '54px', 
-                      maxHeight: '120px',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                      minHeight: '48px',
+                      maxHeight: '96px',
+                      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
                       background: isDark 
-                        ? 'linear-gradient(135deg, rgba(13, 17, 23, 0.9) 0%, rgba(22, 27, 34, 0.8) 100%)'
-                        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.8) 100%)'
+                        ? 'linear-gradient(135deg, rgba(13, 17, 23, 0.95) 0%, rgba(22, 27, 34, 0.9) 100%)'
+                        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%)'
                     }} 
                     onInput={(e) => { 
                       const target = e.target as HTMLTextAreaElement; 
                       target.style.height = 'auto'; 
-                      target.style.height = `${target.scrollHeight}px`; 
+                      target.style.height = `${Math.min(target.scrollHeight, 96)}px`; 
                     }}
                     onFocus={() => {
-                      // Add subtle focus glow
+                      // Add subtle focus glow for mobile
                       if (inputRef.current) {
                         inputRef.current.style.boxShadow = isDark 
-                          ? '0 0 0 2px rgba(74, 128, 240, 0.3), 0 8px 32px rgba(0, 0, 0, 0.12)'
-                          : '0 0 0 2px rgba(59, 130, 246, 0.2), 0 8px 32px rgba(0, 0, 0, 0.08)';
+                          ? '0 0 0 2px rgba(74, 128, 240, 0.4), 0 4px 20px rgba(0, 0, 0, 0.15)'
+                          : '0 0 0 2px rgba(59, 130, 246, 0.3), 0 4px 20px rgba(0, 0, 0, 0.1)';
                       }
                     }}
                     onBlur={() => {
                       if (inputRef.current) {
-                        inputRef.current.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)';
+                        inputRef.current.style.boxShadow = '0 2px 12px rgba(0, 0, 0, 0.08)';
                       }
                     }}
                   />
-                  
-                  {/* Floating label effect */}
-                  <AnimatePresence>
-                    {!nlpInput && !isLoading && (
-                      <motion.div
-                        className={`absolute right-16 top-1/2 -translate-y-1/2 ${isDark ? 'text-gray-500' : 'text-gray-400'} text-xs font-medium`}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        Press ⏎ to send
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </motion.div>
-                
-                <motion.button 
-                  type="submit" 
-                  disabled={!nlpInput.trim() || isLoading} 
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-xl transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'text-gray-400 hover:text-white bg-gray-800/50 hover:bg-gray-700/70' : 'text-gray-500 hover:text-blue-600 bg-gray-100/50 hover:bg-gray-200/70'} backdrop-blur-sm border`}
-                  whileHover={{ 
-                    scale: 1.08,
-                    rotate: 5,
-                    transition: { ...premiumSpring, duration: 0.2 }
-                  }}
-                  whileTap={{ 
-                    scale: 0.92,
-                    transition: { ...premiumSpring, duration: 0.1 }
-                  }}
-                  style={{
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                  }}
-                >
-                  <AnimatePresence mode="wait">
-                    {isLoading ? (
-                      <motion.div
-                        key="loading"
-                        initial={{ opacity: 0, rotate: -90 }}
-                        animate={{ opacity: 1, rotate: 0 }}
-                        exit={{ opacity: 0, rotate: 90 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="send"
-                        initial={{ opacity: 0, rotate: -90 }}
-                        animate={{ opacity: 1, rotate: 0 }}
-                        exit={{ opacity: 0, rotate: 90 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Send className="w-5 h-5" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
               </motion.div>
+              
+              <motion.button 
+                type="submit" 
+                disabled={!nlpInput.trim() || isLoading} 
+                className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation ${themeStyles.sendButton}`}
+                whileHover={{ 
+                  scale: nlpInput.trim() && !isLoading ? 1.05 : 1,
+                  transition: { ...premiumSpring, duration: 0.2 }
+                }}
+                whileTap={{ 
+                  scale: nlpInput.trim() && !isLoading ? 0.95 : 1,
+                  transition: { ...premiumSpring, duration: 0.1 }
+                }}
+                initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                style={{
+                  minWidth: '48px',
+                  minHeight: '48px'
+                }}
+              >
+                <AnimatePresence mode="wait">
+                  {isLoading ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, rotate: -90 }}
+                      animate={{ opacity: 1, rotate: 0 }}
+                      exit={{ opacity: 0, rotate: 90 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="send"
+                      initial={{ opacity: 0, rotate: -90 }}
+                      animate={{ opacity: 1, rotate: 0 }}
+                      exit={{ opacity: 0, rotate: 90 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Send className="w-5 h-5" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             </form>
           </div>
         </div>

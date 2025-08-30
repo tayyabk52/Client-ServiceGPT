@@ -1,0 +1,142 @@
+/* Mobile-first Chat Interface Styles */
+
+/* Safe Area Support */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pb-safe {
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+/* Touch Optimization */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Mobile Scrolling Improvements */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scroll-padding-bottom: 100px; /* Account for fixed input area */
+}
+
+/* Smooth scrolling for all elements */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced scroll behavior for chat area */
+.chat-container {
+  scroll-snap-type: y proximity;
+}
+
+.message-item {
+  scroll-snap-align: end;
+}
+
+/* Mobile Chat Message Styling */
+@media (max-width: 640px) {
+  /* Optimize message spacing for mobile */
+  .chat-message {
+    margin-bottom: 1rem;
+  }
+  
+  /* Optimize provider cards for mobile */
+  .provider-card-mobile {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+  }
+  
+  /* Optimize input for mobile */
+  .mobile-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+    border-radius: 1rem;
+  }
+  
+  /* Mobile-specific animations */
+  .mobile-reduced-motion {
+    animation-duration: 0.2s;
+    transition-duration: 0.2s;
+  }
+}
+
+/* iOS Specific Fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  .ios-scroll-fix {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix for iOS input focus zoom */
+  input[type="text"], 
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Android Specific Fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .android-scroll-fix {
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Dark mode adjustments for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 640px) {
+  .mobile-dark-backdrop {
+    backdrop-filter: blur(20px);
+    background-color: rgba(13, 17, 23, 0.95);
+  }
+}
+
+/* Light mode adjustments for mobile */
+@media (prefers-color-scheme: light) and (max-width: 640px) {
+  .mobile-light-backdrop {
+    backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Mobile viewport fixes */
+@media (max-width: 640px) {
+  .mobile-viewport {
+    min-height: -webkit-fill-available;
+    min-height: 100vh;
+  }
+  
+  /* Fix for mobile browsers address bar */
+  .mobile-full-height {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+  
+  /* Optimize touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Reduce motion for performance */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
