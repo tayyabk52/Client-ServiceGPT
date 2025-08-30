@@ -803,7 +803,8 @@ const SimpleChatInterface: React.FC = () => {
     }
     
     // Additional fallback: If no location found but userLocation exists, use it
-    if (!location && userLocation && (query.includes('near me') || query.includes('close to me') || query.includes('my area'))) {
+    // This handles cases where user has provided location earlier (via "near me" etc) and now asks for a service
+    if (!location && userLocation) {
       const locationParts = [];
       if (userLocation.area) locationParts.push(userLocation.area);
       if (userLocation.city && userLocation.city !== userLocation.area) locationParts.push(userLocation.city);
@@ -1955,7 +1956,7 @@ const SimpleChatInterface: React.FC = () => {
                             variants={serviceCardVariants} 
                             key={service.id} 
                             onClick={() => handleServiceSelect(service)} 
-                            className={`flex flex-col items-center justify-center text-center p-5 rounded-2xl backdrop-blur-sm border ${themeStyles.serviceCard} group relative overflow-hidden`}
+                            className={`flex flex-col items-center justify-center text-center p-3 rounded-xl backdrop-blur-sm border ${themeStyles.serviceCard} group relative overflow-hidden`}
                             whileHover={{ 
                               scale: 1.03, 
                               y: -4,
@@ -1970,14 +1971,14 @@ const SimpleChatInterface: React.FC = () => {
                           >
                             {/* Subtle gradient overlay */}
                             <motion.div 
-                              className={`absolute inset-0 rounded-2xl ${isDark ? 'bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10' : 'bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5'}`}
+                              className={`absolute inset-0 rounded-xl ${isDark ? 'bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10' : 'bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5'}`}
                               initial={{ opacity: 0 }}
                               whileHover={{ opacity: 1 }}
                               transition={{ duration: 0.3 }}
                             />
                             
                             <motion.div 
-                              className={`w-14 h-14 rounded-2xl mb-4 ${isDark ? 'bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200'} flex items-center justify-center shadow-lg relative`}
+                              className={`w-10 h-10 rounded-xl mb-2.5 ${isDark ? 'bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200'} flex items-center justify-center shadow-lg relative`}
                               whileHover={{ 
                                 scale: 1.15, 
                                 rotateY: 10,
@@ -1988,9 +1989,9 @@ const SimpleChatInterface: React.FC = () => {
                                 filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))'
                               }}
                             >
-                              <service.icon className={`w-7 h-7 ${isDark ? 'text-blue-400' : 'text-blue-600'} relative z-10`} />
+                              <service.icon className={`w-5 h-5 ${isDark ? 'text-blue-400' : 'text-blue-600'} relative z-10`} />
                               <motion.div
-                                className={`absolute inset-0 rounded-2xl ${isDark ? 'bg-gradient-to-br from-blue-400/20 to-purple-400/20' : 'bg-gradient-to-br from-blue-500/10 to-purple-500/10'}`}
+                                className={`absolute inset-0 rounded-xl ${isDark ? 'bg-gradient-to-br from-blue-400/20 to-purple-400/20' : 'bg-gradient-to-br from-blue-500/10 to-purple-500/10'}`}
                                 initial={{ scale: 0, opacity: 0 }}
                                 whileHover={{ scale: 1, opacity: 1 }}
                                 transition={{ duration: 0.2 }}
@@ -1998,7 +1999,7 @@ const SimpleChatInterface: React.FC = () => {
                             </motion.div>
                             
                             <motion.h4 
-                              className={`font-semibold text-sm ${isDark ? 'text-[#E6EDF3]' : 'text-gray-900'} tracking-wide`}
+                              className={`font-semibold text-xs ${isDark ? 'text-[#E6EDF3]' : 'text-gray-900'} tracking-wide`}
                               whileHover={{ y: -1 }}
                               transition={springConfig}
                             >
@@ -2036,7 +2037,7 @@ const SimpleChatInterface: React.FC = () => {
                               variants={locationChipVariants}
                               key={location.id}
                               onClick={() => handleLocationSelect(location)}
-                              className={`px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2.5 backdrop-blur-sm border relative overflow-hidden ${
+                              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 backdrop-blur-sm border relative overflow-hidden ${
                                 location.id === 'near-me' && locationLoading
                                   ? `${themeStyles.locationChip} opacity-50 cursor-not-allowed`
                                   : themeStyles.locationChip
